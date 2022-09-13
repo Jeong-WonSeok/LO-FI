@@ -9,6 +9,10 @@
   bottom: 0;
   width: 100%;
   border-top: 1px rgba(179, 179, 179, 0.575) solid;
+  z-index: 10;
+  display: flex;
+  justify-content: space-around;
+  background-color: white;
 }
 
 .navigater {
@@ -22,7 +26,6 @@
   width: 46px;
   height: 46px;
   border-radius: 25px;
-  bottom: 3px;
   background-color: rgba(164, 237, 224, 0.35);
 }
 
