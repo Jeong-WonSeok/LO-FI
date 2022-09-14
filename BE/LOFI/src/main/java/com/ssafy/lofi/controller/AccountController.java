@@ -21,7 +21,7 @@ public class AccountController {
         String result = mailService.joinEmail(email);
 
         if(result.equals("exits")){
-            return ResponseEntity.status(401).body("이미 존재하는 이메일 입니다.");
+            return ResponseEntity.status(201).body("이미 존재하는 이메일 입니다.");
         }
         else{
             return ResponseEntity.ok().body(result);
