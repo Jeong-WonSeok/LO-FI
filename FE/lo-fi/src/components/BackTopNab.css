@@ -1,0 +1,21 @@
+.detail-top-nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 10px;
+    align-items: center;
+}
+
+.submit-button{
+    opacity: 0.7;
+    background-color: #B4E0D7;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.pass {
+    opacity: 1 !important;
+}
+
+.detail-top-nav > img {
+    height: 25px;
+}

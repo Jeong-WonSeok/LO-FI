@@ -11,7 +11,7 @@ export default function SearchPage() {
     setSearchText(e.target.value);
   }
   return (
-    <div>
+    <div style={{height: '100%'}}>
       {/* 시간이 지나면 자동으로 검색 되도록 구현 */}
       <div className='search_box flex justify-between'>
         <img src={search_icon} alt="" width={20} height={20}/>
