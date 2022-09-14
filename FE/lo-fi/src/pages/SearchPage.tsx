@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import Category from '../components/Category'
 import search_icon from '../assets/img/icon/search_icon.png'
 import './SearchPage.css'
+import List from '../components/List';
 
 export default function SearchPage() {
   const [SearchText, setSearchText] = useState("");
@@ -17,6 +18,7 @@ export default function SearchPage() {
         <input className="search_input" type="text" value={SearchText} onChange={handleChange}/>
       </div>
       <Category/>
+      <List/>
     </div>
   )
 }
