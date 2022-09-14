@@ -1,9 +1,9 @@
 package com.ssafy.lofi.util.jwt;
 
-import com.common.dipping.api.user.domain.entity.User;
-import com.common.dipping.api.user.repository.UserRepository;
-import com.common.dipping.exception.UserNotFoundException;
-import com.common.dipping.security.UserDetailsImpl;
+import com.ssafy.lofi.db.entity.User;
+import com.ssafy.lofi.util.exception.UserNotFoundException;
+import com.ssafy.lofi.config.security.UserDetailsImpl;
+import com.ssafy.lofi.db.repository.UserRepository;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -81,10 +81,9 @@ public final class JwtProvider {
 
         User user = userRepository.findByEmail(claims.getSubject()).orElseThrow(UserNotFoundException::new);
         claims.put("id", user.getId());
-        claims.put("nickname", user.getNickname());
+        claims.put("email", user.getEmail());
         claims.put("provider", user.getProvider());
         claims.put("roles", authentication.getAuthorities());
-        claims.put("profileImgUrl", user.getProfileImgUrl());
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims)

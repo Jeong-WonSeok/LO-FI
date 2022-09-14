@@ -18,14 +18,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private int id;
+    private Long id;
 
     @Column(nullable = false, unique = true, length = 50)
     private String email;
 
     @Setter
     @Column(nullable = true)
-    private String pw;
+    private String password;
 
     @Column(nullable = false, length = 50)
     @Enumerated(EnumType.STRING)

@@ -1,7 +1,7 @@
 package com.ssafy.lofi.util.handler;
 
-import com.common.dipping.common.ApiResponse;
-import com.common.dipping.common.ApiResponseType;
+import com.ssafy.lofi.util.ApiResponse;
+import com.ssafy.lofi.util.ApiResponseType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
