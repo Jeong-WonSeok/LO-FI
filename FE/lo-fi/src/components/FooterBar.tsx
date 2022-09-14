@@ -33,16 +33,17 @@ export default function FooterBar() {
   };
 
   return (
-    <div className="Footer_contain">
+    <div className='Footer-center'>
+      <div className="Footer_contain">
         <Link className="navigater" to="/" onClick={() => handleChangeTap('main')}>
           <img src={Select === 'main' ? select_main : main} alt=""
           width="40px" height="40px"/>
         </Link>
-        <Link className="navigater" to="/Search" onClick={() => handleChangeTap('search')}>
+        <Link className="navigater" to="/search" onClick={() => handleChangeTap('search')}>
           <img src={Select === 'search' ? select_search : search} alt=""
           width="40px" height="40px"/>
         </Link>
-        <Link className='navigater add_button' to="/Search">
+        <Link className='navigater add_button' to="/add">
           <div className='plus'>+</div>
         </Link>
         <Link className="navigater" to="/Search" onClick={() => handleChangeTap('chat')}>
@@ -53,6 +54,7 @@ export default function FooterBar() {
           <img src={Select === 'user' ? select_user : user} alt=""
           width="40px" height="40px" />
         </Link>
+      </div>
     </div>
   )
 }

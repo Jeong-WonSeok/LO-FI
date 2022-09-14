@@ -1,0 +1,32 @@
+.add-container {
+    font-family: "DalseoHealingBold";
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.add-buttons {
+    margin-top: 40px;
+}
+
+.add-button {
+    display: flex;
+    flex-direction: row;
+    margin: 20px;
+    align-items: center;
+    font-size: 20px;
+    width: 250px;
+    height: 80px;
+    background: #FFFFFF;
+    box-shadow: 1px 3px 8px 3px #7AB4B8;
+    border-radius: 5px;
+}
+
+.add-button > p {
+    margin-left: 15px;
+}
+
+.add-button > img {
+    margin-left: 10px;
+}
