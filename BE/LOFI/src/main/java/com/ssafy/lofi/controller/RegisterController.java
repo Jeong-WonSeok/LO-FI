@@ -1,5 +1,6 @@
 package com.ssafy.lofi.controller;
 
+import com.ssafy.lofi.db.entity.User;
 import com.ssafy.lofi.dto.request.SignUpDto;
 import com.ssafy.lofi.service.RegisterService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,11 @@ public class RegisterController {
 
     @PostMapping(value = "/signUp")
     public ResponseEntity<?> signup(@RequestBody SignUpDto signUpDto){
-        registerService.signUp(signUpDto);
-        return ResponseEntity.ok().build();
+        User user = registerService.signUp(signUpDto);
+        if(user.getId() == null){
+            return ResponseEntity.badRequest().build();
+        }else {
+            return ResponseEntity.ok().build();
+        }
     }
 }

@@ -14,13 +14,13 @@ public class RegisterService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public void signUp(SignUpDto signUpDto) {
+    public User signUp(SignUpDto signUpDto) {
         User user = User.builder()
                 .email(signUpDto.getEmail())
                 .password(passwordEncoder.encode(signUpDto.getPassword()))
                 .role(UserRole.ROLE_USER)
                 .provider(signUpDto.getProvider())
                 .build();
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 }
