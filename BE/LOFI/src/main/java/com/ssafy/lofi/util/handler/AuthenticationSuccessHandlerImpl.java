@@ -1,7 +1,7 @@
 package com.ssafy.lofi.util.handler;
 
-import com.common.dipping.common.ApiResponse;
-import com.common.dipping.jwt.JwtProvider;
+import com.ssafy.lofi.util.ApiResponse;
+import com.ssafy.lofi.util.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
