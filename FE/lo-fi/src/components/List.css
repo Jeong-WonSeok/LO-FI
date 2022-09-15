@@ -1,15 +1,21 @@
 .list-container {
-  width: 360px;
-  height: 133px;
+  width: 100%;
   border-radius: 20px;
   font-family: "DalSeoHealingMedium";
+  margin-top: 20px;
 }
 
 .list-item-container {
+  height: 133px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   padding: 10px;
   margin-top: 10px;
+  border-radius: 12px;
+}
+
+.list-item-container:hover {
+  background-color: rgba(164, 237, 224, 0.21);
 }
 
 .list-item-container > img {
@@ -19,7 +25,7 @@
 .list-item-info {
   display: flex;
   flex-direction: column;
-  padding: 5px 0;
+  padding: 12px 20px 12px 0;
 }
 
 

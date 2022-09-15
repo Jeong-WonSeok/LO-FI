@@ -1,0 +1,40 @@
+.detail-container {
+    font-family: 'DalSeoHealingBold';
+}
+
+.detail-img {
+    margin: 20px;
+}
+
+.detail-info {
+    padding-top: 20px;
+}
+
+.detail-span {
+    display: flex;
+    flex-direction: row;
+    margin: 10px 0;
+    font-size: 20px;
+    align-items: center;
+}
+
+.detail-span > img {
+    height: 20px;
+}
+
+.detail-span > span {
+    margin-left: 12px;
+}
+
+.detail-button {
+    position: fixed;
+    bottom: 80px;
+}
+
+.detail-button > button {
+    background-color: #B4E0D7;
+    border-radius: 20px;
+    width: 280px;
+    height: 40px;
+    font-size: 20px;
+}
