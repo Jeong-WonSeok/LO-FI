@@ -33,4 +33,8 @@ public class RegisterService {
         userDto.setPoint(user.getPoint());
         return userDto;
     }
+
+    public void deleteuser(Long id) {
+        userRepository.deleteById(id);
+    }
 }
