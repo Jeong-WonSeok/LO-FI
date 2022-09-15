@@ -31,5 +31,12 @@ public class RegisterController {
         UserDto user = registerService.mypage("ssafy@naver.com");
         return ResponseEntity.ok().body(user);
     }
-    //@AuthenticationPrincipal UserDetailsImpl userInfo,
+    //@AuthenticationPrincipal UserDetailsImpl userInfo
+
+    @PostMapping(value = "/delete")
+    public ResponseEntity<?> deleteUser(){
+        registerService.deleteuser(1L);
+        return ResponseEntity.ok().build();
+    }
+    //@AuthenticationPrincipal UserDetailsImpl userInfo
 }
