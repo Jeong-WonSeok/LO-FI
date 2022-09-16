@@ -1,5 +1,6 @@
 package com.ssafy.lofi.controller;
 
+import com.ssafy.lofi.config.security.UserDetailsImpl;
 import com.ssafy.lofi.db.entity.User;
 import com.ssafy.lofi.dto.request.SignUpDto;
 import com.ssafy.lofi.dto.response.UserDto;
@@ -27,16 +28,14 @@ public class RegisterController {
     }
 
     @GetMapping(value = "/myPage")
-    public ResponseEntity<?> myPage(){
-        UserDto user = registerService.mypage("ssafy@naver.com");
+    public ResponseEntity<?> myPage(@AuthenticationPrincipal UserDetailsImpl userInfo){
+        UserDto user = registerService.mypage(userInfo.getName());
         return ResponseEntity.ok().body(user);
     }
-    //@AuthenticationPrincipal UserDetailsImpl userInfo
 
     @PostMapping(value = "/delete")
-    public ResponseEntity<?> deleteUser(){
-        registerService.deleteuser(1L);
+    public ResponseEntity<?> deleteUser(@AuthenticationPrincipal UserDetailsImpl userInfo){
+        registerService.deleteuser(userInfo.getId());
         return ResponseEntity.ok().build();
     }
-    //@AuthenticationPrincipal UserDetailsImpl userInfo
 }
