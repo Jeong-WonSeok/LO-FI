@@ -1,6 +1,7 @@
 package com.ssafy.lofi.config;
 
 import com.ssafy.lofi.config.security.CustomAuthenticationFilter;
+import com.ssafy.lofi.config.security.oauth.OAuth2UserServiceImpl;
 import com.ssafy.lofi.util.jwt.JwtFilter;
 import com.ssafy.lofi.util.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthenticationFailureHandler authenticationFailureHandler;
     //인가 실패 핸들러
     private final AccessDeniedHandler accessDeniedHandler;
+    private final OAuth2UserServiceImpl OAuth2UserServiceImpl;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -66,7 +68,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
-                .accessDeniedHandler(accessDeniedHandler);
+                .accessDeniedHandler(accessDeniedHandler)
+                .and()
+                .oauth2Login()
+                .defaultSuccessUrl("http://localhost:3000")
+                .successHandler(authenticationSuccessHandler)
+                .userInfoEndpoint()
+                .userService(OAuth2UserServiceImpl);
     }
 
     @Bean
