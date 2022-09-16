@@ -1,0 +1,9 @@
+#map {
+  width: 100%
+}
+
+@media all and (min-width: 768px) {
+  #map {
+    width: 768px;
+  }
+}

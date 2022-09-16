@@ -7,11 +7,12 @@ import './AddPage.css'
 import BackTopNab from '../components/BackTopNab'
 import { Link } from 'react-router-dom'
 
+
 export default function AddPage() {
   return (
     <div className='add-container'>
-      <BackTopNab back={-1} submit={""}/>
-      <h2 style={{fontSize: "20px"}}>무엇을 등록하시나요?</h2>
+      <BackTopNab back={-1}/>
+      <h2 style={{fontSize: "30px"}}>무엇을 등록하시나요?</h2>
       <div className='add-buttons'>
         <Link to="/add/animal" className='add-button'>
           <img src={animal} alt="" width={55} height={55}/>
