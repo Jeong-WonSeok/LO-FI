@@ -62,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin().disable()
                 .authorizeRequests()
-                .antMatchers("/api/account/**","/api/register/**").permitAll() //로그인 및 회원가입 요청은 허용
+                .antMatchers("/api/account/**","/api/register/**","/api/main/**").permitAll() //로그인 및 회원가입 요청은 허용
                 //.antMatchers("/api/**").authenticated()
                 .and()
                 .addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
