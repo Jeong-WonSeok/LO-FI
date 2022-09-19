@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface MissingPersonService {
     void saveMissingPersonAPIData(List<MissingPersonAPIResponse> data);
+
+    void deleteMissingPersonAPIData();
 }

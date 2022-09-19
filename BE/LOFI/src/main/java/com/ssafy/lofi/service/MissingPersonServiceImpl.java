@@ -23,4 +23,10 @@ public class MissingPersonServiceImpl implements MissingPersonService {
         }
         missingPersonRepository.saveAll(list);
     }
+
+    @Override
+    @Transactional
+    public void deleteMissingPersonAPIData() {
+        missingPersonRepository.truncateMissingPerson();
+    }
 }
