@@ -5,7 +5,7 @@ COPY build.gradle .
 COPY settings.gradle .
 COPY src src
 RUN chmod +x gradlew
-RUN ["./gradlew". "bootJar"]
+RUN ["./gradlew", "bootJar"]
 
 FROM openjdk:8-jdk-alpine
 # // FROM amazoncorretto:11 ==> amazon corretto 11 사용할 경우
