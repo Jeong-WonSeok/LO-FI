@@ -83,4 +83,10 @@ public class MainController {
         // 이제 db에 넣어줘야한다.
         missingPersonService.saveMissingPersonAPIData(apiResponses);
     }
+
+    @Transactional
+    @DeleteMapping("/person")
+    public void deleteMissingPerson(){
+        missingPersonService.deleteMissingPersonAPIData();
+    }
 }
