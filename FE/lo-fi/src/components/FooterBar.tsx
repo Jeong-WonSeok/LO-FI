@@ -53,7 +53,7 @@ export default function FooterBar() {
           <img src={Select === 'chat' ? select_chat : chat} alt=""
           width="40px" height="40px"/>
         </Link>
-        <Link className="navigater" to="/Search" onClick={() => handleChangeTap('user')}>
+        <Link className="navigater" to="/Profile/" onClick={() => handleChangeTap('user')}>
           <img src={Select === 'user' ? select_user : user} alt=""
           width="40px" height="40px" />
         </Link>
