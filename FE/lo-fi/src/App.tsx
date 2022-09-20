@@ -7,10 +7,10 @@ import SearchPage from './pages/SearchPage';
 import DetailPage from './pages/DetailPage';
 import AddPage from './pages/AddPage';
 import AddDetailPage from './pages/AddDetailPage';
+import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import KakaoLogin from './pages/KakaoLogin';
-
 
 
 function App() {
@@ -26,6 +26,7 @@ function App() {
           <Route path='/search/:id' element={<DetailPage />}/>
           <Route path='/add' element={<AddPage />}/>
           <Route path='/add/:category' element={<AddDetailPage/>}/>
+          <Route path='/profile/' element={<ProfilePage/>}/>
         </Routes>
         <FooterBar/>
       </Router>
