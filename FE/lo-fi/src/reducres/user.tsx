@@ -1,4 +1,6 @@
-const user = (state = {}, action: {type: string}) => {
+const initialState = null;
+
+const user = (state = initialState, action: {type: string}) => {
   switch (action.type) {
     case "login":
       
@@ -8,7 +10,7 @@ const user = (state = {}, action: {type: string}) => {
     case "logout":
       return 
     default:
-      break;
+      return state;
   }
 }
 

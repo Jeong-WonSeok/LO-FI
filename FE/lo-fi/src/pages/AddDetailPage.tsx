@@ -36,7 +36,7 @@ export default function AddDetailPage() {
     age: 1,
     location: "",
     detail_loctaion: "",
-    picture: stringList,
+    picture: new FileList(),
     date: new Date(),
     description: ""
   })
@@ -72,7 +72,10 @@ export default function AddDetailPage() {
   }, []);
 
   const addImage = ((files: FileList) => {
-    // 파일 리스트
+    // setInfo(prev => {
+    //   ...prev,
+    //   "picture": files
+    // })
     const nowImageURLList = [...previewImg];
     for (let i=0; i < files.length; i++ ) {
       // 미리보기가 가능하게 변수화
