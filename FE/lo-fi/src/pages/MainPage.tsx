@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Category from '../components/Category';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import * as dataActions from '../reducres/data';
 import './MainPage.css'
 
 // 카카오 불러오기

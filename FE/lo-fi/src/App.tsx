@@ -16,14 +16,8 @@ import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import KakaoLogin from './pages/KakaoLogin';
-// reducer
-import * as getData from './reducres/data';
-import  {bindActionCreators} from 'redux';
-import { connect } from 'react-redux'
-
 
 function App() {
-
   return (
     <div className="App">
       <Router>
@@ -44,13 +38,4 @@ function App() {
   );
 }
 
-export default connect(
-  (state) => ({
-      data: state.data.data
-      loading: state.data.pending,
-      error: state.data.error
-  }),
-  (dispatch) => ({
-      CounterActions: bindActionCreators(getData, dispatch),
-  })
-)(App);
+export default App;
