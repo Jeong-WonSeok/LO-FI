@@ -40,6 +40,21 @@
     flex-direction: column;
 }
 
+.add-picture-button {
+    background-color: #B4E0D7;
+    border-radius: 20px;
+    width: 85px;
+}
+
+.add-img-list {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
 #description {
     min-height: 5rem;
     overflow-y: hidden;
