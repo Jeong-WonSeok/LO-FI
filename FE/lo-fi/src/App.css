@@ -23,7 +23,7 @@
     justify-content: center;
     align-items: center;
     z-index: 1;
-    width: 100%;
+    width: 100% !important;
     height: 100%;
   }
 }
@@ -31,7 +31,7 @@
 /* 768px 보다 클 때 */
 @media all and (min-width: 768px) {
   .App {
-    width: 768px;
+    width: 768px !important;
     display: flex;
     align-items: center;
     justify-content: center;

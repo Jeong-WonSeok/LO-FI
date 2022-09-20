@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState, useCallback} from 'react'
 import { useParams } from 'react-router-dom'
 import male from '../assets/img/icon/male.png'
 import select_male from '../assets/img/icon/select_male.png'
@@ -20,11 +20,14 @@ export type infoType = {
   detail_loctaion: String,
   date: Date,
   description: String
+  picture: FileList,
 }
 
 
 export default function AddDetailPage() {
+  const stringList: string[] = [];
   const navigate = useNavigate();
+  const [previewImg, setPreviewImg] = useState(stringList)
   const [ info, setInfo ] = useState({ 
     name: "",
     category: "",
@@ -33,10 +36,11 @@ export default function AddDetailPage() {
     age: 1,
     location: "",
     detail_loctaion: "",
-    picture: "",
+    picture: stringList,
     date: new Date(),
     description: ""
   })
+
   const [isInfo, setIsInfo] = useState({
     isName: true,
     isCategory: true,
@@ -49,6 +53,36 @@ export default function AddDetailPage() {
     isDescription: true,
   })
   const { category } = useParams();
+
+
+  const inputRef = useRef<HTMLInputElement | null> (null);
+
+  const onUplopadImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      addImage(e.target.files)
+      return;
+    }
+  }, []) 
+
+  const onUploadImageButtonClick = useCallback(() => {
+    if (!inputRef.current) {
+      return;
+    }
+    inputRef.current.click();
+  }, []);
+
+  const addImage = ((files: FileList) => {
+    // 파일 리스트
+    const nowImageURLList = [...previewImg];
+    for (let i=0; i < files.length; i++ ) {
+      // 미리보기가 가능하게 변수화
+      let nowImageUrl: string = ""; 
+      nowImageUrl = URL.createObjectURL(files[i]);
+      nowImageURLList.push(nowImageUrl);
+    }
+    setPreviewImg(nowImageURLList)
+    console.log(info.picture)
+  })
 
   // 값이 변경될 때 마다 제출 여부를 실행함
   // useEffect(() => {
@@ -66,6 +100,37 @@ export default function AddDetailPage() {
     const textEle = document.getElementById('description') as HTMLTextAreaElement
     textEle.style.height = '1px';
     textEle.style.height = (12 + e.target.scrollHeight) + 'px';
+  }
+  
+  // 이미지 등록한거 스크롤
+  window.onload = function() {
+    const slider = document.querySelector('.add-img-list')  as HTMLDivElement;
+    let isMouseDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+    
+    slider.addEventListener('mousedown', (e) => {
+      isMouseDown = true;
+      startX = e.pageX - slider.offsetLeft
+      scrollLeft = slider.scrollLeft
+    })
+  
+    slider.addEventListener('mouseleave', () => {
+      isMouseDown = false;
+    })
+  
+    slider.addEventListener('mouseup', () => {
+      isMouseDown = false;
+    })
+  
+    slider.addEventListener('mousemove', (e) => {
+      if (!isMouseDown) return;
+  
+      e.preventDefault();
+      const x = e.pageX - slider.offsetLeft;
+      const walk = (x - startX) * 1;
+      slider.scrollLeft = scrollLeft - walk;
+    })
   }
 
   const handleName = (e: any) => {
@@ -275,9 +340,19 @@ export default function AddDetailPage() {
             {isInfo.isDetailLocation ? "" : "상세지역을 입력해주세요"}
           </div>
           <hr />
-          <div className='add-component'>
-            <label htmlFor="picture">사진</label>
-            <input type="file" src="" alt="" />
+          <div className='add-component' style={{display: "flex", flexDirection: "column"}}>
+            <div style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
+              <label htmlFor="picture">사진</label>
+              <input type="file" multiple src="" alt="" id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
+              <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
+            </div>
+            <div id="add-img-list" className='add-img-list'>
+              {previewImg.map(imgUrl => {
+                return (
+                  <img src={imgUrl} alt="" key={imgUrl} width={250} height={250}/>
+                )
+              })}
+            </div>
           </div>
           <hr />
           <div className='add-component'>
