@@ -24,7 +24,7 @@ const requests = {
   searchLostItem: "api/search/article",
   searchPerson: "api/search/Person",
   searchTakeItem: "api/search/found",
-  searchDetail: "api/search/"
+  searchDetail: "api/search/",
 }
 
 export default requests;

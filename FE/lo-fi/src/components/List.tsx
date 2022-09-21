@@ -1,11 +1,21 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { Link } from 'react-router-dom'
 import box from '../assets/img/icon/box.png'
 import calendar from '../assets/img/icon/calendar.png'
 import pin from '../assets/img/icon/pin.png'
 import './List.css'
+import { useAppDispatch, useAppSelector } from '../hooks/reduxHook'
+import { getData, increse } from '../redux/modules/mainData'
+import axios from 'axios'
+
 
 export default function List() {
+
+  const dispatch = useAppDispatch();
+
+  // useSelector 와 달리 따로 type을 지정해주지 않아도 작동
+  const { data, count } = useAppSelector(state => state.mainData);
+
   const [Example, setExample] = useState([
     {
       id : 1,
@@ -30,8 +40,27 @@ export default function List() {
     },
   ])
 
+  const [test, setTest] = useState(data);
+
+  const start = async() => {
+    await dispatch(getData("lostItem"));
+    console.log(data)
+  }
+  
+  useEffect(() => {
+    // CORS 요청때문에 잠시 package.json에 proxy 작성함
+    // axios.get("/1320000/LostGoodsInfoInqireService/getLostGoodsInfoAccToClAreaPd",
+    // {params: {
+    //   serviceKey: process.env.REACT_APP_LOST_ITEM_KEY
+    // }}).then(res => {
+    //   console.log(res.data.response.body.items.item)
+    // })
+    start()
+  }, [])
+
   return (
     <div className='list-container'>
+      <button onClick={() => {dispatch({type: increse})}}>{count}</button>
       {Example.map((data) => {
         return (
           <Link to={`${data.id}`} className='list-item-container'>
