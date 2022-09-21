@@ -12,7 +12,7 @@ RUN mkdir /app
 WORKDIR /app
 RUN mkdir ./build
 COPY --from=build /var/jenkins_home/workspace/deploytest1/FE/lo-fi/build ./build
-COPY ./nginx.conf /etc/nginx/conf.d
-#COPY --from=build-stage /var/jenkins_home/workspace/deploytest1/FE/lo-fi/deploy_conf/nginx.conf /etc/nginx/conf.d/default.conf
+#COPY ./nginx.conf /etc/nginx/conf.d
+COPY --from=build /var/jenkins_home/workspace/deploytest1/FE/lo-fi/deploy_conf/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g","daemon off;"]
