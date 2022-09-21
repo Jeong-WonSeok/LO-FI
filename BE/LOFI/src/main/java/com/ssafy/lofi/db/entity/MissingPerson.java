@@ -6,6 +6,8 @@ import org.springframework.lang.Nullable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import java.beans.Encoder;
+import java.util.Base64;
 
 @Entity
 @Getter
@@ -26,7 +28,8 @@ public class MissingPerson extends BaseEntity{
     private String description;
     private String category;
     private String dress;
-//    private String picture;
+    @Column(columnDefinition = "TEXT")
+    private String picture;
 
     public static MissingPerson of(MissingPersonAPIResponse missingPersonAPIResponse){
         return MissingPerson.builder()
@@ -39,7 +42,7 @@ public class MissingPerson extends BaseEntity{
                 .description(missingPersonAPIResponse.getEtcSpfeatr())
                 .category(missingPersonAPIResponse.getWritngTrgetDscd())
                 .dress(missingPersonAPIResponse.getAlldressingDscd())
-//                .picture(missingPersonAPIResponse.getTknphotoFile())
+                .picture(missingPersonAPIResponse.getTknphotoFile())
                 .build();
     }
 }
