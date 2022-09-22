@@ -6,18 +6,15 @@ import org.springframework.lang.Nullable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import java.beans.Encoder;
-import java.util.Base64;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MissingPerson extends BaseEntity{
     @Nullable
-    private Integer userId;
+    private Long userId;
     private String name;
     private String gender;
     private Integer age;
