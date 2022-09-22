@@ -2,9 +2,11 @@ package com.ssafy.lofi.controller;
 
 import com.ssafy.lofi.config.security.UserDetailsImpl;
 import com.ssafy.lofi.db.entity.User;
+import com.ssafy.lofi.dto.request.MissingAnimalRequest;
 import com.ssafy.lofi.dto.request.SignUpDto;
 import com.ssafy.lofi.dto.response.UserDto;
 import com.ssafy.lofi.service.RegisterService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,4 +40,12 @@ public class RegisterController {
         registerService.deleteuser(userInfo.getId());
         return ResponseEntity.ok().build();
     }
+
+    @ApiOperation(value = "실종동물 등록", notes = "입력된 실종동물 데이터 등록")
+    @PostMapping(value = "/missingAnimal")
+    public ResponseEntity<?> registerMissingAnimal(@RequestBody MissingAnimalRequest missingAnimalRequest){
+        registerService.registerMissingAnimal(missingAnimalRequest,1);
+        return ResponseEntity.ok().build();
+    }
+
 }
