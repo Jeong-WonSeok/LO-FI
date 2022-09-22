@@ -16,7 +16,6 @@ public class Scheduler {
 
     @Scheduled(cron = "0 0 1 1/1 * ?")
     public void scheduleMissingPerson() throws ParseException {
-        System.out.println(System.currentTimeMillis() / 1000);
         mainController.deleteMissingPerson();
         mainController.getLostPerson(10000487, "5ea509f2f6344251", 100);
     }

@@ -19,5 +19,5 @@ public class MissingPersonAPIResponse {
     private String etcSpfeatr;
     private String writngTrgetDscd;
     private String alldressingDscd;
-//    private String tknphotoFile;
+    private String tknphotoFile;
 }
