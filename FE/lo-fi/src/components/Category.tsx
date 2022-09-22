@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import dog from '../assets/img/Category/remove_dog.png'
 import select_dog from '../assets/img/Category/color_dog.png'
 import lost_item from '../assets/img/Category/remove_lost_item.png'
@@ -8,27 +8,43 @@ import select_take_item from '../assets/img/Category/color_take_item.png'
 import baby from '../assets/img/Category/remove_baby.png'
 import select_baby from '../assets/img/Category/color_baby.png'
 import './Category.css';
+import { useAppDispatch, useAppSelector } from '../hooks/reduxHook'
+import { getData, increse } from '../redux/modules/mainData'
 
 export default function Category() {
   const [Select, setSelect] = useState("lost_item");
+
+  const dispatch = useAppDispatch();
+
+  // useSelector 와 달리 따로 type을 지정해주지 않아도 작동
+  const { data, pending } = useAppSelector(state => state.mainData);
 
   const handleChangeTap = (tag: string) => {
     // 선택하면 데이터가 바뀜
     switch (tag) {
       case "dog":
+        dispatch(getData("animal"))
         setSelect("dog");
         return
       case "lost_item":
+        dispatch(getData("lostItem"))
         setSelect("lost_item");
         return
       case "baby":
+        dispatch(getData("person"))
         setSelect("baby");
         return
       case "take_item":
+        dispatch(getData("takeItem"))
         setSelect("take_item");
         return
     }
   }
+
+  useEffect(() => {
+    dispatch(getData("lostItem"))
+  }, [])
+  
 
   return (
     <div className="category-container">
