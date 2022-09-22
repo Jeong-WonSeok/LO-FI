@@ -35,21 +35,21 @@ export default function List() {
 
   useEffect(() => {
     setTest(data)
-    console.log('store에 저장된 데이터', data)
-    console.log('컴포넌트에 저장된 값', test)
-  }, [pending])
+  }, [data])
 
   // 로딩중
   if (pending) {
     return (
-      <div className='list-container'>loading...</div>
+      <div className='list-container'>
+        <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+      </div>
     )
   } else {
     return (
       <div className='list-container'>
         {test.map((data: any) => {
           return (
-            <Link to={`${data.atcId}`} className='list-item-container'>
+            <Link to={`${data.atcId}`} key={data.atcId} className='list-item-container'>
               <img src={data.image} alt="실종품 사진" width={100} height={100}/>
               <div className='list-item-info'>
                 <div className='list-item-span'>

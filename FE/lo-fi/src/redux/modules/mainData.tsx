@@ -39,6 +39,7 @@ export const getData = (category: string) => async (dispatch: Dispatch) => {
   // 요청을 시작한다.
   return await getDataAPI(category).then(
     res => {
+      console.log('데이터 요청 성공')
       // 요청을 성곻했을 때, 응답내용을 payload로 보낸다.
       dispatch({
         type: GET_DATA_SUCCESS,
