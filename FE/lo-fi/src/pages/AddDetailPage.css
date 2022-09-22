@@ -10,6 +10,7 @@
 
 
 .add-detail-container {
+    width:100%;
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -17,10 +18,25 @@
     font-size: 20px;
 }
 
+@media all and (max-width:768px) {
+    .add-detail-container {
+        width: 768px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        font-family: 'DalseoHealingBold';
+        font-size: 20px;
+    }
+}
+
 .add-component {
     margin : 10px;
     display: flex;
     justify-content: space-between;
+}
+
+.add-component > input {
+    text-align: right;
 }
 
 .add-alert {
@@ -50,9 +66,18 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    overflow: scroll;
-    overflow-x: hidden;
+    overflow-x: scroll;
     overflow-y: hidden;
+    margin : 10px;
+    margin-left: 0px !important;
+}
+
+.add-img-list::-webkit-scrollbar {
+    display: none;
+}
+
+.add-img-list > img{
+    margin-left: 10px;
 }
 
 #description {

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState, useCallback} from 'react'
+import React, {useEffect, RefObject, useRef, useState, useCallback} from 'react'
 import { useParams } from 'react-router-dom'
 import male from '../assets/img/icon/male.png'
 import select_male from '../assets/img/icon/select_male.png'
@@ -10,24 +10,28 @@ import { useNavigate } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/esm/locale';
+import ImgList from '../components/AddPagePreviewImgList'
 
-export type infoType = {
-  name: String,
-  spiece: String,
-  Gender: String,
-  age: Number,
-  location: String,
-  detail_loctaion: String,
-  date: Date,
-  description: String
-  picture: FileList,
+export interface infoType {
+  info: {
+    name: String,
+    spiece: String,
+    Gender: String,
+    age: Number,
+    location: String,
+    detail_loctaion: String,
+    date: Date,
+    description: String
+    picture: String[],
+  },
+  previewFileList: String[]
 }
 
-
 export default function AddDetailPage() {
-  const stringList: string[] = [];
+  const previewFileList: string[] = [];
+  const fileList: File[] = [];
   const navigate = useNavigate();
-  const [previewImg, setPreviewImg] = useState(stringList)
+  const [previewImg, setPreviewImg] = useState(previewFileList)
   const [ info, setInfo ] = useState({ 
     name: "",
     category: "",
@@ -36,7 +40,7 @@ export default function AddDetailPage() {
     age: 1,
     location: "",
     detail_loctaion: "",
-    picture: new FileList(),
+    picture: [''],
     date: new Date(),
     description: ""
   })
@@ -54,15 +58,8 @@ export default function AddDetailPage() {
   })
   const { category } = useParams();
 
-
+  // 이미지 업로드 로직
   const inputRef = useRef<HTMLInputElement | null> (null);
-
-  const onUplopadImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      addImage(e.target.files)
-      return;
-    }
-  }, []) 
 
   const onUploadImageButtonClick = useCallback(() => {
     if (!inputRef.current) {
@@ -71,11 +68,22 @@ export default function AddDetailPage() {
     inputRef.current.click();
   }, []);
 
-  const addImage = ((files: FileList) => {
-    // setInfo(prev => {
-    //   ...prev,
-    //   "picture": files
-    // })
+  const onUplopadImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      // fileList를 Array의 형태로 
+      const uploadFiles = Array.prototype.slice.call(e.target.files)
+      
+      uploadFiles.forEach((uploadFile) => {
+        fileList.push(uploadFile);
+      });
+      
+      addImage(fileList)
+      return;
+    }
+  }, []) 
+
+  const addImage = ((files: Array<File>) => {
+    console.log(files)
     const nowImageURLList = [...previewImg];
     for (let i=0; i < files.length; i++ ) {
       // 미리보기가 가능하게 변수화
@@ -84,14 +92,7 @@ export default function AddDetailPage() {
       nowImageURLList.push(nowImageUrl);
     }
     setPreviewImg(nowImageURLList)
-    console.log(info.picture)
   })
-
-  // 값이 변경될 때 마다 제출 여부를 실행함
-  // useEffect(() => {
-  //   isSubmit()
-  // }, [info])
-  
 
   // 데이터 입력시 선언
   // 입력이 늘어나면 그것에 맞춰 텍스트 박스의 길이가 늘어남
@@ -103,37 +104,6 @@ export default function AddDetailPage() {
     const textEle = document.getElementById('description') as HTMLTextAreaElement
     textEle.style.height = '1px';
     textEle.style.height = (12 + e.target.scrollHeight) + 'px';
-  }
-  
-  // 이미지 등록한거 스크롤
-  window.onload = function() {
-    const slider = document.querySelector('.add-img-list')  as HTMLDivElement;
-    let isMouseDown = false;
-    let startX = 0;
-    let scrollLeft = 0;
-    
-    slider.addEventListener('mousedown', (e) => {
-      isMouseDown = true;
-      startX = e.pageX - slider.offsetLeft
-      scrollLeft = slider.scrollLeft
-    })
-  
-    slider.addEventListener('mouseleave', () => {
-      isMouseDown = false;
-    })
-  
-    slider.addEventListener('mouseup', () => {
-      isMouseDown = false;
-    })
-  
-    slider.addEventListener('mousemove', (e) => {
-      if (!isMouseDown) return;
-  
-      e.preventDefault();
-      const x = e.pageX - slider.offsetLeft;
-      const walk = (x - startX) * 1;
-      slider.scrollLeft = scrollLeft - walk;
-    })
   }
 
   const handleName = (e: any) => {
@@ -256,10 +226,7 @@ export default function AddDetailPage() {
         "isDetailLocation" : (info.detail_loctaion ? true : false),
         "isDate" : (info.date ? true : false)
       }))
-      
     }
-    
-    
   }
 
   switch (category) {
@@ -268,7 +235,7 @@ export default function AddDetailPage() {
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
             <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-2)}/>
-            <button className='submit-button' onClick={isSubmit}>제출</button>
+            <input type="submit" className='submit-button' onClick={isSubmit}>제출</input>
           </div>
           <div className='add-component'>
             <label htmlFor="name">반려동물 이름</label>
@@ -306,7 +273,7 @@ export default function AddDetailPage() {
           </div>
           <hr />
           <div className='add-component'>
-            {/* 추후에 선택상자로 표현할 예정 */}
+            {/* 좌표지정으로 선택  */}
             <label htmlFor="location">실종 지역</label>
             <select name="cars" id="location" value={info.location} onChange={handleLocation}>
               <option value="">지역을 선택해주세요</option>
@@ -346,16 +313,10 @@ export default function AddDetailPage() {
           <div className='add-component' style={{display: "flex", flexDirection: "column"}}>
             <div style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
               <label htmlFor="picture">사진</label>
-              <input type="file" multiple src="" alt="" id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
+              <input type="file" src="" alt="" id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" />
               <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
             </div>
-            <div id="add-img-list" className='add-img-list'>
-              {previewImg.map(imgUrl => {
-                return (
-                  <img src={imgUrl} alt="" key={imgUrl} width={250} height={250}/>
-                )
-              })}
-            </div>
+            <ImgList {...previewFileList} />
           </div>
           <hr />
           <div className='add-component'>
@@ -455,10 +416,12 @@ export default function AddDetailPage() {
             {isInfo.isDetailLocation ? "" : "상세지역을 입력해주세요"}
           </div>
           <hr />
-          <div className='add-component'>
+          <div className="add-component" style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
             <label htmlFor="picture">사진</label>
-            <input type="file" src="" alt="" />
+            <input type="file" src="" alt="" multiple id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
+            <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
           </div>
+          <ImgList {...previewFileList} />
           <hr />
           <div className='add-component'>
             <label htmlFor="date">실종 일자</label>

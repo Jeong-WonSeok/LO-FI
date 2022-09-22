@@ -16,9 +16,6 @@ export default function Category() {
 
   const dispatch = useAppDispatch();
 
-  // useSelector 와 달리 따로 type을 지정해주지 않아도 작동
-  const { data, pending } = useAppSelector(state => state.mainData);
-
   const handleChangeTap = (tag: string) => {
     // 선택하면 데이터가 바뀜
     switch (tag) {
