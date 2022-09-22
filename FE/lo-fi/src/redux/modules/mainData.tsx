@@ -3,6 +3,7 @@ import test_axios from 'axios'
 import requests from "../../api/requests";
 import { createAction, handleActions } from "redux-actions";
 import { Dispatch } from 'redux';
+import { data } from "jquery";
 
 // 데이터 버튼을 누를 때 마다 데이터를 가져올지 미리 데이터를 다 받아놓고 변경만 해야되는지 고민
 const getDataAPI = async (type: string) => {
@@ -11,13 +12,12 @@ const getDataAPI = async (type: string) => {
   } else if (type === "person") {
     return axios.get(requests.person)
   } else if (type === "lostItem") {
-    const res = await test_axios.get("/1320000/LostGoodsInfoInqireService/getLostGoodsInfoAccToClAreaPd",
-    {params: {
-      serviceKey: process.env.REACT_APP_LOST_ITEM_KEY
-    }})
+    const res = await test_axios.get(`/1320000/LostGoodsInfoInqireService/getLostGoodsInfoAccToClAreaPd?serviceKey=${process.env.REACT_APP_LOST_ITEM_KEY}`)
     return res.data.response.body.items.item
   } else if (type === "takeItem") {
-    return axios.get(requests.takeItem)
+    const res = await test_axios.get(`/1320000/LosfundInfoInqireService/getLosfundInfoAccToClAreaPd?serviceKey=${process.env.REACT_APP_LOST_ITEM_KEY}`)
+    return res.data.response.body.items.item
+    // return axios.get(requests.takeItem)
   } else {
     console.log('잘못된 입력입니다.')
   }
@@ -42,7 +42,7 @@ export const getData = (category: string) => async (dispatch: Dispatch) => {
       // 요청을 성곻했을 때, 응답내용을 payload로 보낸다.
       dispatch({
         type: GET_DATA_SUCCESS,
-        data: res,
+        payload: res,
       })
     }
   ).catch(err => {
@@ -65,7 +65,7 @@ export interface initialState {
 const initialState: initialState = {
   pending: false,
   error: false,
-  data: [{}],
+  data: [],
   count: 0,
 }
 
@@ -79,12 +79,11 @@ export default handleActions({
       error: false
     };
   },
-  [GET_DATA_SUCCESS]: (state, data) => {
-    console.log(data)
+  [GET_DATA_SUCCESS]: (state, {payload}) => {
     return {
       ...state,
       pending: false,
-      data: data.payload.data
+      data: state.data.concat(payload)
     };
   },
   [GET_DATA_FAILURE]: (state, action) => {

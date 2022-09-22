@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Category from '../components/Category';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../hooks/reduxHook'
 import './MainPage.css'
 
 // 카카오 불러오기
@@ -10,6 +9,8 @@ const kakao = (window as any).kakao
 
 
 const MainPage = () => {
+  const { data, pending, error } = useAppSelector(state => state.mainData)
+  
   const [location, setLocation] = useState({
     lat: 0,
     lon: 0

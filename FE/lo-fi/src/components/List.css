@@ -2,7 +2,7 @@
   width: 400px;
   border-radius: 20px;
   font-family: "DalSeoHealingMedium";
-  margin: 20px auto 0;
+  margin: 20px auto 60px;
 }
 
 @media all and (max-width: 400px) {
@@ -11,6 +11,7 @@
     border-radius: 20px;
     font-family: "DalSeoHealingMedium";
     margin-top: 20px;
+    margin-bottom: 60px;
   }
 }
 
