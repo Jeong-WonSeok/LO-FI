@@ -2,9 +2,11 @@ package com.ssafy.lofi.controller;
 
 import com.ssafy.lofi.config.security.UserDetailsImpl;
 import com.ssafy.lofi.db.entity.User;
+import com.ssafy.lofi.dto.request.MissingPersonRequest;
 import com.ssafy.lofi.dto.request.SignUpDto;
 import com.ssafy.lofi.dto.response.UserDto;
 import com.ssafy.lofi.service.RegisterService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,6 +38,12 @@ public class RegisterController {
     @PostMapping(value = "/delete")
     public ResponseEntity<?> deleteUser(@AuthenticationPrincipal UserDetailsImpl userInfo){
         registerService.deleteuser(userInfo.getId());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/missingPerson")
+    public ResponseEntity<?> registerMissingPerson(@RequestBody MissingPersonRequest missingPersonRequest){
+        registerService.registerMissingPerson(missingPersonRequest,1);
         return ResponseEntity.ok().build();
     }
 }

@@ -1,5 +1,6 @@
 package com.ssafy.lofi.db.entity;
 
+import com.ssafy.lofi.dto.request.MissingPersonRequest;
 import com.ssafy.lofi.dto.response.MissingPersonAPIResponse;
 import lombok.*;
 import org.springframework.lang.Nullable;
@@ -15,7 +16,7 @@ import java.util.Base64;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MissingPerson extends BaseEntity{
+public class MissingPerson extends BaseEntity {
     @Nullable
     private Integer userId;
     private String name;
@@ -31,7 +32,7 @@ public class MissingPerson extends BaseEntity{
     @Column(columnDefinition = "TEXT")
     private String picture;
 
-    public static MissingPerson of(MissingPersonAPIResponse missingPersonAPIResponse){
+    public static MissingPerson of(MissingPersonAPIResponse missingPersonAPIResponse) {
         return MissingPerson.builder()
                 .name(missingPersonAPIResponse.getNm())
                 .gender(missingPersonAPIResponse.getSexdstnDscd())
@@ -44,5 +45,14 @@ public class MissingPerson extends BaseEntity{
                 .dress(missingPersonAPIResponse.getAlldressingDscd())
                 .picture(missingPersonAPIResponse.getTknphotoFile())
                 .build();
+    }
+
+    public void updateMissingPerson(MissingPersonRequest missingPersonRequest) {
+        this.name = missingPersonRequest.getName();
+        this.gender = missingPersonRequest.getGender();
+        this.age = missingPersonRequest.getMissingAge();
+        this.date = missingPersonRequest.getMissingDate();
+        this.dress = missingPersonRequest.getMissingClothes();
+        this.picture = missingPersonRequest.getPicture();
     }
 }
