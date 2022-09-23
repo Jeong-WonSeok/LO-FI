@@ -1,7 +1,10 @@
-import React, {RefObject, useEffect} from 'react'
-import { infoType } from '../pages/AddDetailPage';
+import React, {RefObject, useEffect, useState} from 'react'
+import close from '../assets/img/icon/close.png'
+import './AddPagePreviewimgList.css'
 
-export default function AddPagePreviewImgList(previewFileList: infoType['previewFileList'], dragRef: RefObject<HTMLDivElement>) {
+export default function AddPagePreviewImgList(previewFileList: string[], dragRef: RefObject<HTMLElement>) {
+  const list: string[] = []
+  const [fileList, setFileList] = useState(list)
   let isDown = false; // 사용자가 마우스를 눌렀는지 판단할 변수 선언
   let startX: number; // 사용자가 마우스를 누른 시작 지점 변수 선언
   let startScrollLeft: number; // 사용자가 마우스를 눌렀을 때 scrollLeft의 위치 변수 선언
@@ -43,7 +46,12 @@ export default function AddPagePreviewImgList(previewFileList: infoType['preview
     }
   };
 
+  const deleteImg = (e:any) => {
+    console.log(e.target)
+  }
+
   useEffect(() => {
+    setFileList(Object.values(previewFileList))
     const ref = dragRef.current; // dragRef.current가 아래에서 반복적으로 사용되기에 선언
     if (ref) { // 마운트 시에 이벤트를 등록
       ref.addEventListener('mousedown', mouseTouchDown);
@@ -68,14 +76,18 @@ export default function AddPagePreviewImgList(previewFileList: infoType['preview
         ref.removeEventListener('touchmove', mouseTouchMove);
       }
     };
-  }, [dragRef]);
+  }, [dragRef, previewFileList]);
 
   return (
-    <div id="add-img-list" className='add-img-list'>
-      {previewFileList.map(imgUrl => {
+    <div className='add-img-list'>
+      {fileList.map((imgUrl, idx) => {
         return (
-          // <img src={imgUrl} alt="" key={imgUrl} width={250} height={250}/>
-          <div>{imgUrl}</div>
+          <div key={idx}>
+            <div className='img-delete-background' onClick={deleteImg}>
+              <img src={close} alt="" className='img-close' width={10} height={10}/>
+            </div>
+            <img src={imgUrl} alt="" key={imgUrl} width={250} height={250}/>
+          </div>
         )
       })}
     </div>
