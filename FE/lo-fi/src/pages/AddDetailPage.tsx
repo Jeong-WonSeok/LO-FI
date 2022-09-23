@@ -1,4 +1,4 @@
-import React, {useEffect, RefObject, useRef, useState, useCallback} from 'react'
+import React, { useRef, useState, useCallback} from 'react'
 import { useParams } from 'react-router-dom'
 import male from '../assets/img/icon/male.png'
 import select_male from '../assets/img/icon/select_male.png'
@@ -11,6 +11,8 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/esm/locale';
 import ImgList from '../components/AddPagePreviewImgList'
+import ReactS3Client from 'react-aws-s3-typescript'
+import { s3Config } from '../hooks/s3Config'
 
 export interface infoType {
   info: {
@@ -32,6 +34,7 @@ export default function AddDetailPage() {
   const fileList: File[] = [];
   const navigate = useNavigate();
   const [previewImg, setPreviewImg] = useState(previewFileList)
+  const [files, setFiles] = useState(fileList)
   const [ info, setInfo ] = useState({ 
     name: "",
     category: "",
@@ -76,14 +79,13 @@ export default function AddDetailPage() {
       uploadFiles.forEach((uploadFile) => {
         fileList.push(uploadFile);
       });
-      
+      setFiles(fileList)
       addImage(fileList)
       return;
     }
   }, []) 
 
   const addImage = ((files: Array<File>) => {
-    console.log(files)
     const nowImageURLList = [...previewImg];
     for (let i=0; i < files.length; i++ ) {
       // 미리보기가 가능하게 변수화
@@ -155,6 +157,31 @@ export default function AddDetailPage() {
     }))
   }
 
+
+  const s3 = new ReactS3Client(s3Config);
+
+  const uploadS3Files = (S3files: File[]) => {
+    // 사진 데이터 s3에 저장하기
+    const arr:string[] =  []
+    // for문을 돌려 upload 후 리턴된 경로를 info에 저장한다.
+    if (S3files.length == 0) {
+      return
+    } else {
+      for (let i=0; i < S3files.length; i++) {
+        s3.uploadFile(S3files[i], S3files[i].name).then((data) => {
+          // 잘들어가는 것을 확인
+          console.log('데이터 위치',data.location)
+          arr.push(data.location)
+          setInfo((prev) => {
+            let newInfo = {...prev};
+            newInfo['picture'] = arr
+            return newInfo
+          });
+        }).catch(err => console.error(err))
+      }
+      return
+    }
+  }
   const isSubmit = () => {
     // 공통사항 검사
     if (info.name && info.location && info.detail_loctaion && info.date) {
@@ -181,7 +208,8 @@ export default function AddDetailPage() {
           }
         case "people":
           if (info.age && info.gender && info.description) {
-            // axios 요청 보내기
+            // 이미지 업로드
+            uploadS3Files(files);
             return 
           } else {
             return setIsInfo(prev => ({
@@ -316,7 +344,7 @@ export default function AddDetailPage() {
               <input type="file" src="" alt="" id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" />
               <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
             </div>
-            <ImgList {...previewFileList} />
+            <ImgList {...previewImg} />
           </div>
           <hr />
           <div className='add-component'>
@@ -421,7 +449,7 @@ export default function AddDetailPage() {
             <input type="file" src="" alt="" multiple id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
             <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
           </div>
-          <ImgList {...previewFileList} />
+          <ImgList {...previewImg} />
           <hr />
           <div className='add-component'>
             <label htmlFor="date">실종 일자</label>
@@ -529,10 +557,12 @@ export default function AddDetailPage() {
             {isInfo.isDetailLocation ? "" : "상세지역을 입력해주세요"}
           </div>
           <hr />
-          <div className='add-component'>
+          <div className="add-component" style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
             <label htmlFor="picture">사진</label>
-            <input type="file" src="" alt="" />
+            <input type="file" src="" alt="" multiple id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
+            <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
           </div>
+          <ImgList {...previewImg} />
           <hr />
           <div className='add-component'>
             <label htmlFor="date">분실 일자</label>
@@ -640,10 +670,12 @@ export default function AddDetailPage() {
             {isInfo.isDetailLocation ? "" : "상세지역을 입력해주세요"}
           </div>
           <hr />
-          <div className='add-component'>
+          <div className="add-component" style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
             <label htmlFor="picture">사진</label>
-            <input type="file" src="" alt="" />
+            <input type="file" src="" alt="" multiple id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
+            <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
           </div>
+          <ImgList {...previewImg} />
           <hr />
           <div className='add-component'>
             <label htmlFor="date">습득 일자</label>
