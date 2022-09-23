@@ -8,19 +8,19 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LostArticleDetailResponse {
-    String atcId;
-    String lstFilePathImg;
-    Integer lstHor;
-    String lstLctNm;
-    String lstPlace;
-    String lstPlaceSeNm;
-    String lstPrdtNm;
-    String lstSbjt;
-    String lstSteNm;
-    String lstYmd;
-    String orgId;
-    String orgNm;
-    String prdtClNm;
-    String tel;
-    String uniq;
+    private String atcId;
+    private String lstFilePathImg;
+    private Integer lstHor;
+    private String lstLctNm;
+    private String lstPlace;
+    private String lstPlaceSeNm;
+    private String lstPrdtNm;
+    private String lstSbjt;
+    private String lstSteNm;
+    private String lstYmd;
+    private String orgId;
+    private String orgNm;
+    private String prdtClNm;
+    private String tel;
+    private String uniq;
 }

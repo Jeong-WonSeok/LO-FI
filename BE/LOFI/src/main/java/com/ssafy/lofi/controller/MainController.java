@@ -4,15 +4,15 @@ package com.ssafy.lofi.controller;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.ssafy.lofi.dto.response.LostArticleDetailResponse;
+
 import com.ssafy.lofi.dto.response.MissingPersonAPIResponse;
+import com.ssafy.lofi.service.FoundArticleService;
 import com.ssafy.lofi.service.LostArticleService;
 import com.ssafy.lofi.service.MissingPersonService;
 import lombok.RequiredArgsConstructor;
 
 
-import org.json.JSONArray;
-import org.json.XML;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -25,23 +25,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,6 +41,7 @@ public class MainController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final MissingPersonService missingPersonService;
     private final LostArticleService lostArticleService;
+    private final FoundArticleService foundArticleService;
     @Transactional
     @GetMapping("/person")
     public void getLostPerson(
@@ -112,7 +99,7 @@ public class MainController {
 
     @Transactional
     @GetMapping("/article")
-    public void getLostArticle() throws IOException {
+    public void getLostArticle(String date) throws IOException {
         int numOfRows = 100;
         int pageNo = 1;
 
@@ -120,7 +107,7 @@ public class MainController {
         List<String> idList = new ArrayList<>();
         boolean flag = true;
         while (flag){
-            flag = lostArticleService.getLostArticleList(numOfRows, pageNo++, idList);
+            flag = lostArticleService.getLostArticleList(numOfRows, pageNo++, idList, date);
         }
 
         // idList 돌면서 이미 있는지 체크
@@ -128,5 +115,25 @@ public class MainController {
 
         // idList 돌면서 분실물 상세조회 API 호출하고 db에 저장하기
         lostArticleService.callDetailAPIAndSaveLostArticle(idList);
+    }
+
+    @Transactional
+    @GetMapping("/found")
+    public void getFoundArticle(String date) throws IOException {
+        int numOfRows = 10;
+        int pageNo = 1;
+
+        // 습득물 리스트 조회 API
+        List<String> idList = new ArrayList<>();
+        boolean flag = true;
+        while (flag) {
+            flag = foundArticleService.getFoundArticleList(numOfRows, pageNo++, idList, date);
+        }
+
+        // idList 돌면서 이미 있는지 체크
+        foundArticleService.checkIdExist(idList);
+
+        // idList 돌면서 습득물 상세조회 API 호출하고 db에 저장하기
+        foundArticleService.callDetailAPIAndSaveFoundArticle(idList);
     }
 }

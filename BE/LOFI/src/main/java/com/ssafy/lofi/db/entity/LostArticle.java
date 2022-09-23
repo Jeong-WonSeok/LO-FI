@@ -13,27 +13,27 @@ import javax.persistence.Entity;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LostArticle extends BaseEntity{
-    private String lostArticleId;
-    private String lostArticleName;
-    private String lostArticleCategory;
-    private String lostArticleDate;
-    private String lostArticlePolice;
-    private String lostArticleLocation;
-    private String lostArticleCity;
+    private String atcId;
+    private String name;
+    private String category;
+    private String date;
+    private String police;
+    private String location;
+    private String city;
     @Nullable
     private Long userId;
-    private String lostArticlePicture;
+    private String picture;
 
     public static LostArticle of(LostArticleDetailResponse detailResponse) {
         return LostArticle.builder()
-                .lostArticleId(detailResponse.getAtcId())
-                .lostArticleName(detailResponse.getLstPrdtNm())
-                .lostArticleCategory(detailResponse.getPrdtClNm())
-                .lostArticleDate(detailResponse.getLstYmd())
-                .lostArticlePolice(detailResponse.getOrgNm())
-                .lostArticleLocation(detailResponse.getLstPlace())
-                .lostArticleCity(detailResponse.getLstLctNm())
-                .lostArticlePicture(detailResponse.getLstFilePathImg())
+                .atcId(detailResponse.getAtcId())
+                .name(detailResponse.getLstPrdtNm())
+                .category(detailResponse.getPrdtClNm())
+                .date(detailResponse.getLstYmd())
+                .police(detailResponse.getOrgNm())
+                .location(detailResponse.getLstPlace())
+                .city(detailResponse.getLstLctNm())
+                .picture(detailResponse.getLstFilePathImg())
                 .build();
     }
 }
