@@ -62,24 +62,6 @@
     width: 85px;
 }
 
-.add-img-list {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    margin : 10px;
-    margin-left: 0px !important;
-}
-
-.add-img-list::-webkit-scrollbar {
-    display: none;
-}
-
-.add-img-list > img{
-    margin-left: 10px;
-}
-
 #description {
     min-height: 5rem;
     overflow-y: hidden;

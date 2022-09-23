@@ -29,7 +29,7 @@ const MainPage = () => {
     // 나갔다가 다시 돌아오면 위치 데이터가 들어오지 않음
     async function fecthmap() {
     // 현재 위치 가져오기
-    await getLocation();
+    getLocation()
     var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
     mapOption = { 
       center: new kakao.maps.LatLng(location.lat, location.lon), // 지도의 중심좌표
@@ -84,7 +84,7 @@ const MainPage = () => {
 
   }, [location]);
 
-  function getLocation() {
+  const getLocation = () => {
     if (navigator.geolocation) { // GPS를 지원하면
       // 이것으로 현재 위치를 가져온다.
       navigator.geolocation.getCurrentPosition(function(position) {
