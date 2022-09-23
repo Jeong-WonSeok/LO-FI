@@ -2,9 +2,9 @@ package com.ssafy.lofi.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.lofi.db.entity.LostArticle;
-import com.ssafy.lofi.db.repository.LostArticleRepository;
-import com.ssafy.lofi.dto.response.LostArticleDetailResponse;
+import com.ssafy.lofi.db.entity.FoundArticle;
+import com.ssafy.lofi.db.repository.FoundArticleRepository;
+import com.ssafy.lofi.dto.response.FoundArticleDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,27 +14,25 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 
-@Service("lostArticleService")
+@Service("foundArticleService")
 @RequiredArgsConstructor
-public class LostArticleService {
-    private final LostArticleRepository lostArticleRepository;
-
-    public boolean getLostArticleList(int numOfRows, int pageNo, List<String> idList, String date) throws IOException{
-        String urlBuilder = "http://apis.data.go.kr/1320000/LostGoodsInfoInqireService/getLostGoodsInfoAccToClAreaPd" +
+public class FoundArticleService {
+    private final FoundArticleRepository foundArticleRepository;
+    public boolean getFoundArticleList(int numOfRows, int pageNo, List<String> idList, String date) throws IOException {
+        /*URL*/
+        String urlBuilder = "http://apis.data.go.kr/1320000/LosfundInfoInqireService/getLosfundInfoAccToClAreaPd" +
                 "?" + URLEncoder.encode("serviceKey", "UTF-8") + "=z5aVcHaA2frLlaYTCzEF45A22OIUDm1rc1CcW54fwBAFwz%2F7VB3QHz2SWxUGa8aP3xbnVSAZkGrnIAwb%2FWc4OQ%3D%3D" + /*Service Key*/
-                "&" + URLEncoder.encode("START_YMD", "UTF-8") + "=" + URLEncoder.encode(date, "UTF-8") + /*분실물 등록날짜*/
-                "&" + URLEncoder.encode("END_YMD", "UTF-8") + "=" + URLEncoder.encode(date, "UTF-8") + /*분실물 등록날짜*/
-                "&" + URLEncoder.encode("PRDT_CL_CD_01", "UTF-8") + "=" + URLEncoder.encode("", "UTF-8") + /*상위물품코드*/
-                "&" + URLEncoder.encode("PRDT_CL_CD_02", "UTF-8") + "=" + URLEncoder.encode("", "UTF-8") + /*하위물품코드*/
-                "&" + URLEncoder.encode("LST_LCT_CD", "UTF-8") + "=" + URLEncoder.encode("", "UTF-8") + /*분실지역코드*/
+                "&" + URLEncoder.encode("PRDT_CL_CD_01", "UTF-8") + "=" + URLEncoder.encode("", "UTF-8") + /*대분류*/
+                "&" + URLEncoder.encode("PRDT_CL_CD_02", "UTF-8") + "=" + URLEncoder.encode("", "UTF-8") + /*중분류*/
+                "&" + URLEncoder.encode("FD_COL_CD", "UTF-8") + "=" + URLEncoder.encode("", "UTF-8") + /*습득물 색상*/
+                "&" + URLEncoder.encode("START_YMD", "UTF-8") + "=" + URLEncoder.encode(date, "UTF-8") + /*검색시작일*/
+                "&" + URLEncoder.encode("END_YMD", "UTF-8") + "=" + URLEncoder.encode(date, "UTF-8") + /*검색종료일*/
+                "&" + URLEncoder.encode("N_FD_LCT_CD", "UTF-8") + "=" + URLEncoder.encode("", "UTF-8") + /*습득지역*/
                 "&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode(Integer.toString(pageNo), "UTF-8") + /*페이지 번호*/
                 "&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode(Integer.toString(numOfRows), "UTF-8"); /*목록 건수*/
         URL url = new URL(urlBuilder);
@@ -43,7 +41,7 @@ public class LostArticleService {
         conn.setRequestProperty("Content-type", "application/json");
         System.out.println("Response code: " + conn.getResponseCode());
         BufferedReader rd;
-        if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
             rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         } else {
             rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
@@ -55,13 +53,13 @@ public class LostArticleService {
         }
         rd.close();
         conn.disconnect();
-        org.json.JSONObject jsonObject = XML.toJSONObject(sb.toString());
+        JSONObject jsonObject = XML.toJSONObject(sb.toString());
         System.out.println(jsonObject.toString(0));
 
-        // 분실물 리스트에서 id값만 꺼내기
-        org.json.JSONObject response = jsonObject.getJSONObject("response");
-        org.json.JSONObject body = response.getJSONObject("body");
-        org.json.JSONObject items = body.getJSONObject("items");
+        // 습득물 리스트에서 id값만 꺼내기
+        JSONObject response = jsonObject.getJSONObject("response");
+        JSONObject body = response.getJSONObject("body");
+        JSONObject items = body.getJSONObject("items");
         int totalCount = body.getInt("totalCount");
         if(totalCount - (pageNo - 1) * numOfRows == 1){
             JSONObject item = items.getJSONObject("item");
@@ -74,18 +72,23 @@ public class LostArticleService {
             }
         }
 
-        if(totalCount < pageNo * numOfRows){
+        if (totalCount < pageNo * numOfRows){
             return false;
         }
         return true;
     }
 
-    public void callDetailAPIAndSaveLostArticle(List<String> idList) throws IOException {
-        for (String atcId : idList){
+    public void checkIdExist(List<String> idList){
+        idList.removeIf(id -> foundArticleRepository.findByAtcId(id) != null);
+    }
+
+    public void callDetailAPIAndSaveFoundArticle(List<String> idList) throws IOException {
+        for (String atcId : idList) {
             /*URL*/
-            String urlBuilder = "http://apis.data.go.kr/1320000/LostGoodsInfoInqireService/getLostGoodsDetailInfo" +
+            String urlBuilder = "http://apis.data.go.kr/1320000/LosfundInfoInqireService/getLosfundDetailInfo" +
                     "?" + URLEncoder.encode("serviceKey", "UTF-8") + "=z5aVcHaA2frLlaYTCzEF45A22OIUDm1rc1CcW54fwBAFwz%2F7VB3QHz2SWxUGa8aP3xbnVSAZkGrnIAwb%2FWc4OQ%3D%3D" + /*Service Key*/
-                    "&" + URLEncoder.encode("ATC_ID", "UTF-8") + "=" + URLEncoder.encode(atcId, "UTF-8"); /*관리ID*/
+                    "&" + URLEncoder.encode("ATC_ID", "UTF-8") + "=" + URLEncoder.encode(atcId, "UTF-8") + /*관리ID*/
+                    "&" + URLEncoder.encode("FD_SN", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8"); /*습득순번*/
             URL url = new URL(urlBuilder);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -104,20 +107,17 @@ public class LostArticleService {
             }
             rd.close();
             conn.disconnect();
-            org.json.JSONObject jsonObject1 = XML.toJSONObject(sb.toString());
-            org.json.JSONObject detailResponse = jsonObject1.getJSONObject("response");
-            org.json.JSONObject detailBody = detailResponse.getJSONObject("body");
-            org.json.JSONObject detailItem = detailBody.getJSONObject("item");
+            JSONObject jsonObject = XML.toJSONObject(sb.toString());
+            System.out.println(jsonObject.toString(0));
+            JSONObject detailResponse = jsonObject.getJSONObject("response");
+            JSONObject detailBody = detailResponse.getJSONObject("body");
+            JSONObject detailItem = detailBody.getJSONObject("item");
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            LostArticleDetailResponse lostArticleDetailResponse = mapper.readValue(detailItem.toString(), LostArticleDetailResponse.class);
+            FoundArticleDetailResponse foundArticleDetailResponse = mapper.readValue(detailItem.toString(), FoundArticleDetailResponse.class);
 
-            lostArticleRepository.save(LostArticle.of(lostArticleDetailResponse));
+            foundArticleRepository.save(FoundArticle.of(foundArticleDetailResponse));
         }
-    }
-
-    public void checkIdExist(List<String> idList){
-        idList.removeIf(id -> lostArticleRepository.findByAtcId(id) != null);
     }
 }

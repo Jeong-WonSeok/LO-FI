@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface LostArticleRepository extends JpaRepository<LostArticle, Long> {
-    LostArticle findByLostArticleId(String lostArticleId);
+    LostArticle findByAtcId(String lostArticleId);
 }
