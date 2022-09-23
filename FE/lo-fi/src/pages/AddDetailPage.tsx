@@ -1,18 +1,23 @@
 import React, { useRef, useState, useCallback} from 'react'
 import { useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import DatePicker from 'react-datepicker'
+import { ko } from 'date-fns/esm/locale';
+
+import ReactS3Client from 'react-aws-s3-typescript'
+import { s3Config } from '../hooks/s3Config'
+
 import male from '../assets/img/icon/male.png'
 import select_male from '../assets/img/icon/select_male.png'
 import female from '../assets/img/icon/female.png'
 import select_female from '../assets/img/icon/select_female.png'
-import './AddDetailPage.css'
 import close from '../assets/img/icon/close.png'
-import { useNavigate } from 'react-router-dom'
-import DatePicker from 'react-datepicker'
+import './AddDetailPage.css'
 import 'react-datepicker/dist/react-datepicker.css';
-import { ko } from 'date-fns/esm/locale';
+
+import MapMarker from '../components/MapMarker'
 import ImgList from '../components/AddPagePreviewImgList'
-import ReactS3Client from 'react-aws-s3-typescript'
-import { s3Config } from '../hooks/s3Config'
+
 
 export interface infoType {
   info: {
@@ -30,6 +35,7 @@ export interface infoType {
 }
 
 export default function AddDetailPage() {
+  const [isModal, setIsModal] = useState(false);
   const previewFileList: string[] = [];
   const fileList: File[] = [];
   const navigate = useNavigate();
@@ -263,7 +269,7 @@ export default function AddDetailPage() {
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
             <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-2)}/>
-            <input type="submit" className='submit-button' onClick={isSubmit}>제출</input>
+            <button type="submit" className='submit-button' onClick={isSubmit}>제출</button>
           </div>
           <div className='add-component'>
             <label htmlFor="name">반려동물 이름</label>
@@ -332,8 +338,11 @@ export default function AddDetailPage() {
           <hr />
           <div className='add-component'>
             <label htmlFor="detail_location">상세 지역</label>
-            <input type="text" id="detail_location" value={info.detail_loctaion} onChange={handleDetailLoation}/>
+            <span id="detail_location" onChange={handleDetailLoation} onClick={() => setIsModal(true)} style={{width: "300px"}}>{info.detail_loctaion}</span>
           </div>
+          <div>
+            {isModal && <MapMarker />}
+            </div>
           <div className='add-alert'>
             {isInfo.isDetailLocation ? "" : "상세지역을 입력해주세요"}
           </div>
@@ -341,7 +350,7 @@ export default function AddDetailPage() {
           <div className='add-component' style={{display: "flex", flexDirection: "column"}}>
             <div style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
               <label htmlFor="picture">사진</label>
-              <input type="file" src="" alt="" id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" />
+              <input type="file" src="" alt="" id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: 'none'}}/>
               <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
             </div>
             <ImgList {...previewImg} />
