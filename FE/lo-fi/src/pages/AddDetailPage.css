@@ -39,6 +39,10 @@
     text-align: right;
 }
 
+#detail_location {
+    text-align: right;
+}
+
 .add-alert {
     margin: 0px 10px;
     color: red;

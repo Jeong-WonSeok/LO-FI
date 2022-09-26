@@ -4,6 +4,7 @@ import requests from "../../api/requests";
 import { createAction, handleActions } from "redux-actions";
 import { Dispatch } from 'redux';
 import { data } from "jquery";
+import Category from "../../components/Category";
 
 // 데이터 버튼을 누를 때 마다 데이터를 가져올지 미리 데이터를 다 받아놓고 변경만 해야되는지 고민
 const getDataAPI = async (type: string) => {
@@ -27,19 +28,16 @@ const getDataAPI = async (type: string) => {
 const GET_DATA_PENDING = 'mainData/GET_DATA_PENDING';
 const GET_DATA_SUCCESS = 'mainData/GET_DATA_SUCCESS';
 const GET_DATA_FAILURE = 'mainData/GET_DATA_FAILURE';
-const INCRESE = 'mainData/INCRESE'
-
-export const increse = createAction(INCRESE, (count:number) => count)
+const ADD_DATA = 'mainData/ADD_DATA';
 
 // 액션 생성 함수
 export const getData = (category: string) => async (dispatch: Dispatch) => {
   // 요청을 시작했다는 것을 알림
-  dispatch({type: GET_DATA_PENDING})
+  dispatch({type: GET_DATA_PENDING, payload: category})
 
   // 요청을 시작한다.
   return await getDataAPI(category).then(
     res => {
-      console.log('데이터 요청 성공')
       // 요청을 성곻했을 때, 응답내용을 payload로 보낸다.
       dispatch({
         type: GET_DATA_SUCCESS,
@@ -55,29 +53,44 @@ export const getData = (category: string) => async (dispatch: Dispatch) => {
     throw(err);
   })
 }
+
+export const addData = (category: string, data: Object) => (dispatch: Dispatch) => {
+  const sendData = {
+    "category": category,
+    "data": data
+  }
+
+
+  dispatch({
+    type: ADD_DATA,
+    payload: sendData
+  })
+}
+
 // 초기값 타입 설정
 export interface initialState {
   pending: Boolean,
   error: Boolean,
+  category: String,
   data: Array<Object>,
-  count: number
 }
 // 초기값 설정
 const initialState: initialState = {
   pending: false,
   error: false,
+  category: '',
   data: [],
-  count: 0,
 }
 
 // 액션에 따른 state 변경 / 이게 리듀서인가?
 export default handleActions({
-  [GET_DATA_PENDING]: (state) => {
+  [GET_DATA_PENDING]: (state, {payload}) => {
     // 반환해줄 데이터
     return {
       ...state,
       pending: true,
-      error: false
+      error: false,
+      category: payload.category
     };
   },
   [GET_DATA_SUCCESS]: (state, {payload}) => {
@@ -94,11 +107,17 @@ export default handleActions({
       error: true
     };
   },
-  [INCRESE]: (state, action) => {
-    return {
-      ...state,
-      count: state.count + 1
-    }
-  }
+  [ADD_DATA]: (state, {payload}) => {
+    if (state.category == payload.category) {
+      return {
+        ...state,
+        data: state.data.concat(payload.data)
+      };
+    } else {
+      return {
+        ...state
+      };
+    };
+  },
 }, initialState)
 

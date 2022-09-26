@@ -22,9 +22,15 @@ const requests = {
   // 검색페이지
   searchAnimal: "api/search/animal",
   searchLostItem: "api/search/article",
-  searchPerson: "api/search/Person",
+  searchPerson: "api/search/person",
   searchTakeItem: "api/search/found",
   searchDetail: "api/search/",
+
+  //등록페이지
+  addAnimal: "api/add/animal",
+  addPerson: "api/add/person",
+  addLostItem: "api/add/article",
+  addTakeItem: "api/add/found",
 }
 
 export default requests;
