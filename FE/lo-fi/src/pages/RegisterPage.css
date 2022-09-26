@@ -2,7 +2,7 @@
     display: flex;
 }
 
-.container {
+.register_container {
     width: 100vw;
     height: 100vh;
     display: flex;
@@ -26,4 +26,11 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+  }
+
+  .register_button {
+    background-color: #478185;
+    margin-top: 15px;
+    border-radius: 15px;
+    width : 80%;
   }

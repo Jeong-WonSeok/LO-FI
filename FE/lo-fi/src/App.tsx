@@ -10,7 +10,7 @@ import AddDetailPage from './pages/AddDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import KakaoLogin from './pages/KakaoLogin';
+import GoogleLogin from './pages/GoogleLogin';
 
 
 function App() {
@@ -20,13 +20,13 @@ function App() {
         <Routes>
           <Route path='/' element={<MainPage />}/>
           <Route path='/login' element={<LoginPage />}/>
-          <Route path='/kakaoLogin' element={<KakaoLogin />}/>
           <Route path='/register' element={<RegisterPage />}/>
           <Route path='/search' element={<SearchPage />}/>
           <Route path='/search/:id' element={<DetailPage />}/>
           <Route path='/add' element={<AddPage />}/>
           <Route path='/add/:category' element={<AddDetailPage/>}/>
           <Route path='/profile/' element={<ProfilePage/>}/>
+          <Route path='/oauth2/:token' element={<GoogleLogin/>}/>
         </Routes>
         <FooterBar/>
       </Router>

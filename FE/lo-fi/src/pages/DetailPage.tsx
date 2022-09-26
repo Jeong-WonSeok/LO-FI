@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import box from '../assets/img/icon/box.png'
 import calendar from '../assets/img/icon/calendar.png'
 import pin from '../assets/img/icon/pin.png'
