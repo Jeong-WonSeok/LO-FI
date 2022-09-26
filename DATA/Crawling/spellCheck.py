@@ -9,7 +9,8 @@ import requests
 import json
 from kiwipiepy import Kiwi
 import time
-import datetime
+from datetime import timedelta
+from datetime import datetime
 
 # 맞춤법 검사기 실행 hanspell
 # def spellCheck(text):
@@ -38,7 +39,6 @@ def spellCehck_Busan(text):
 def keyword_analysis(text):
 
     text = str(text)
-    # print(text)
     kiwi = Kiwi()
     kiwi_analysis = kiwi.tokenize(text, normalize_coda=True)
     keyword_result = []
@@ -48,13 +48,51 @@ def keyword_analysis(text):
             keyword_result.append(morpheme.form)
             # print(morpheme.form, morpheme.tag)
         if(morpheme.tag == 'VA'):
-            VA = {"빨갛": '빨간', "하얗" : '하얀', "까맣": '까만', "노랗": '노란', "파랗": '파란', "붉": '붉은',
+            VA = {"빨갛": '빨간', "하얗": '하얀', "까맣": '까만', "노랗": '노란', "파랗": '파란', "붉": '붉은',
                   "검": '검은', "희": '흰', "작": '작', "크": '큰', "길": '긴', "짧": '짧'}
             if(morpheme.form in VA):
                 keyword_result.append(VA[morpheme.form])
 
     return keyword_result
 
+def map_keyword_analysis(text):
+
+    text = str(text)
+    kiwi = Kiwi()
+    keyword_result = []
+
+    if(text.find('로') != -1 and text.find('으로') == -1):
+
+        index = text.find('로')
+        final_string = text[:index + 1] + "에서" + text[index+1:]
+        final_arr = kiwi.tokenize(final_string, normalize_coda=True)
+        for string in final_arr:
+            print(string)
+            if (string.tag == 'NNG' or string.tag == 'NNP' or string.tag == 'SN' or string.form == '-' or string.tag == 'SL' or string.form == '번'):
+                if (string.form == '인근' or string.form == '근처' or string.form == '주변' or string.form == '부근' or string.form == '추정'):
+                    continue
+                keyword_result.append(string.form)
+            elif(string.form == '에서'):
+                continue
+            else:
+                return keyword_result
+
+    else:
+        morpheme = kiwi.tokenize(text, normalize_coda=True)
+        for string in morpheme:
+            print(string)
+            if (string.tag == 'NNG' or string.tag == 'NNP' or string.tag == 'SN' or string.form == '-' or string.tag == 'SL' or string.form == '번'):
+                if(string.form == '인근' or string.form == '근처' or string.form == '주변' or string.form == '부근' or string.form == '추정'):
+                    continue
+                keyword_result.append(string.form)
+            else:
+                return keyword_result
+
+
+    print(keyword_result)
+
+
+    return keyword_result
 # db에서 검사기 돌릴 행 가져오기
 def selectDB(sql):
 
@@ -64,7 +102,7 @@ def selectDB(sql):
                            db='lo-fi')
 
     cursor = conn.cursor()
-    cursor.execute(sql)
+    cursor.execute(sql, (datetime.today().strftime("%Y-%m-%d")))
     result = cursor.fetchall()
     conn.commit()
     conn.close()
@@ -73,7 +111,6 @@ def selectDB(sql):
 
 # db 맞춤법 검사기 돌려서 update
 def update_db(sql, sql_keyword, animal):
-
 
     conn = pymysql.connect(host='localhost',
                            user='ssafy',
@@ -110,9 +147,13 @@ def update_db(sql, sql_keyword, animal):
 # missing_animal table update
 def missing_animal_update():
 
-    sql_select = "select animal_id, location, find, gender, description, name, age  from missing_animal"
+    #animal_select
+    sql_select = "select animal_id, location, find, gender, description, name, age  from missing_animal where update_day = %s"
     sql_update = "update missing_animal set location = %s, find = %s, gender = %s, description = %s where animal_id = %s"
-    sql_insert_keyword = "insert into keyword (keyword, missing_id) values (%s, %s)"
+    sql_insert_keyword = "insert into keyword (keyword, animal_id) values (%s, %s)"
+    #person_select
+    #found_article_select
+    #lost_article_select
 
     result_df = pd.DataFrame(selectDB(sql_select))
     for animal in result_df.values:
@@ -123,7 +164,7 @@ missing_animal_update()
 end = time.time()
 
 sec = (end - start)
-result = datetime.timedelta(seconds=sec)
+result = timedelta(seconds=sec)
 print(result)
 
 
