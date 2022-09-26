@@ -34,6 +34,15 @@ export interface infoType {
   previewFileList: String[]
 }
 
+// 자식에서 부모로 데이터 넘겨주기 위해
+export interface Iprops {
+  getAddress: (address: string) => void
+}
+
+export interface getAddressType {
+  address: string
+}
+
 export default function AddDetailPage() {
   const [isModal, setIsModal] = useState(false);
   const previewFileList: string[] = [];
@@ -163,6 +172,19 @@ export default function AddDetailPage() {
     }))
   }
 
+  const getAddress = (address: string) => {
+    setInfo((current) => {
+      let newInfo = {...current}
+      newInfo['detail_loctaion'] = address
+      return newInfo
+    })
+    setIsModal(false)
+    console.log(info)
+  }
+
+  const closeModal = () => {
+    setIsModal(false)
+  }
 
   const s3 = new ReactS3Client(s3Config);
 
@@ -338,10 +360,10 @@ export default function AddDetailPage() {
           <hr />
           <div className='add-component'>
             <label htmlFor="detail_location">상세 지역</label>
-            <span id="detail_location" onChange={handleDetailLoation} onClick={() => setIsModal(true)} style={{width: "300px"}}>{info.detail_loctaion}</span>
+            <span id="detail_location" onClick={() => setIsModal(true)} style={{width: "300px"}}>{info.detail_loctaion}</span>
           </div>
           <div>
-            {isModal && <MapMarker />}
+            {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
             </div>
           <div className='add-alert'>
             {isInfo.isDetailLocation ? "" : "상세지역을 입력해주세요"}
