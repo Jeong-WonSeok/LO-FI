@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// 컴포넌트
 import FooterBar from './components/FooterBar';
 import MainPage from './pages/MainPage';
 import SearchPage from './pages/SearchPage';
@@ -11,7 +12,6 @@ import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import GoogleLogin from './pages/GoogleLogin';
-
 
 function App() {
   return (
