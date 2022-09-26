@@ -2,6 +2,7 @@ package com.ssafy.lofi.controller;
 
 import com.ssafy.lofi.config.security.UserDetailsImpl;
 import com.ssafy.lofi.db.entity.User;
+import com.ssafy.lofi.dto.request.MissingAnimalRequest;
 import com.ssafy.lofi.dto.request.MissingPersonRequest;
 import com.ssafy.lofi.dto.request.SignUpDto;
 import com.ssafy.lofi.dto.response.UserDto;
@@ -44,10 +45,18 @@ public class RegisterController {
         return ResponseEntity.ok().build();
     }
 
+    @ApiOperation(value = "실종동물 등록", notes = "입력된 실종동물 데이터 등록")
+    @PostMapping(value = "/missingAnimal")
+    public ResponseEntity<?> registerMissingAnimal(@RequestBody MissingAnimalRequest missingAnimalRequest){
+        registerService.registerMissingAnimal(missingAnimalRequest,1);
+        return ResponseEntity.ok().build();
+    }
+
     @ApiOperation(value = "실종자등록", notes = "입력된 실종자 데이터 등록")
     @PostMapping(value = "/missingPerson")
     public ResponseEntity<?> registerMissingPerson(@RequestBody MissingPersonRequest missingPersonRequest){
         registerService.registerMissingPerson(missingPersonRequest,1);
         return ResponseEntity.ok().build();
     }
+    
 }

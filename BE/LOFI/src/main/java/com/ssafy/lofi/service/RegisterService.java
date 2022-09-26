@@ -1,5 +1,8 @@
 package com.ssafy.lofi.service;
 
+import com.ssafy.lofi.db.entity.MissingAnimal;
+import com.ssafy.lofi.db.repository.MissingAnlmalRepository;
+import com.ssafy.lofi.dto.request.MissingAnimalRequest;
 import com.ssafy.lofi.db.entity.MissingPerson;
 import com.ssafy.lofi.db.entity.User;
 import com.ssafy.lofi.db.repository.MissingPersonRepository;
@@ -12,11 +15,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
 @RequiredArgsConstructor
 @Service
 public class RegisterService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final MissingAnlmalRepository missingAnlmalRepository;
     private final MissingPersonRepository missingPersonRepository;
 
     public User signUp(SignUpDto signUpDto) {
@@ -40,6 +49,30 @@ public class RegisterService {
 
     public void deleteuser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public void registerMissingAnimal(MissingAnimalRequest missingAnimalRequest, int userId) {
+        MissingAnimal missingAnimal = MissingAnimal.builder()
+                .name(missingAnimalRequest.getName())
+                .gender(missingAnimalRequest.getGender())
+                .age(missingAnimalRequest.getAge())
+                .description(missingAnimalRequest.getDescription())
+                .img(missingAnimalRequest.getPicture())
+                .build();
+        missingAnlmalRepository.save(missingAnimal);
+    }
+
+    public LocalDateTime stringDateConvertDate(String date, String time){
+        LocalDateTime result_date;
+        if(!date.isEmpty() || !time.isEmpty()){
+            String result = date + " " + time;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH시 mm분 ss초");
+            result_date = LocalDateTime.parse(result,formatter);
+        }else {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            result_date = LocalDateTime.parse(date,formatter);
+        }
+        return result_date;
     }
 
     public void registerMissingPerson(MissingPersonRequest missingPersonRequest, int userId) {
