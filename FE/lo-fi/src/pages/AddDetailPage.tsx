@@ -7,6 +7,9 @@ import { ko } from 'date-fns/esm/locale';
 import ReactS3Client from 'react-aws-s3-typescript'
 import { s3Config } from '../hooks/s3Config'
 
+import axios from '../api/axios'
+import requests from '../api/requests'
+
 import male from '../assets/img/icon/male.png'
 import select_male from '../assets/img/icon/select_male.png'
 import female from '../assets/img/icon/female.png'
@@ -17,6 +20,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import MapMarker from '../components/MapMarker'
 import ImgList from '../components/AddPagePreviewImgList'
+import {addData} from '../redux/modules/mainData'
+import { useAppDispatch } from '../hooks/reduxHook';
+
 
 
 export interface infoType {
@@ -39,14 +45,22 @@ export interface Iprops {
   getAddress: (address: string) => void
 }
 
+interface DataType {
+  address: string,
+  lat: number,
+  lon: number
+}
+
 export interface getAddressType {
   address: string
 }
 
-export default function AddDetailPage() {
+export default function AddDetailPage(history: any) {
+  const dispatch = useAppDispatch()
   const [isModal, setIsModal] = useState(false);
   const previewFileList: string[] = [];
   const fileList: File[] = [];
+  const myFileList: File[] = [];
   const navigate = useNavigate();
   const [previewImg, setPreviewImg] = useState(previewFileList)
   const [files, setFiles] = useState(fileList)
@@ -60,7 +74,9 @@ export default function AddDetailPage() {
     detail_loctaion: "",
     picture: [''],
     date: new Date(),
-    description: ""
+    description: "",
+    lat: 0,
+    lon: 0,
   })
 
   const [isInfo, setIsInfo] = useState({
@@ -86,23 +102,25 @@ export default function AddDetailPage() {
     inputRef.current.click();
   }, []);
 
-  const onUplopadImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const onUplopadImage = ( async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       // fileList를 Array의 형태로 
       const uploadFiles = Array.prototype.slice.call(e.target.files)
-      
+
       uploadFiles.forEach((uploadFile) => {
-        fileList.push(uploadFile);
+        myFileList.push(uploadFile)
       });
-      setFiles(fileList)
-      addImage(fileList)
+
+      setFiles(myFileList)
+      addImage(myFileList)
       return;
     }
-  }, []) 
+  })
 
   const addImage = ((files: Array<File>) => {
     const nowImageURLList = [...previewImg];
     for (let i=0; i < files.length; i++ ) {
+      
       // 미리보기가 가능하게 변수화
       let nowImageUrl: string = ""; 
       nowImageUrl = URL.createObjectURL(files[i]);
@@ -151,20 +169,6 @@ export default function AddDetailPage() {
     }))
   }
 
-  const handleLocation = (e: any) => {
-    setInfo(prev => ({
-      ...prev,
-      "location" : e.target.value
-    }))
-  }
-  
-  const handleDetailLoation = (e: any) => {
-    setInfo(prevState => ({
-      ...prevState,
-      "detail_loctaion": e.target.value
-    }))
-  }
-
   const handleChangeDate = (date: any) => {
     setInfo(prevState => ({
       ...prevState,
@@ -172,18 +176,52 @@ export default function AddDetailPage() {
     }))
   }
 
-  const getAddress = (address: string) => {
+  const getAddress = (data: DataType) => {
     setInfo((current) => {
       let newInfo = {...current}
-      newInfo['detail_loctaion'] = address
+      newInfo['detail_loctaion'] = data['address']
+      newInfo['lat'] = data['lat']
+      newInfo['lon'] = data['lon']
       return newInfo
     })
     setIsModal(false)
-    console.log(info)
   }
 
   const closeModal = () => {
     setIsModal(false)
+  }
+
+  // 이미지 제거
+  const deleteImg = (idx: number) => {
+    // 해당 인덱스 제거
+    setFiles((current) => {
+      let newFile = [...current]
+      newFile.splice(idx, 1)
+      return newFile
+    })
+
+    myFileList.splice(idx, 1)
+
+    setPreviewImg((current) => {
+      let newPreviewFile = [...current]
+      newPreviewFile.splice(idx, 1)
+      return newPreviewFile
+    })
+
+    const dataTranster = new DataTransfer()
+
+    Array.from(files)
+      .filter((file, fileidx) => {
+        if (fileidx !== Number(idx)) {
+          return file
+        }
+      })
+      .forEach(file => {
+        dataTranster.items.add(file)
+      })
+
+    const InputFile = document.querySelector('#picture') as HTMLInputElement
+    InputFile.files = dataTranster.files;
   }
 
   const s3 = new ReactS3Client(s3Config);
@@ -192,7 +230,7 @@ export default function AddDetailPage() {
     // 사진 데이터 s3에 저장하기
     const arr:string[] =  []
     // for문을 돌려 upload 후 리턴된 경로를 info에 저장한다.
-    if (S3files.length == 0) {
+    if (S3files.length === 0) {
       return
     } else {
       for (let i=0; i < S3files.length; i++) {
@@ -210,7 +248,7 @@ export default function AddDetailPage() {
       return
     }
   }
-  const isSubmit = () => {
+  const isSubmit = async () => {
     // 공통사항 검사
     if (info.name && info.location && info.detail_loctaion && info.date) {
       setIsInfo(prev => ({
@@ -223,8 +261,13 @@ export default function AddDetailPage() {
       switch(category) {
         case "animal":
           if (info.speice && info.age && info.gender && info.description) {
-            // axios 요청 보내기
-            return 
+            await uploadS3Files(files);
+            const res = await axios.post(requests.addAnimal, {Headers: {
+              Token: localStorage.getItem('token'),
+              data: info
+            }})
+            dispatch(addData("animal", res))
+            return history.push('/search')
           } else {
             return setIsInfo(prev => ({
               ...prev,
@@ -236,9 +279,13 @@ export default function AddDetailPage() {
           }
         case "people":
           if (info.age && info.gender && info.description) {
-            // 이미지 업로드
-            uploadS3Files(files);
-            return 
+            await uploadS3Files(files);
+            const res = await axios.post(requests.addAnimal, {Headers: {
+              Token: localStorage.getItem('token'),
+              data: info
+            }})
+            dispatch(addData("people", res))
+            return history.push('/search')
           } else {
             return setIsInfo(prev => ({
               ...prev,
@@ -249,8 +296,13 @@ export default function AddDetailPage() {
           }
         case "lost_item":
           if (info.category && info.description) {
-            // axios 요청 보내기
-            return 
+            await uploadS3Files(files);
+            const res = await axios.post(requests.addAnimal, {Headers: {
+              Token: localStorage.getItem('token'),
+              data: info
+            }})
+            dispatch(addData("lostItem", res))
+            return history.push('/search')
           } else {
             return setIsInfo(prev => ({
               ...prev,
@@ -260,8 +312,13 @@ export default function AddDetailPage() {
           }
         case "take_item":
           if (info.category && info.description) {
-            // axios 요청 보내기
-            return 
+            await uploadS3Files(files);
+            const res = await axios.post(requests.addAnimal, {Headers: {
+              Token: localStorage.getItem('token'),
+              data: info
+            }})
+            dispatch(addData("takeItem", res))
+            return history.push('/search') 
           } else {
             return setIsInfo(prev => ({
               ...prev,
@@ -269,8 +326,7 @@ export default function AddDetailPage() {
               "isDescription" : (info.description ? true : false)
             }))
           }  
-      }
-    } else {
+    }} else {
       setIsInfo(prev => ({
         "isCategory" : (info.category ? true : false),
         "isSpeice" : (info.speice ? true : false),
@@ -329,44 +385,14 @@ export default function AddDetailPage() {
           </div>
           <hr />
           <div className='add-component'>
-            {/* 좌표지정으로 선택  */}
-            <label htmlFor="location">실종 지역</label>
-            <select name="cars" id="location" value={info.location} onChange={handleLocation}>
-              <option value="">지역을 선택해주세요</option>
-              <option value="서울특별시">서울특별시</option>
-              <option value="강원도">강원도</option>
-              <option value="경기도">경기도</option>
-              <option value="경상남도">경상남도</option>
-              <option value="경상북도">경상북도</option>
-              <option value="광주광역시">광주광역시</option>
-              <option value="대구광역시">대구광역시</option>
-              <option value="대전광역시">대전광역시</option>
-              <option value="부산광역시">부산광역시</option>
-              <option value="울산광역시">울산광역시</option>
-              <option value="인천광역시">인천광역시</option>
-              <option value="전라남도">전라남도</option>
-              <option value="전라북도">전라북도</option>
-              <option value="충청남도">충청남도</option>
-              <option value="충청북도">충청북도</option>
-              <option value="제주특별자치도">제주특별자치도</option>
-              <option value="세종특별자치시">세종특별자치시</option>
-              <option value="해외">해외</option>
-              <option value="기타">기타</option>
-            </select>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isLocation ? "" : "지역을 입력해주세요"}
-          </div>
-          <hr />
-          <div className='add-component'>
-            <label htmlFor="detail_location">상세 지역</label>
+            <label htmlFor="detail_location">실종위치</label>
             <span id="detail_location" onClick={() => setIsModal(true)} style={{width: "300px"}}>{info.detail_loctaion}</span>
           </div>
           <div>
             {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
             </div>
           <div className='add-alert'>
-            {isInfo.isDetailLocation ? "" : "상세지역을 입력해주세요"}
+            {isInfo.isDetailLocation ? "" : "위치를 입력해주세요"}
           </div>
           <hr />
           <div className='add-component' style={{display: "flex", flexDirection: "column"}}>
@@ -375,7 +401,7 @@ export default function AddDetailPage() {
               <input type="file" src="" alt="" id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: 'none'}}/>
               <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
             </div>
-            <ImgList {...previewImg} />
+            <ImgList previewImg={previewImg} deleteImg={deleteImg} />
           </div>
           <hr />
           <div className='add-component'>
@@ -438,41 +464,14 @@ export default function AddDetailPage() {
           </div>
           <hr />
           <div className='add-component'>
-            {/* 추후에 선택상자로 표현할 예정 */}
-            <label htmlFor="location">실종 지역</label>
-            <select name="cars" id="location" value={info.location} onChange={handleLocation}>
-              <option value="">지역을 선택해주세요</option>
-              <option value="서울특별시">서울특별시</option>
-              <option value="강원도">강원도</option>
-              <option value="경기도">경기도</option>
-              <option value="경상남도">경상남도</option>
-              <option value="경상북도">경상북도</option>
-              <option value="광주광역시">광주광역시</option>
-              <option value="대구광역시">대구광역시</option>
-              <option value="대전광역시">대전광역시</option>
-              <option value="부산광역시">부산광역시</option>
-              <option value="울산광역시">울산광역시</option>
-              <option value="인천광역시">인천광역시</option>
-              <option value="전라남도">전라남도</option>
-              <option value="전라북도">전라북도</option>
-              <option value="충청남도">충청남도</option>
-              <option value="충청북도">충청북도</option>
-              <option value="제주특별자치도">제주특별자치도</option>
-              <option value="세종특별자치시">세종특별자치시</option>
-              <option value="해외">해외</option>
-              <option value="기타">기타</option>
-            </select>
+            <label htmlFor="detail_location">실종위치</label>
+            <span id="detail_location" onClick={() => setIsModal(true)} style={{width: "300px"}}>{info.detail_loctaion}</span>
           </div>
+          <div>
+            {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
+            </div>
           <div className='add-alert'>
-            {isInfo.isLocation ? "" : "지역을 입력해주세요"}
-          </div>
-          <hr />
-          <div className='add-component'>
-            <label htmlFor="detail_location">상세 지역</label>
-            <input type="text" id="detail_location" value={info.detail_loctaion} onChange={handleDetailLoation}/>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isDetailLocation ? "" : "상세지역을 입력해주세요"}
+            {isInfo.isDetailLocation ? "" : "위치를 입력해주세요"}
           </div>
           <hr />
           <div className="add-component" style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
@@ -480,7 +479,7 @@ export default function AddDetailPage() {
             <input type="file" src="" alt="" multiple id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
             <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
           </div>
-          <ImgList {...previewImg} />
+          <ImgList previewImg={previewImg} deleteImg={deleteImg} />
           <hr />
           <div className='add-component'>
             <label htmlFor="date">실종 일자</label>
@@ -552,40 +551,14 @@ export default function AddDetailPage() {
           </div>
           <hr />
           <div className='add-component'>
-            <label htmlFor="location">분실 지역</label>
-            <select name="cars" id="location" value={info.location} onChange={handleLocation}>
-              <option value="">지역을 선택하세요</option>
-              <option value="서울특별시">서울특별시</option>
-              <option value="강원도">강원도</option>
-              <option value="경기도">경기도</option>
-              <option value="경상남도">경상남도</option>
-              <option value="경상북도">경상북도</option>
-              <option value="광주광역시">광주광역시</option>
-              <option value="대구광역시">대구광역시</option>
-              <option value="대전광역시">대전광역시</option>
-              <option value="부산광역시">부산광역시</option>
-              <option value="울산광역시">울산광역시</option>
-              <option value="인천광역시">인천광역시</option>
-              <option value="전라남도">전라남도</option>
-              <option value="전라북도">전라북도</option>
-              <option value="충청남도">충청남도</option>
-              <option value="충청북도">충청북도</option>
-              <option value="제주특별자치도">제주특별자치도</option>
-              <option value="세종특별자치시">세종특별자치시</option>
-              <option value="해외">해외</option>
-              <option value="기타">기타</option>
-            </select>
+            <label htmlFor="detail_location">습득위치</label>
+            <span id="detail_location" onClick={() => setIsModal(true)} style={{width: "300px"}}>{info.detail_loctaion}</span>
           </div>
+          <div>
+            {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
+            </div>
           <div className='add-alert'>
-            {isInfo.isLocation ? "" : "지역을 입력해주세요"}
-          </div>
-          <hr />
-          <div className='add-component'>
-            <label htmlFor="detail_location">상세 지역</label>
-            <input type="text" id="detail_location" value={info.detail_loctaion} onChange={handleDetailLoation}/>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isDetailLocation ? "" : "상세지역을 입력해주세요"}
+            {isInfo.isDetailLocation ? "" : "위치를 입력해주세요"}
           </div>
           <hr />
           <div className="add-component" style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
@@ -593,7 +566,7 @@ export default function AddDetailPage() {
             <input type="file" src="" alt="" multiple id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
             <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
           </div>
-          <ImgList {...previewImg} />
+          <ImgList previewImg={previewImg} deleteImg={deleteImg} />
           <hr />
           <div className='add-component'>
             <label htmlFor="date">분실 일자</label>
@@ -665,40 +638,14 @@ export default function AddDetailPage() {
           </div>
           <hr />
           <div className='add-component'>
-            <label htmlFor="location">습득 지역</label>
-            <select name="cars" id="location" value={info.location} onChange={handleLocation}>
-              <option value="">지역을 선택하세요</option>
-              <option value="서울특별시">서울특별시</option>
-              <option value="강원도">강원도</option>
-              <option value="경기도">경기도</option>
-              <option value="경상남도">경상남도</option>
-              <option value="경상북도">경상북도</option>
-              <option value="광주광역시">광주광역시</option>
-              <option value="대구광역시">대구광역시</option>
-              <option value="대전광역시">대전광역시</option>
-              <option value="부산광역시">부산광역시</option>
-              <option value="울산광역시">울산광역시</option>
-              <option value="인천광역시">인천광역시</option>
-              <option value="전라남도">전라남도</option>
-              <option value="전라북도">전라북도</option>
-              <option value="충청남도">충청남도</option>
-              <option value="충청북도">충청북도</option>
-              <option value="제주특별자치도">제주특별자치도</option>
-              <option value="세종특별자치시">세종특별자치시</option>
-              <option value="해외">해외</option>
-              <option value="기타">기타</option>
-            </select>
+            <label htmlFor="detail_location">습득위치</label>
+            <span id="detail_location" onClick={() => setIsModal(true)} style={{width: "300px"}}>{info.detail_loctaion}</span>
           </div>
+          <div>
+            {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
+            </div>
           <div className='add-alert'>
-            {isInfo.isLocation ? "" : "지역을 입력해주세요"}
-          </div>
-          <hr />
-          <div className='add-component'>
-            <label htmlFor="detail_location">상세 지역</label>
-            <input type="text" id="detail_location" value={info.detail_loctaion} onChange={handleDetailLoation}/>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isDetailLocation ? "" : "상세지역을 입력해주세요"}
+            {isInfo.isDetailLocation ? "" : "위치를 입력해주세요"}
           </div>
           <hr />
           <div className="add-component" style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
@@ -706,7 +653,7 @@ export default function AddDetailPage() {
             <input type="file" src="" alt="" multiple id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
             <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
           </div>
-          <ImgList {...previewImg} />
+          <ImgList previewImg={previewImg} deleteImg={deleteImg} />
           <hr />
           <div className='add-component'>
             <label htmlFor="date">습득 일자</label>

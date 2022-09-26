@@ -9,7 +9,7 @@ import baby from '../assets/img/Category/remove_baby.png'
 import select_baby from '../assets/img/Category/color_baby.png'
 import './Category.css';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHook'
-import { getData, increse } from '../redux/modules/mainData'
+import { getData } from '../redux/modules/mainData'
 
 export default function Category() {
   const [Select, setSelect] = useState("lost_item");
