@@ -1,5 +1,7 @@
 package com.ssafy.lofi.service;
 
+import com.ssafy.lofi.db.repository.FoundArticleRepository;
+import com.ssafy.lofi.db.repository.LostArticleRepository;
 import com.ssafy.lofi.db.repository.MissingAnlmalRepository;
 import com.ssafy.lofi.db.repository.MissingPersonRepository;
 import com.ssafy.lofi.dto.response.MissingAnimalDto;
@@ -14,8 +16,8 @@ import java.util.List;
 @Service
 public class SearchService {
 
-    private final FoundArticleService foundArticleService;
-    private final LostArticleService lostArticleService;
+    private final FoundArticleRepository foundArticleRepository;
+    private final LostArticleRepository lostArticleRepository;
     private final MissingAnlmalRepository missingAnlmalRepository;
     private final MissingPersonRepository missingPersonRepository;
 
@@ -47,7 +49,7 @@ public class SearchService {
     }
 
     public void getFound(String[] keywords, String category) {
-
+        //List<FoundArticle> foundArticle = foundArticleRepository
     }
 
     public void getArticle(String[] keywords, String category) {
