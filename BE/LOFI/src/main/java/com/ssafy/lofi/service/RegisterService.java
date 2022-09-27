@@ -1,19 +1,14 @@
 package com.ssafy.lofi.service;
 
-import com.ssafy.lofi.db.entity.MissingAnimal;
-import com.ssafy.lofi.db.repository.MissingAnlmalRepository;
-import com.ssafy.lofi.dto.request.MissingAnimalRequest;
-import com.ssafy.lofi.db.entity.MissingPerson;
-import com.ssafy.lofi.db.entity.User;
-import com.ssafy.lofi.db.repository.MissingPersonRepository;
-import com.ssafy.lofi.db.repository.UserRepository;
+import com.ssafy.lofi.db.entity.*;
+import com.ssafy.lofi.db.repository.*;
+import com.ssafy.lofi.dto.request.*;
 import com.ssafy.lofi.dto.UserRole;
-import com.ssafy.lofi.dto.request.MissingPersonRequest;
-import com.ssafy.lofi.dto.request.SignUpDto;
 import com.ssafy.lofi.dto.response.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,6 +22,8 @@ public class RegisterService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final MissingAnlmalRepository missingAnlmalRepository;
     private final MissingPersonRepository missingPersonRepository;
+    private final LostArticleRepository lostArticleRepository;
+    private final FoundArticleRepository foundArticleRepository;
 
     public User signUp(SignUpDto signUpDto) {
         User user = User.builder()
@@ -58,24 +55,28 @@ public class RegisterService {
                 .age(missingAnimalRequest.getAge())
                 .description(missingAnimalRequest.getDescription())
                 .img(missingAnimalRequest.getPicture())
+                .missingDay(stringDateConvertDate(missingAnimalRequest.getDate(),missingAnimalRequest.getTime()))
                 .build();
         missingAnlmalRepository.save(missingAnimal);
     }
 
-    public LocalDateTime stringDateConvertDate(String date, String time){
+    public Date stringDateConvertDate(String date, String time){
         LocalDateTime result_date;
         if(!date.isEmpty() || !time.isEmpty()){
             String result = date + " " + time;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH시 mm분 ss초");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH시 mm분");
             result_date = LocalDateTime.parse(result,formatter);
         }else {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             result_date = LocalDateTime.parse(date,formatter);
         }
-        return result_date;
+        return java.sql.Timestamp.valueOf(result_date);
     }
 
     public void registerMissingPerson(MissingPersonRequest missingPersonRequest, int userId) {
+        missingPersonRequest.setMissingClothes(spellCheckout(missingPersonRequest.getMissingClothes()));
+        missingPersonRequest.setDescription(spellCheckout(missingPersonRequest.getDescription()));
+
         MissingPerson missingPerson = MissingPerson.builder()
                 .name(missingPersonRequest.getName())
                 .gender(missingPersonRequest.getGender())
@@ -85,5 +86,43 @@ public class RegisterService {
                 .picture(missingPersonRequest.getPicture())
                 .build();
         missingPersonRepository.save(missingPerson);
+    }
+
+    public String spellCheckout(String word){
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "j7b102.p.ssafy.io:8000/api/spellCheck/" + word;
+        String result = restTemplate.getForObject(url,String.class);
+        return result;
+    }
+
+    public void registerLostArticle(LostArticleRequest lostArticleRequest, int i) {
+        lostArticleRequest.setName(spellCheckout(lostArticleRequest.getName()));
+        lostArticleRequest.setCategory(spellCheckout(lostArticleRequest.getCategory()));
+
+        LostArticle lostArticle = LostArticle.builder()
+                .name(lostArticleRequest.getName())
+                .category(lostArticleRequest.getCategory())
+                .date(stringDateConvertDate(lostArticleRequest.getDate(), lostArticleRequest.getTime()).toString())
+                .location(lostArticleRequest.getLocation())
+                .picture(lostArticleRequest.getPicture())
+                .build();
+        lostArticleRepository.save(lostArticle);
+    }
+
+    public void registerFoundArticle(FoundArticleRequest foundArticleRequest, int i) {
+        foundArticleRequest.setName(spellCheckout(foundArticleRequest.getName()));
+        foundArticleRequest.setCategory(spellCheckout(foundArticleRequest.getCategory()));
+        foundArticleRequest.setDescription(spellCheckout(foundArticleRequest.getDescription()));
+
+        FoundArticle foundArticle = FoundArticle.builder()
+                .name(foundArticleRequest.getName())
+                .category(foundArticleRequest.getCategory())
+                .date(stringDateConvertDate(foundArticleRequest.getDate(), foundArticleRequest.getTime()).toString())
+                .safeLocation(foundArticleRequest.getSafeLocation())
+                .foundLocation(foundArticleRequest.getFoundLocation())
+                .picture(foundArticleRequest.getPicture())
+                .description(foundArticleRequest.getDescription())
+                .build();
+        foundArticleRepository.save(foundArticle);
     }
 }
