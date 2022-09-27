@@ -23,9 +23,10 @@ public class SearchService {
 
     public String[] keywordtoPython(String keyword) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "j7b102.p.ssafy.io:8000/api/keyword/" + keyword;
+        String url = "http://j7b102.p.ssafy.io:8000/api/keyword/" + keyword;
         String s = restTemplate.getForObject(url,String.class);
-        return s.split(" ");
+        String result = s.substring(1,s.length()-1);
+        return result.split(" ");
     }
 
     public void getAnimal(String[] keywords, String category) {
