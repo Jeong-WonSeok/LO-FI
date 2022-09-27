@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FoundArticle extends BaseEntity{
+
     private String name;
     @Nullable
     private Long userId;
