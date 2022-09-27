@@ -32,7 +32,7 @@ public class Scheduler {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String formattedNow = now.minusDays(1).format(formatter);
         String formattedBefore = now.minusMonths(1).format(formatter);
-        mainController.getLostArticle(formattedNow, formattedBefore);
+        mainController.getLostArticle(formattedNow);
     }
 
     @Scheduled(cron = "0 0 2 1/1 * ?")
