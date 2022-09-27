@@ -1,7 +1,6 @@
 package com.ssafy.lofi.db.entity;
 
 import com.ssafy.lofi.dto.response.MissingAnimalAPIResponse;
-import com.ssafy.lofi.dto.response.MissingPersonAPIResponse;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -18,20 +17,24 @@ import java.util.Date;
 @Builder
 public class MissingAnimal extends BaseEntity{
 
-//"id", "find", "gender", "age", "name", "missingDay", "location", "description", "img"
+// "id", "find", "gender", "age", "name", "missingDay", "location", "description", "img", "updateDay", "latitude", "longitude"
 
-    private Long animalId;
+    private String animalId;
     private String find;
     private String gender;
     private String age; // ~ 살 ~ 살 미만
     private String name;
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date missingDay;
     private String location;
     @Column(columnDefinition = "TEXT")
     private String description;
     private String img;
     private Boolean used;
+    @Temporal(TemporalType.DATE)
+    private Date updateDay;
+    private String latitude;
+    private String longitude;
 //    private String picture;
 
     public static MissingAnimal of(MissingAnimalAPIResponse missingAnimalAPIResponse){
