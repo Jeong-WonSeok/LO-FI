@@ -25,13 +25,15 @@ public class MissingAnimal extends BaseEntity{
     private String gender;
     private String age; // ~ 살 ~ 살 미만
     private String name;
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date missingDay;
     private String location;
     @Column(columnDefinition = "TEXT")
     private String description;
     private String img;
     private Boolean used;
+    @Temporal(TemporalType.DATE)
+    private Date updateDay;
 //    private String picture;
 
     public static MissingAnimal of(MissingAnimalAPIResponse missingAnimalAPIResponse){
