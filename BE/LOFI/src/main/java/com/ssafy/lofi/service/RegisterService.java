@@ -90,9 +90,10 @@ public class RegisterService {
 
     public String spellCheckout(String word){
         RestTemplate restTemplate = new RestTemplate();
-        String url = "j7b102.p.ssafy.io:8000/api/spellCheck/" + word;
+        String url = "http://j7b102.p.ssafy.io:8000/api/spellCheck/" + word;
         String result = restTemplate.getForObject(url,String.class);
-        return result;
+        String s = result.substring(1,result.length()-1);
+        return s;
     }
 
     public void registerLostArticle(LostArticleRequest lostArticleRequest, int i) {
