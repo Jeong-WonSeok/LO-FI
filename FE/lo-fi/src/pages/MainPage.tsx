@@ -1,18 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import Category from '../components/Category';
+import search_icon from '../assets/img/icon/search_icon.png'
+import list from '../assets/img/Category/list.png'
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHook'
 import './MainPage.css'
+import { useNavigate } from 'react-router-dom';
 
 // 카카오 불러오기
 const kakao = (window as any).kakao
 
 const MainPage = () => {
+  const navigate = useNavigate();
   const { data, pending, error } = useAppSelector(state => state.mainData)
   
   const [location, setLocation] = useState({
     lat: 0,
     lon: 0
   })
+
+  const [SearchText, setSearchText] = useState("");
+
+  const handleChange = (e: any) => {
+    setSearchText(e.target.value);
+  }
 
   
 
@@ -98,11 +108,25 @@ const MainPage = () => {
     }
   }
 
+  const goList = () => {
+    navigate('/search')
+  }
+
   return (
     <div style={{width: '100%'}}>
+      <div className='search_top_nav' >
+        <div className='search_map' onClick={goList}>
+          <img src={list} alt="" width={35} height={35} />
+          <span>목록으로</span>
+        </div>
+        <div className='search_box'>
+          <img src={search_icon} alt="" width={20} height={20}/>
+          <input className="search_input" type="text" value={SearchText} onChange={handleChange}/>
+        </div>
+      </div>
       <Category/>
       
-      <div id="map" style={{height: '90vh'}}>
+      <div id="map" style={{height: '85vh'}}>
 
       </div>
     </div>
