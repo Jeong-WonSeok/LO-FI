@@ -2,9 +2,7 @@ package com.ssafy.lofi.controller;
 
 import com.ssafy.lofi.config.security.UserDetailsImpl;
 import com.ssafy.lofi.db.entity.User;
-import com.ssafy.lofi.dto.request.MissingAnimalRequest;
-import com.ssafy.lofi.dto.request.MissingPersonRequest;
-import com.ssafy.lofi.dto.request.SignUpDto;
+import com.ssafy.lofi.dto.request.*;
 import com.ssafy.lofi.dto.response.UserDto;
 import com.ssafy.lofi.service.RegisterService;
 import io.swagger.annotations.ApiOperation;
@@ -56,6 +54,20 @@ public class RegisterController {
     @PostMapping(value = "/missingPerson")
     public ResponseEntity<?> registerMissingPerson(@RequestBody MissingPersonRequest missingPersonRequest){
         registerService.registerMissingPerson(missingPersonRequest,1);
+        return ResponseEntity.ok().build();
+    }
+
+    @ApiOperation(value = "분실물 등록", notes = "입력된 분실물 등록")
+    @PostMapping(value = "/lostArticle")
+    public ResponseEntity<?> registerMissingPerson(@RequestBody LostArticleRequest lostArticleRequest){
+        registerService.registerLostArticle(lostArticleRequest,1);
+        return ResponseEntity.ok().build();
+    }
+
+    @ApiOperation(value = "습득물 등록", notes = "입력된 습득물 등록")
+    @PostMapping(value = "/foundArticle")
+    public ResponseEntity<?> registerMissingPerson(@RequestBody FoundArticleRequest foundArticleRequest){
+        registerService.registerFoundArticle(foundArticleRequest,1);
         return ResponseEntity.ok().build();
     }
     

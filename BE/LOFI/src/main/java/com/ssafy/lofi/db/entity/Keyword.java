@@ -17,16 +17,16 @@ public class Keyword extends BaseEntity{
 
     private String keyword;
     @ManyToOne
-    @JoinColumn(name="id")
+    @JoinColumn(name="foundId")
     private FoundArticle found_index_id;
     @ManyToOne
-    @JoinColumn(name="id")
+    @JoinColumn(name="lostId")
     private LostArticle lost_index_id;
     @ManyToOne
-    @JoinColumn(name="id")
+    @JoinColumn(name="animalId")
     private MissingAnimal animal_index_id;
     @ManyToOne
-    @JoinColumn(name="id")
+    @JoinColumn(name="personId")
     private MissingPerson person_index_id;
 
 }
