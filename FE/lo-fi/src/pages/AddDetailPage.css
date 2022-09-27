@@ -1,4 +1,16 @@
+.submit-button{
+    background-color: #B4E0D7;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.pass {
+    opacity: 1 !important;
+}
+
+
 .add-detail-container {
+    width:100%;
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -6,10 +18,35 @@
     font-size: 20px;
 }
 
+@media all and (max-width:768px) {
+    .add-detail-container {
+        width: 768px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        font-family: 'DalseoHealingBold';
+        font-size: 20px;
+    }
+}
+
 .add-component {
     margin : 10px;
     display: flex;
     justify-content: space-between;
+}
+
+.add-component > input {
+    text-align: right;
+}
+
+#detail_location {
+    text-align: right;
+}
+
+.add-alert {
+    margin: 0px 10px;
+    color: red;
+    text-align: end;
 }
 
 
@@ -23,8 +60,27 @@
     flex-direction: column;
 }
 
+.add-picture-button {
+    background-color: #B4E0D7;
+    border-radius: 20px;
+    width: 85px;
+}
+
 #description {
     min-height: 5rem;
     overflow-y: hidden;
     resize: none;
+}
+
+/* datepicker 스타일 */
+.react-datepicker-wrapper {
+    width: 200px !important;
+}
+
+.react-datepicker__input-container {
+    width: 200px !important;
+}
+
+.react-datepicker-ignore-onclickoutside {
+    width: 200px !important;
 }

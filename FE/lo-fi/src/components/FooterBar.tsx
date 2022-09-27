@@ -9,6 +9,7 @@ import user from '../assets/img/Footer/user.png'
 import select_user from '../assets/img/Footer/select_user.png'
 import './FooterBar.css'
 import { Link } from 'react-router-dom'
+import { setEngine } from 'crypto'
 
 export default function FooterBar() {
   const [Select, setSelect] = useState("main");
@@ -18,7 +19,6 @@ export default function FooterBar() {
     switch (tag) {
       case "main":
         setSelect("main");
-        
         return
       case "search":
         setSelect("search");
@@ -28,6 +28,9 @@ export default function FooterBar() {
         return
       case "user":
         setSelect("user");
+        return
+      case "plus":
+        setSelect("plus");
         return
     }
   };
@@ -43,14 +46,14 @@ export default function FooterBar() {
           <img src={Select === 'search' ? select_search : search} alt=""
           width="40px" height="40px"/>
         </Link>
-        <Link className='navigater add_button' to="/add">
+        <Link className='navigater add_button' to="/add" onClick={() => handleChangeTap('add')}>
           <div className='plus'>+</div>
         </Link>
         <Link className="navigater" to="/Search" onClick={() => handleChangeTap('chat')}>
           <img src={Select === 'chat' ? select_chat : chat} alt=""
           width="40px" height="40px"/>
         </Link>
-        <Link className="navigater" to="/Search" onClick={() => handleChangeTap('user')}>
+        <Link className="navigater" to="/Profile/" onClick={() => handleChangeTap('user')}>
           <img src={Select === 'user' ? select_user : user} alt=""
           width="40px" height="40px" />
         </Link>

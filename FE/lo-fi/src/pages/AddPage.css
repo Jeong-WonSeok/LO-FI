@@ -4,10 +4,15 @@
     flex-direction: column;
     justify-content: center;
     text-align: center;
+    width: 100%;
 }
 
 .add-buttons {
     margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .add-button {

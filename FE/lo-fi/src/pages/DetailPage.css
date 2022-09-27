@@ -1,5 +1,14 @@
 .detail-container {
     font-family: 'DalSeoHealingBold';
+    width: 100%;
+    
+}
+
+.deatil-info-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .detail-img {
@@ -8,6 +17,7 @@
 
 .detail-info {
     padding-top: 20px;
+    width: 280px;
 }
 
 .detail-span {
