@@ -208,23 +208,24 @@ def insert_new_animal(db_data, animal_df) :
   insert_df = pd.DataFrame(columns=("animal_id", "find", "gender", "age", "name", "missing_day", "location", "description", "img", "used", "today"))
   for index, row in animal_df.iterrows():
     if(db_data[db_data['animal_id'] == row[0]].empty) :
-      insert_df = insert_df.append(pd.DataFrame( {'animal_id' : [row[0]], "find": [row[1]], 'gender': [row[2]],
+      insert_df = insert_df.append(pd.DataFrame({'animal_id' : [row[0]], "find": [row[1]], 'gender': [row[2]],
                                                   'age': [row[3]], 'name': [row[4]], 'missing_day': [row[5]],
                                                   'location': [row[6]], 'description': [row[7]], 'img': [row[8]],
-                                                  'used': [row[9]] } ) , ignore_index=True)
+                                                  'used': [row[9]]}) , ignore_index=True)
   return insert_df
 
 def update_db(db_data, animal_df):
+  date = datetime.today().strftime("%Y-%m-%d")
   for index, row in db_data.iterrows():
     if(animal_df[animal_df['animal_id'] == row[2]].empty):
-      sql = "UPDATE missing_animal SET used = False WHERE animal_id = %s"
-      conn = pymysql.connect(host = 'localhost',
-                             user = 'ssafy',
-                             password = 'ssafy',
-                             db = 'lo-fi')
+      sql = "UPDATE missing_animal SET used = False, update_day = %s WHERE animal_id = %s"
+      conn = pymysql.connect(host='localhost',
+                             user='ssafy',
+                             password='ssafy',
+                             db='lo-fi')
 
       cursor = conn.cursor()
-      cursor.execute(sql, (row[2]))
+      cursor.execute(sql, (date, row[2]))
       conn.commit()
       conn.close()
 
