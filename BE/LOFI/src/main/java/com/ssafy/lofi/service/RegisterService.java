@@ -64,7 +64,7 @@ public class RegisterService {
         LocalDateTime result_date;
         if(!date.isEmpty() || !time.isEmpty()){
             String result = date + " " + time;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH시 mm분");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             result_date = LocalDateTime.parse(result,formatter);
         }else {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
