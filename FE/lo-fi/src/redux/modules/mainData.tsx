@@ -24,11 +24,33 @@ const getDataAPI = async (type: string) => {
   }
 }
 
+const getSearchAPI = async (type: string) => {
+  if (type === "animal") {
+    return axios.get(requests.animal)
+  } else if (type === "person") {
+    return axios.get(requests.person)
+  } else if (type === "lostItem") {
+    const res = await test_axios.get(`/1320000/LostGoodsInfoInqireService/getLostGoodsInfoAccToClAreaPd?serviceKey=${process.env.REACT_APP_LOST_ITEM_KEY}`)
+    return res.data.response.body.items.item
+  } else if (type === "takeItem") {
+    const res = await test_axios.get(`/1320000/LosfundInfoInqireService/getLosfundInfoAccToClAreaPd?serviceKey=${process.env.REACT_APP_LOST_ITEM_KEY}`)
+    return res.data.response.body.items.item
+    // return axios.get(requests.takeItem)
+  } else {
+    console.log('잘못된 입력입니다.')
+  }
+}
+
+
 // 액션 타입 지정/ 데이터 전송, 성공, 실패
 const GET_DATA_PENDING = 'mainData/GET_DATA_PENDING';
 const GET_DATA_SUCCESS = 'mainData/GET_DATA_SUCCESS';
 const GET_DATA_FAILURE = 'mainData/GET_DATA_FAILURE';
 const ADD_DATA = 'mainData/ADD_DATA';
+const SEARCH_DATA_PENDING = 'mainData/SEARCH_DATA_PENDING';
+const SEARCH_DATA_SUCCESS = 'mainData/SEARCH_DATA_SUCCESS';
+const SEARCH_DATA_FAILURE = 'mainData/SEARCH_DATA_FAILURE';
+const SEARCH_STOP = 'mainData/SEARCH_STOP';
 
 // 액션 생성 함수
 export const getData = (category: string) => async (dispatch: Dispatch) => {
@@ -54,6 +76,8 @@ export const getData = (category: string) => async (dispatch: Dispatch) => {
   })
 }
 
+
+// 데이터 추가
 export const addData = (category: string, data: Object) => (dispatch: Dispatch) => {
   const sendData = {
     "category": category,
@@ -67,19 +91,52 @@ export const addData = (category: string, data: Object) => (dispatch: Dispatch) 
   })
 }
 
+// 데이터 검색
+export const searchData = (category: string) => async (dispatch: Dispatch) => {
+  // 요청을 시작했다는 것을 알림
+  dispatch({type: SEARCH_DATA_PENDING, payload: category})
+
+  // 요청을 시작한다.
+  return await getSearchAPI(category).then(
+    res => {
+      // 요청을 성곻했을 때, 응답내용을 payload로 보낸다.
+      dispatch({
+        type: SEARCH_DATA_SUCCESS,
+        payload: res,
+      })
+    }
+  ).catch(err => {
+    dispatch({
+      type: SEARCH_DATA_FAILURE,
+      payload: err
+    });
+    // 이 함수가 실행 된 다음에 다시한번 catch 할 수 있도록 한다.
+    throw(err);
+  })
+}
+
+// 검색 취소
+export const stopSearch = ()  => async (dispatch: Dispatch) => {
+  dispatch({type: SEARCH_STOP})
+}
+
 // 초기값 타입 설정
 export interface initialState {
   pending: Boolean,
   error: Boolean,
-  category: String,
+  search: Boolean,
+  category: string,
   data: Array<Object>,
+  search_data: Array<Object>,
 }
 // 초기값 설정
 const initialState: initialState = {
   pending: false,
   error: false,
+  search: false,
   category: '',
   data: [],
+  search_data: []
 }
 
 // 액션에 따른 state 변경 / 이게 리듀서인가?
@@ -108,7 +165,7 @@ export default handleActions({
     };
   },
   [ADD_DATA]: (state, {payload}) => {
-    if (state.category == payload.category) {
+    if (state.category === payload.category) {
       return {
         ...state,
         data: state.data.concat(payload.data)
@@ -117,6 +174,36 @@ export default handleActions({
       return {
         ...state
       };
+    };
+  },
+  [SEARCH_DATA_PENDING]: (state, {payload}) => {
+    // 반환해줄 데이터
+    return {
+      ...state,
+      search: true,
+      pending: true,
+      error: false,
+      category: payload.category
+    };
+  },
+  [SEARCH_DATA_SUCCESS]: (state, {payload}) => {
+    return {
+      ...state,
+      pending: false,
+      search_data: state.data.concat(payload)
+    };
+  },
+  [SEARCH_DATA_FAILURE]: (state, action) => {
+    return {
+      ...state,
+      pending: false,
+      error: true
+    };
+  },
+  [SEARCH_STOP]: (state) => {
+    return {
+      ...state,
+      search: false,
     };
   },
 }, initialState)
