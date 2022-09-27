@@ -32,10 +32,12 @@ export interface infoType {
     Gender: String,
     age: Number,
     location: String,
-    detail_loctaion: String,
+    detail_location: String,
     date: Date,
     description: String
-    picture: String[],
+    picture: String,
+    time: String,
+    point: Number
   },
   previewFileList: String[]
 }
@@ -56,6 +58,7 @@ export interface getAddressType {
 }
 
 export default function AddDetailPage(history: any) {
+  let del_count = 0;
   const dispatch = useAppDispatch()
   const [isModal, setIsModal] = useState(false);
   const previewFileList: string[] = [];
@@ -70,17 +73,20 @@ export default function AddDetailPage(history: any) {
     speice: "",
     gender: "",
     age: 1,
+    time: new Date().toTimeString().slice(0, 5),
     location: "",
-    detail_loctaion: "",
-    picture: [''],
+    detail_location: "",
+    picture: "",
     date: new Date(),
     description: "",
     lat: 0,
     lon: 0,
+    point: 0
   })
 
   const [isInfo, setIsInfo] = useState({
     isName: true,
+    isTime: true,
     isCategory: true,
     isSpeice: true,
     isGender: true,
@@ -104,16 +110,36 @@ export default function AddDetailPage(history: any) {
 
   const onUplopadImage = ( async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      // fileList를 Array의 형태로 
-      const uploadFiles = Array.prototype.slice.call(e.target.files)
+      // 파일이 3개 이상이면 잘라냄
+      if (previewImg.length < 3) {
+         // fileList를 Array의 형태로 
+        const uploadFiles = Array.prototype.slice.call(e.target.files)
 
-      uploadFiles.forEach((uploadFile) => {
-        myFileList.push(uploadFile)
-      });
+        uploadFiles.forEach((uploadFile) => {
+          myFileList.push(uploadFile)
+        });
 
-      setFiles(myFileList)
-      addImage(myFileList)
-      return;
+        setFiles(myFileList)
+        addImage(myFileList)
+        return;
+      } else {
+        const dataTranster = new DataTransfer()
+
+        Array.from(files)
+          .filter((file, fileidx) => {
+            if (fileidx !== 3) {
+              return file
+            }
+          })
+          .forEach(file => {
+            dataTranster.items.add(file)
+          })
+    
+        const InputFile = document.querySelector('#picture') as HTMLInputElement
+        InputFile.files = dataTranster.files;
+
+        return;
+      }
     }
   })
 
@@ -170,21 +196,43 @@ export default function AddDetailPage(history: any) {
   }
 
   const handleChangeDate = (date: any) => {
+    console.log(Date.now() - date)
     setInfo(prevState => ({
       ...prevState,
       "date" : date
     }))
   }
 
+  const handlePoint = (e: any) => {
+    setInfo(prev => ({
+      ...prev,
+      "point": Number(e.target.value)
+    }))
+  }
+
+  const handleTime = (e: any) => {
+    setInfo(prev => ({
+      ...prev,
+      "time": e.target.value
+    }))
+  }
+
   const getAddress = (data: DataType) => {
     setInfo((current) => {
       let newInfo = {...current}
-      newInfo['detail_loctaion'] = data['address']
+      newInfo['location'] = data['address']
       newInfo['lat'] = data['lat']
       newInfo['lon'] = data['lon']
       return newInfo
     })
     setIsModal(false)
+  }
+
+  const handleDetail = (e: any) => {
+    setInfo(prev => ({
+      ...prev,
+      "detail_location": e.target.value
+    }))
   }
 
   const closeModal = () => {
@@ -209,10 +257,10 @@ export default function AddDetailPage(history: any) {
     })
 
     const dataTranster = new DataTransfer()
-
+    
     Array.from(files)
       .filter((file, fileidx) => {
-        if (fileidx !== Number(idx)) {
+        if (fileidx !== Number(idx) + del_count) {
           return file
         }
       })
@@ -222,13 +270,14 @@ export default function AddDetailPage(history: any) {
 
     const InputFile = document.querySelector('#picture') as HTMLInputElement
     InputFile.files = dataTranster.files;
+    del_count += 1
   }
 
   const s3 = new ReactS3Client(s3Config);
 
   const uploadS3Files = (S3files: File[]) => {
     // 사진 데이터 s3에 저장하기
-    const arr:string[] =  []
+    let picture_string = ""
     // for문을 돌려 upload 후 리턴된 경로를 info에 저장한다.
     if (S3files.length === 0) {
       return
@@ -236,11 +285,10 @@ export default function AddDetailPage(history: any) {
       for (let i=0; i < S3files.length; i++) {
         s3.uploadFile(S3files[i], S3files[i].name).then((data) => {
           // 잘들어가는 것을 확인
-          console.log('데이터 위치',data.location)
-          arr.push(data.location)
+          picture_string += data.location + " "
           setInfo((prev) => {
             let newInfo = {...prev};
-            newInfo['picture'] = arr
+            newInfo['picture'] = picture_string
             return newInfo
           });
         }).catch(err => console.error(err))
@@ -250,22 +298,35 @@ export default function AddDetailPage(history: any) {
   }
   const isSubmit = async () => {
     // 공통사항 검사
-    if (info.name && info.location && info.detail_loctaion && info.date) {
+    if (info.name && info.location && info.detail_location && info.date) {
       setIsInfo(prev => ({
         ...prev,
         "isName" : true,
         "isLocation" :  true,
-        "isDetailLocation" :  true,
         "isDate" :  true
       }))
       switch(category) {
         case "animal":
           if (info.speice && info.age && info.gender && info.description) {
             await uploadS3Files(files);
-            const res = await axios.post(requests.addAnimal, {Headers: {
-              Token: localStorage.getItem('token'),
-              data: info
+            const sendData = {
+              "age": String(info.age),
+              "date": String(info.date),
+              "description": info.description,
+              "gender": info.gender,
+              "location": info.location,
+              "locationDescription": info.detail_location,
+              "name": info.name,
+              "picture": info.picture,
+              "point": String(info.point),
+              "time": info.time
+            }
+            const res = await axios.post(requests.addAnimal, sendData, {headers: {
+              // Token: localStorage.getItem('token'),
             }})
+
+            console.log('받은 데이터',res)
+
             dispatch(addData("animal", res))
             return history.push('/search')
           } else {
@@ -297,9 +358,8 @@ export default function AddDetailPage(history: any) {
         case "lost_item":
           if (info.category && info.description) {
             await uploadS3Files(files);
-            const res = await axios.post(requests.addAnimal, {Headers: {
+            const res = await axios.post(requests.addAnimal, {headers: {
               Token: localStorage.getItem('token'),
-              data: info
             }})
             dispatch(addData("lostItem", res))
             return history.push('/search')
@@ -328,6 +388,7 @@ export default function AddDetailPage(history: any) {
           }  
     }} else {
       setIsInfo(prev => ({
+        "isTime" : (info.time ? true : false),
         "isCategory" : (info.category ? true : false),
         "isSpeice" : (info.speice ? true : false),
         "isAge" : (info.age ? true : false),
@@ -335,7 +396,7 @@ export default function AddDetailPage(history: any) {
         "isDescription" : (info.description ? true : false),
         "isName" : (info.name ? true : false),
         "isLocation" : (info.location ? true : false),
-        "isDetailLocation" : (info.detail_loctaion ? true : false),
+        "isDetailLocation" : (info.detail_location ? true : false),
         "isDate" : (info.date ? true : false)
       }))
     }
@@ -346,7 +407,7 @@ export default function AddDetailPage(history: any) {
       return (
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
-            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-2)}/>
+            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
             <button type="submit" className='submit-button' onClick={isSubmit}>제출</button>
           </div>
           <div className='add-component'>
@@ -385,8 +446,11 @@ export default function AddDetailPage(history: any) {
           </div>
           <hr />
           <div className='add-component'>
-            <label htmlFor="detail_location">실종위치</label>
-            <span id="detail_location" onClick={() => setIsModal(true)} style={{width: "300px"}}>{info.detail_loctaion}</span>
+            <label htmlFor="location">실종위치</label>
+            <div>
+              <button onClick={() => setIsModal(true)} className={info.location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
+              <span id="detail_location" className={info.location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.location}</span>
+            </div>
           </div>
           <div>
             {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
@@ -395,13 +459,20 @@ export default function AddDetailPage(history: any) {
             {isInfo.isDetailLocation ? "" : "위치를 입력해주세요"}
           </div>
           <hr />
+          <div className='add-component'>
+            <label htmlFor="detail_location">상세위치</label>
+            <input type="text" id="detail_location" value={info.detail_location} onChange={handleDetail}/>
+          </div>
+          <hr />
           <div className='add-component' style={{display: "flex", flexDirection: "column"}}>
             <div style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
               <label htmlFor="picture">사진</label>
               <input type="file" src="" alt="" id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: 'none'}}/>
               <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
             </div>
+            <div className={previewImg ? "picture_off" : ""}>사진은 최대 3장까지 등록 가능합니다.</div>
             <ImgList previewImg={previewImg} deleteImg={deleteImg} />
+            <div className='add-alert'></div>
           </div>
           <hr />
           <div className='add-component'>
@@ -419,6 +490,11 @@ export default function AddDetailPage(history: any) {
             {isInfo.isDate ? "" : "날짜을 입력해주세요"}
           </div>
           <hr />
+          <div className='add-component'>
+            <label htmlFor="time">실종 시간</label>
+            <input type="time" name="" id="time" value={info.time} onChange={handleTime}/>
+          </div>
+          <hr />
           <div className='add-component add-componet-description'>
             <label htmlFor="description" style={{marginBottom: "5px"}}>특징</label>
             <textarea name="" id="description" placeholder='특징을 적어주세요' value={info.description} onChange={resize}></textarea>
@@ -427,13 +503,21 @@ export default function AddDetailPage(history: any) {
             {isInfo.isDescription ? "" : "특징을 입력해주세요"}
           </div>
           <hr />
+          <div className='add-component'>
+            <label htmlFor="point">사례금</label>
+            <div>
+              <input type="number" id="point" value={info.point} onChange={handlePoint} style={{textAlign: "right"}}/>
+              <span> point</span>
+            </div>
+          </div>
+          <hr />
         </div>
       )
     case "people":
       return (
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
-            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-2)}/>
+            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
             <button className='submit-button' onClick={isSubmit}>제출</button>
           </div>
           <div className='add-component'>
@@ -465,13 +549,21 @@ export default function AddDetailPage(history: any) {
           <hr />
           <div className='add-component'>
             <label htmlFor="detail_location">실종위치</label>
-            <span id="detail_location" onClick={() => setIsModal(true)} style={{width: "300px"}}>{info.detail_loctaion}</span>
+            <div>
+              <button onClick={() => setIsModal(true)} className={info.location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
+              <span id="detail_location" className={info.location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.location}</span>
+            </div>
           </div>
           <div>
             {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
             </div>
           <div className='add-alert'>
             {isInfo.isDetailLocation ? "" : "위치를 입력해주세요"}
+          </div>
+          <hr />
+          <div className='add-component'>
+            <label htmlFor="detail_location">상세위치</label>
+            <input type="text" id="detail_location" value={info.detail_location} onChange={handleDetail}/>
           </div>
           <hr />
           <div className="add-component" style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
@@ -496,6 +588,11 @@ export default function AddDetailPage(history: any) {
             {isInfo.isDate ? "" : "날짜을 입력해주세요"}
           </div>
           <hr />
+          <div className='add-component'>
+            <label htmlFor="time">실종 시간</label>
+            <input type="time" name="" id="time" value={info.time} onChange={handleTime}/>
+          </div>
+          <hr />
           <div className='add-component add-componet-description'>
             <label htmlFor="description" style={{marginBottom: "5px"}}>실종 당시 인상착의</label>
             <textarea name="" id="description" placeholder='인상 착의를 적어주세요' value={info.description} onChange={resize}></textarea>
@@ -504,13 +601,21 @@ export default function AddDetailPage(history: any) {
             {isInfo.isDescription ? "" : "인상 착의를 입력해주세요"}
           </div>
           <hr />
+          <div className='add-component'>
+            <label htmlFor="point">사례금</label>
+            <div>
+              <input type="number" id="point" value={info.point} onChange={handlePoint} style={{textAlign: "right"}}/>
+              <span> point</span>
+            </div>
+          </div>
+          <hr />
         </div>
       )
     case "lost-item" :
       return (
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
-            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-2)}/>
+            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)} style={{cursor: "pointer"}}/>
             <button className='submit-button' onClick={isSubmit}>제출</button>
           </div>
           <div className='add-component'>
@@ -552,13 +657,21 @@ export default function AddDetailPage(history: any) {
           <hr />
           <div className='add-component'>
             <label htmlFor="detail_location">습득위치</label>
-            <span id="detail_location" onClick={() => setIsModal(true)} style={{width: "300px"}}>{info.detail_loctaion}</span>
+            <div>
+              <button onClick={() => setIsModal(true)} className={info.location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
+              <span id="detail_location" className={info.location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.location}</span>
+            </div>
           </div>
           <div>
             {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
             </div>
           <div className='add-alert'>
             {isInfo.isDetailLocation ? "" : "위치를 입력해주세요"}
+          </div>
+          <hr />
+          <div className='add-component'>
+            <label htmlFor="detail_location">상세위치</label>
+            <input type="text" id="detail_location" value={info.detail_location} onChange={handleDetail}/>
           </div>
           <hr />
           <div className="add-component" style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
@@ -583,6 +696,11 @@ export default function AddDetailPage(history: any) {
             {isInfo.isDate ? "" : "날짜을 입력해주세요"}
           </div>
           <hr />
+          <div className='add-component'>
+            <label htmlFor="time">실종 시간</label>
+            <input type="time" name="" id="time" value={info.time} onChange={handleTime}/>
+          </div>
+          <hr />
           <div className='add-component add-componet-description'>
             <label htmlFor="description" style={{marginBottom: "5px"}}>특징</label>
             <textarea name="" id="description" placeholder='특징을 적어주세요' value={info.description} onChange={resize}></textarea>
@@ -591,13 +709,21 @@ export default function AddDetailPage(history: any) {
             {isInfo.isDescription ? "" : "특징을 입력해주세요"}
           </div>
           <hr />
+          <div className='add-component'>
+            <label htmlFor="point">사례금</label>
+            <div>
+              <input type="number" id="point" value={info.point} onChange={handlePoint} style={{textAlign: "right"}}/>
+              <span> point</span>
+            </div>
+          </div>
+          <hr />
         </div>
       )
     case "take-item":
       return (
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
-            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-2)}/>
+            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)} style={{cursor: "pointer"}}/>
             <button className='submit-button' onClick={isSubmit}>제출</button>
           </div>
           <div className='add-component'>
@@ -639,13 +765,21 @@ export default function AddDetailPage(history: any) {
           <hr />
           <div className='add-component'>
             <label htmlFor="detail_location">습득위치</label>
-            <span id="detail_location" onClick={() => setIsModal(true)} style={{width: "300px"}}>{info.detail_loctaion}</span>
+            <div>
+              <button onClick={() => setIsModal(true)} className={info.location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
+              <span id="detail_location" className={info.location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.location}</span>
+            </div>
           </div>
           <div>
             {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
             </div>
           <div className='add-alert'>
             {isInfo.isDetailLocation ? "" : "위치를 입력해주세요"}
+          </div>
+          <hr />
+          <div className='add-component'>
+            <label htmlFor="detail_location">상세위치</label>
+            <input type="text" id="detail_location" value={info.detail_location} onChange={handleDetail}/>
           </div>
           <hr />
           <div className="add-component" style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
@@ -668,6 +802,11 @@ export default function AddDetailPage(history: any) {
           </div>
           <div className='add-alert'>
             {isInfo.isDate ? "" : "날짜을 입력해주세요"}
+          </div>
+          <hr />
+          <div className='add-component'>
+            <label htmlFor="time">실종 시간</label>
+            <input type="time" name="" id="time" value={info.time} onChange={handleTime}/>
           </div>
           <hr />
           <div className='add-component add-componet-description'>

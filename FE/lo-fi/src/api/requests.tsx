@@ -10,7 +10,6 @@ const requests = {
   signup: "api/register/singUp",
   userUpdate: "api/register/update",
   userDelete: "api/register/delete",
-  chat: "api/register/chat",
   profile: "api/register/myPage",
 
   // 메인페이지(지도)
@@ -27,10 +26,10 @@ const requests = {
   searchDetail: "api/search/",
 
   //등록페이지
-  addAnimal: "api/add/animal",
-  addPerson: "api/add/person",
-  addLostItem: "api/add/article",
-  addTakeItem: "api/add/found",
+  addAnimal: "api/register/missingAnimal",
+  addPerson: "api/register/missingPerson",
+  addLostItem: "api/register/LostItem",
+  addTakeItem: "api/register/TakeItem",
 }
 
 export default requests;

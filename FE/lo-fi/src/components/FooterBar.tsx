@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import main from '../assets/img/Footer/main_tap.png'
 import select_main from '../assets/img/Footer/select_main_tap.png'
 import search from '../assets/img/Footer/search_tap.png'
@@ -7,12 +7,29 @@ import chat from '../assets/img/Footer/chat.png'
 import select_chat from '../assets/img/Footer/select_chat.png'
 import user from '../assets/img/Footer/user.png'
 import select_user from '../assets/img/Footer/select_user.png'
+import animal from '../assets/img/Category/color_dog.png'
+import people from '../assets/img/Category/color_baby.png'
+import lost_item from '../assets/img/Category/color_lost_item.png'
+import take_item from '../assets/img/Category/color_take_item.png'
 import './FooterBar.css'
 import { Link } from 'react-router-dom'
-import { setEngine } from 'crypto'
 
 export default function FooterBar() {
   const [Select, setSelect] = useState("main");
+  const [check, setCheck] = useState(false);
+
+  useEffect(() => {
+    if (window.location.href.includes('Profile')) {
+      handleChangeTap('user')
+    } else if (window.location.href.includes('search')) {
+      handleChangeTap('search')
+    } else if (window.location.href.includes('plus')) {
+      handleChangeTap('plus')
+    } else {
+      handleChangeTap('main')
+    }
+  }, [Select])
+  
 
   const handleChangeTap = (tag: string) => {
     // 선택하면 데이터가 바뀜
@@ -42,17 +59,32 @@ export default function FooterBar() {
           <img src={Select === 'main' ? select_main : main} alt=""
           width="40px" height="40px"/>
         </Link>
-        <Link className="navigater" to="/search" onClick={() => handleChangeTap('search')}>
-          <img src={Select === 'search' ? select_search : search} alt=""
-          width="40px" height="40px"/>
-        </Link>
-        <Link className='navigater add_button' to="/add" onClick={() => handleChangeTap('add')}>
-          <div className='plus'>+</div>
-        </Link>
-        <Link className="navigater" to="/Search" onClick={() => handleChangeTap('chat')}>
-          <img src={Select === 'chat' ? select_chat : chat} alt=""
-          width="40px" height="40px"/>
-        </Link>
+        <div className='navigater category-button'>
+          <div className={check ? "button_open" : "button_off"}>
+            <div className='category-add-buttons'>
+              <Link to="/add/animal" className='category-add-button' onClick={() => setCheck(!check)}>
+                <img src={animal} alt="" width={30} height={30}/>
+                <p>반려동물</p>
+              </Link>
+              <Link to="/add/people" className='category-add-button'onClick={() => setCheck(!check)}>
+                <img src={people} alt="" width={30} height={30}/>
+                <p>사람</p>
+              </Link>
+              <Link to="/add/lost-item" className='category-add-button' onClick={() => setCheck(!check)}>
+                <img src={lost_item} alt="" width={30} height={30}/>
+                <p>분실물</p>
+              </Link>
+              <Link to="/add/take-item" className='category-add-button' onClick={() => setCheck(!check)}>
+                <img src={take_item} alt="" width={30} height={30}/>
+                <p>습득물</p>
+              </Link>
+            </div>
+          </div>
+          <input type="checkbox" id="plus" style={{display: "none"}} onChange={() => setCheck(!check)}/>
+          <label htmlFor="plus">
+            <div className={check ? "open_category" : ""} style={{fontSize: "40px", lineHeight: "15px", width: "27px", height: "25px"}}>+</div>
+          </label>
+        </div>
         <Link className="navigater" to="/Profile/" onClick={() => handleChangeTap('user')}>
           <img src={Select === 'user' ? select_user : user} alt=""
           width="40px" height="40px" />
