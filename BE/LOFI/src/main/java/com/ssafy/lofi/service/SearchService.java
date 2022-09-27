@@ -28,7 +28,7 @@ public class SearchService {
 
     public void getAnimal(String[] keywords, String category) {
         List<MissingAnimalDto> missingAnimalDtos = new ArrayList<>();
-        //List<MissingAnimal> missingAnimals = missingAnlmalRepository.findBykeywords;
+        //set<MissingAnimal> missingAnimals = missingAnlmalRepository.findBykeywords;
 //        for (MissingAnimal missingAnimal: missingAnimals) {
 //            MissingAnimalDto missingAnimalDto = new MissingAnimalDto(missingAnimal);
 //        }
@@ -36,8 +36,14 @@ public class SearchService {
     }
 
     public void getPerson(String[] keywords, String category) {
-        // 중복 제거로 set 사용
-        //set<MissingPerson> missingPerson = missingPersonRepository;
+        // 중복 제거로 set 사용이용할려고 했으나 set 순서를 보장해주지 않아서
+        // 쿼리문에서 중복제거하여 list로 받는다.
+        //set<MissingPerson> missingPersons = missingPersonRepository;
+        //List<MissingPersonDto> missingPersonDtos = new ArrayList<>();
+//        for (MissingPerson missingPerson : missingPersons) {
+//            MissingPersonDto missingPersonDto = new MissingPersonDto(missingPerson);
+//            missingPersonDtos.add(missingPersonDto);
+//        }
     }
 
     public void getFound(String[] keywords, String category) {

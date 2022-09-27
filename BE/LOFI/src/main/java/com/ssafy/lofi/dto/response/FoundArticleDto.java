@@ -1,7 +1,6 @@
 package com.ssafy.lofi.dto.response;
 
 import com.ssafy.lofi.db.entity.FoundArticle;
-import com.ssafy.lofi.db.entity.MissingAnimal;
 import lombok.Data;
 
 @Data
