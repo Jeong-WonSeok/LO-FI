@@ -17,7 +17,7 @@ public class DetailController {
     private final DetailService detailService;
 
     @ApiOperation(value = "실종동물 조회", notes = "실종 동물 조회")
-    @PostMapping
+    @GetMapping
     public ResponseEntity<?> getMissingAnimal(@RequestParam Long Id,@RequestParam String category){
         if(category.equals("animal")){
             MissingAnimalDto missingAnimalDto = detailService.selectAnimalByid(Id);
