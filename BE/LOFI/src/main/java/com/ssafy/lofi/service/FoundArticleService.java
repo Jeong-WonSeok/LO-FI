@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -97,7 +98,7 @@ public class FoundArticleService {
         }
     }
 
-    public void callDetailAPIAndSaveFoundArticle(List<String> idList) throws IOException {
+    public void callDetailAPIAndSaveFoundArticle(List<String> idList) throws IOException, ParseException {
         for (String atcId : idList) {
             /*URL*/
             String urlBuilder = "http://apis.data.go.kr/1320000/LosfundInfoInqireService/getLosfundDetailInfo" +

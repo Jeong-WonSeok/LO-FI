@@ -35,8 +35,8 @@ public class MissingAnimal extends BaseEntity{
     private Boolean used;
     @Temporal(TemporalType.DATE)
     private Date updateDay;
-    private String latitude;
-    private String longitude;
+    private Double latitude;
+    private Double longitude;
 //    private String picture;
 
     public static MissingAnimal of(MissingAnimalAPIResponse missingAnimalAPIResponse){
