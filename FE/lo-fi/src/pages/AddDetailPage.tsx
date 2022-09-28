@@ -92,7 +92,6 @@ export default function AddDetailPage(history: any) {
   useEffect(() => {
     if (target) {
       if (info.name && info.location) {
-        console.log(category)
         switch ( category ) {
           case "animal":
           case "person":
@@ -107,7 +106,6 @@ export default function AddDetailPage(history: any) {
             }
           case "lost-item":
           case "take-item": 
-            console.log(Boolean(info.category))
             if (info.category) {
               target.classList.remove("sumbit_fail")
               target.disabled = false;
