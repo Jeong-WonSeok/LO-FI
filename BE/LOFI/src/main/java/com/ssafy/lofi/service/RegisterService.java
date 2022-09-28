@@ -36,7 +36,7 @@ public class RegisterService {
     }
 
     public UserDto mypage(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 유저가 없습니다. email=" + email));;
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 유저가 없습니다. email=" + email));
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
         userDto.setEmail(user.getEmail());
@@ -48,7 +48,7 @@ public class RegisterService {
         userRepository.deleteById(id);
     }
 
-    public void registerMissingAnimal(MissingAnimalRequest missingAnimalRequest, int userId) {
+    public Long registerMissingAnimal(MissingAnimalRequest missingAnimalRequest, int userId) {
         MissingAnimal missingAnimal = MissingAnimal.builder()
                 .name(missingAnimalRequest.getName())
                 .gender(missingAnimalRequest.getGender())
@@ -58,6 +58,7 @@ public class RegisterService {
                 .missingDay(stringDateConvertDate(missingAnimalRequest.getDate(),missingAnimalRequest.getTime()))
                 .build();
         missingAnlmalRepository.save(missingAnimal);
+        return missingAnimal.getId();
     }
 
     public Date stringDateConvertDate(String date, String time){
@@ -73,7 +74,7 @@ public class RegisterService {
         return java.sql.Timestamp.valueOf(result_date);
     }
 
-    public void registerMissingPerson(MissingPersonRequest missingPersonRequest, int userId) {
+    public Long registerMissingPerson(MissingPersonRequest missingPersonRequest, int userId) {
         missingPersonRequest.setMissingClothes(spellCheckout(missingPersonRequest.getMissingClothes()));
         missingPersonRequest.setDescription(spellCheckout(missingPersonRequest.getDescription()));
 
@@ -86,6 +87,7 @@ public class RegisterService {
                 .picture(missingPersonRequest.getPicture())
                 .build();
         missingPersonRepository.save(missingPerson);
+        return missingPerson.getId();
     }
 
     public String spellCheckout(String word){
@@ -96,7 +98,7 @@ public class RegisterService {
         return s;
     }
 
-    public void registerLostArticle(LostArticleRequest lostArticleRequest, int i) {
+    public Long registerLostArticle(LostArticleRequest lostArticleRequest, int i) {
         lostArticleRequest.setName(spellCheckout(lostArticleRequest.getName()));
         lostArticleRequest.setCategory(spellCheckout(lostArticleRequest.getCategory()));
 
@@ -108,9 +110,10 @@ public class RegisterService {
                 .picture(lostArticleRequest.getPicture())
                 .build();
         lostArticleRepository.save(lostArticle);
+        return lostArticle.getId();
     }
 
-    public void registerFoundArticle(FoundArticleRequest foundArticleRequest, int i) {
+    public Long registerFoundArticle(FoundArticleRequest foundArticleRequest, int i) {
         foundArticleRequest.setName(spellCheckout(foundArticleRequest.getName()));
         foundArticleRequest.setCategory(spellCheckout(foundArticleRequest.getCategory()));
         foundArticleRequest.setDescription(spellCheckout(foundArticleRequest.getDescription()));
@@ -125,5 +128,6 @@ public class RegisterService {
                 .description(foundArticleRequest.getDescription())
                 .build();
         foundArticleRepository.save(foundArticle);
+        return foundArticle.getId();
     }
 }
