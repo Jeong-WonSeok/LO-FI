@@ -1,3 +1,12 @@
+"""
+ - fast api 설치
+pip install fastapi
+pip install uvicorn
+
+서버 실행 명령어 ->
+uvicorn main:app --reload
+"""
+
 from typing import Optional
 
 from fastapi import FastAPI
@@ -8,7 +17,7 @@ app = FastAPI()
 def spell_check(spell: Optional[str] =None):
     text = spellCheck.spellCehck_Busan((spell))
 
-    return {'spellCheck': text}
+    return str(text)
 
 @app.get("/api/keyword/{keyword}")
 def read_keyword(keyword: Optional[str] = None):
@@ -16,12 +25,7 @@ def read_keyword(keyword: Optional[str] = None):
     keyword = spellCheck.keyword_analysis(text)
     result = " ".join(keyword)
 
-    return {'keyword': result}
+    return str(result)
 
-@app.get("/api/map/{keyword}")
-def read_map(keyword: Optional[str] = None):
-    text = spellCheck.spellCehck_Busan(keyword)
-    keyword = spellCheck.map_keyword_analysis(text);
-    result = " ".join(keyword)
 
-    return {'mapKeyword' : result}
+
