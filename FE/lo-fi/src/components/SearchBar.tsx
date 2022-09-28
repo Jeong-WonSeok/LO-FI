@@ -5,6 +5,7 @@ import search_icon from '../assets/img/icon/search_icon.png'
 import { useNavigate } from 'react-router-dom';
 import { searchData, stopSearch } from '../redux/modules/mainData';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHook';
+import './SearchBar.css'
 
 export default function SearchBar(props: any) {
   const { category } = useAppSelector(state => state.mainData);
@@ -15,21 +16,20 @@ export default function SearchBar(props: any) {
 
   const handleChange = (e: any) => {
     setSearchText(e.target.value)
-
-    console.log(SearchText)
-
+    console.log(e.target.value)
     // 빈값이라면 검색 종료 및 원래 데이터로 돌려놓기
-    // if (!SearchText) {
-    //   dispatch(stopSearch())
-    //   return
-    // }
-    // 3초 이후에 검색이 실시 된다.
-    const time = setTimeout(() => {
-      console.log('3초후', SearchText)
-      // dispatch(searchData(category))
-    }, 3000)
+    if (!SearchText) {
+      dispatch(stopSearch())
+      return
+    }
+  }
 
-    clearTimeout(time)
+  // 엔터를 입력하면 검색이 실시
+  const Search = (e: any) => {
+    console.log(SearchText)
+    if (e.key == "Enter") {
+      dispatch(searchData(category, SearchText))
+    }
   }
 
   const go = () => {
@@ -50,7 +50,7 @@ export default function SearchBar(props: any) {
           </div>
           <div className='search_box'>
             <img src={search_icon} alt="" width={20} height={20}/>
-            <input className="search_input" type="text" value={SearchText} onChange={handleChange}/>
+            <input className="search_input" type="text" value={SearchText} onChange={handleChange} onKeyDown={Search}/>
           </div>
         </div>
       );
@@ -63,7 +63,7 @@ export default function SearchBar(props: any) {
           </div>
           <div className='search_box'>
             <img src={search_icon} alt="" width={20} height={20}/>
-            <input className="search_input" type="text" value={SearchText} onChange={handleChange}/>
+            <input className="search_input" type="text" value={SearchText} onChange={handleChange} onKeyDown={Search}/>
           </div>
         </div>
       );

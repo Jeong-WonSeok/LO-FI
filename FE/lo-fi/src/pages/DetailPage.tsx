@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import box from '../assets/img/icon/box.png'
 import calendar from '../assets/img/icon/calendar.png'
 import pin from '../assets/img/icon/pin.png'
@@ -7,8 +7,27 @@ import person from '../assets/img/icon/user.png'
 import phone from '../assets/img/icon/phone-call.png'
 import './DetailPage.css'
 import BackTopNab from '../components/BackTopNab'
+import { useParams } from 'react-router-dom';
+import axios from '../api/axios'
+import requests from '../api/requests'
+import { useAppSelector } from '../hooks/reduxHook';
 
 export default function DetailPage() {
+  const { category } = useAppSelector(state => state.mainData)
+  const id = useParams();
+  const [data, setData] = useState({})
+
+  const getData = async () => {
+    const params = { Id: id.id, category : category}
+    
+    const res =  await axios.get(requests.detail, {params})
+    setData(res)
+  }
+
+  useEffect(() => {
+   getData()
+  }, [])
+  
   return (
     <div className='detail-container'>
       <BackTopNab back={-1}/>

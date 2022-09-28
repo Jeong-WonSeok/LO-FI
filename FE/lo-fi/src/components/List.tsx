@@ -8,16 +8,13 @@ import { useAppSelector } from '../hooks/reduxHook'
 
 export default function List() {
   // useSelector 와 달리 따로 type을 지정해주지 않아도 작동
-  const { data, pending, search, search_data } = useAppSelector(state => state.mainData);
+  const { data, pending, search, search_data, category, error } = useAppSelector(state => state.mainData);
 
   interface datatype {
     atcId: String,
     lstPlace: String,
     lstPrdtNm: String,
-    lstSbjt: String,
     lstYmd: String,
-    prdtClNm: String,
-    rnum: Number
   }
 
   // interfact object [] aksemfrl
@@ -27,14 +24,20 @@ export default function List() {
     atcId: '',
     lstPlace: '',
     lstPrdtNm: '',
-    lstSbjt: '',
     lstYmd: '',
-    prdtClNm: '',
-    rnum: 0
   }]);
 
   useEffect(() => {
-    setTest(data)
+    if (error) {
+      setTest([{
+        atcId: '1',
+        lstPlace: '대전광역시 유성구',
+        lstPrdtNm: '에코백',
+        lstYmd: '2022.09.20',
+      }])
+    } else {
+      setTest(data)
+    } 
   }, [data])
 
   // 로딩중
