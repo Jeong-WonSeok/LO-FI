@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MissingPersonRepository extends JpaRepository<MissingPerson, Integer> {
+public interface MissingPersonRepository extends JpaRepository<MissingPerson, Long> {
     @Modifying
     @Query(value = "truncate table missing_person", nativeQuery = true)
     void truncateMissingPerson();

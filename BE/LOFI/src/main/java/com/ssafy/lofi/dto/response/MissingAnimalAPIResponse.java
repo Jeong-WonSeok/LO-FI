@@ -19,4 +19,8 @@ public class MissingAnimalAPIResponse {
     private String resDescription;
     private String resImg;
     private Boolean resUsed;
+    private Date resUpdateDay;
+    private String resLatitude;
+    private String resLongitude;
+
 }
