@@ -19,6 +19,8 @@ public class MissingAnimal extends BaseEntity{
 
 // "id", "find", "gender", "age", "name", "missingDay", "location", "description", "img", "updateDay", "latitude", "longitude"
 
+    @Nullable
+    private Long userId;
     private String animalId;
     private String find;
     private String gender;
