@@ -46,29 +46,29 @@ public class RegisterController {
     @ApiOperation(value = "실종동물 등록", notes = "입력된 실종동물 데이터 등록")
     @PostMapping(value = "/missingAnimal")
     public ResponseEntity<?> registerMissingAnimal(@RequestBody MissingAnimalRequest missingAnimalRequest){
-        registerService.registerMissingAnimal(missingAnimalRequest,1);
-        return ResponseEntity.ok().build();
+        Long id = registerService.registerMissingAnimal(missingAnimalRequest,1);
+        return ResponseEntity.ok().body(id);
     }
 
     @ApiOperation(value = "실종자등록", notes = "입력된 실종자 데이터 등록")
     @PostMapping(value = "/missingPerson")
     public ResponseEntity<?> registerMissingPerson(@RequestBody MissingPersonRequest missingPersonRequest){
-        registerService.registerMissingPerson(missingPersonRequest,1);
-        return ResponseEntity.ok().build();
+        Long id = registerService.registerMissingPerson(missingPersonRequest,1);
+        return ResponseEntity.ok().body(id);
     }
 
     @ApiOperation(value = "분실물 등록", notes = "입력된 분실물 등록")
     @PostMapping(value = "/lostArticle")
     public ResponseEntity<?> registerMissingPerson(@RequestBody LostArticleRequest lostArticleRequest){
-        registerService.registerLostArticle(lostArticleRequest,1);
-        return ResponseEntity.ok().build();
+        Long id = registerService.registerLostArticle(lostArticleRequest,1);
+        return ResponseEntity.ok().body(id);
     }
 
     @ApiOperation(value = "습득물 등록", notes = "입력된 습득물 등록")
     @PostMapping(value = "/foundArticle")
     public ResponseEntity<?> registerMissingPerson(@RequestBody FoundArticleRequest foundArticleRequest){
-        registerService.registerFoundArticle(foundArticleRequest,1);
-        return ResponseEntity.ok().build();
+        Long id = registerService.registerFoundArticle(foundArticleRequest,1);
+        return ResponseEntity.ok().body(id);
     }
     
 }

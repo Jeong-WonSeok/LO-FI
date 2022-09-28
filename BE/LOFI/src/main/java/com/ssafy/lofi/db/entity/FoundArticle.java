@@ -5,10 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -28,6 +32,12 @@ public class FoundArticle extends BaseEntity{
     private String atcId;
     @Column(columnDefinition = "TEXT")
     private String description;
+    @Column(columnDefinition = "boolean default false")
+    private String deleted;
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    private Date updateDate;
+
 
     public static FoundArticle of(FoundArticleDetailResponse detailResponse){
         return FoundArticle.builder()
