@@ -7,7 +7,6 @@ import com.ssafy.lofi.dto.response.MissingPersonDto;
 import com.ssafy.lofi.service.DetailService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +17,7 @@ public class DetailController {
     private final DetailService detailService;
 
     @ApiOperation(value = "실종동물 조회", notes = "실종 동물 조회")
-    @PostMapping(value = "/animal")
+    @PostMapping
     public ResponseEntity<?> getMissingAnimal(@RequestParam Long Id,@RequestParam String category){
         if(category.equals("animal")){
             MissingAnimalDto missingAnimalDto = detailService.selectAnimalByid(Id);
