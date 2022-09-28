@@ -43,8 +43,8 @@ def update_db(sql, sql_keyword, id):
         keyword.extend(spellCheck.keyword_analysis(spell))
 
     print('result', result, id[0])
-
-    spellCheck.coordinate_change(result[0], table)
+    sql_person = "update missing_person set longitude = %s, latitude=%s where id = %s"
+    spellCheck.coordinate_change(sql_person, result[0], table, id[0])
 
     print('keyword', keyword)
     try:
@@ -64,8 +64,8 @@ def update_db(sql, sql_keyword, id):
 def missing_person_update():
 
     #person
-    sql_select_person = "select location, description, category, dress from missing_person"
-    sql_update_person = "update missing_person set location = %s, descriptions = %s, category = %s, dress = %s where person_id = %s"
+    sql_select_person = "select id, location, description, category, dress from missing_person"
+    sql_update_person = "update missing_person set location = %s, descriptions = %s, category = %s, dress = %s where id = %s"
     sql_insert_keyword_person = "insert into keyword (keyword, person_id) values(%s, %s)"
 
     result_df = pd.DataFrame(selectDB(sql_select_person))

@@ -17,8 +17,8 @@ def selectDB(sql):
                            db='lo-fi')
 
     cursor = conn.cursor()
-    # cursor.execute(sql, (datetime.today().strftime("%Y-%m-%d")))
-    cursor.execute(sql)
+    cursor.execute(sql, (datetime.today().strftime("%Y-%m-%d")))
+    # cursor.execute(sql)
     result = cursor.fetchall()
     conn.commit()
     conn.close()
@@ -48,7 +48,8 @@ def update_db(sql, sql_keyword, id):
 
     keyword = set(keyword)
 
-    spellCheck.coordinate_change(result[0], table)
+    sql_animal = "update missing_animal set longitude = %s, latitude=%s where id = %s"
+    spellCheck.coordinate_change(sql_animal, result[0], table, id[0])
 
     print('keyword', keyword)
     try:
@@ -68,8 +69,8 @@ def update_db(sql, sql_keyword, id):
 def missing_animal_update():
 
     #animal
-    sql_select_animal = "select animal_id, location, find, gender, description, name, age  from missing_animal where update_day = %s"
-    sql_update_animal = "update missing_animal set location = %s, find = %s, gender = %s, description = %s where animal_id = %s"
+    sql_select_animal = "select id, location, find, gender, description, name, age  from missing_animal where update_day = %s"
+    sql_update_animal = "update missing_animal set location = %s, find = %s, gender = %s, description = %s where id = %s"
     sql_insert_keyword_animal = "insert into keyword (keyword, animal_id) values (%s, %s)"
 
     result_df = pd.DataFrame(selectDB(sql_select_animal))

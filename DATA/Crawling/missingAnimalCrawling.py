@@ -189,23 +189,23 @@ def other_url_scraping():
     others_idx += 1
   return others_df
 
-dogs_df = dog_url_scraping()
-cats_df = cat_url_scraping()
+# dogs_df = dog_url_scraping()
+# cats_df = cat_url_scraping()
 others_df = other_url_scraping()
 
-dogs_df_clone = dogs_df
-cats_df_clone = cats_df
+# dogs_df_clone = dogs_df
+# cats_df_clone = cats_df
 others_df_clone = others_df
 
-animal_df = pd.concat([dogs_df_clone, cats_df_clone])
-animal_df = pd.concat([animal_df, others_df_clone])
-animal_df
+# animal_df = pd.concat([dogs_df_clone, cats_df_clone])
+# animal_df = pd.concat([animal_df, others_df_clone])
+animal_df = others_df_clone
 
 ## DB연결
 engine = create_engine("mysql+pymysql://ssafy:ssafy@localhost:3306/lo-fi")
 
 def insert_new_animal(db_data, animal_df) :
-  insert_df = pd.DataFrame(columns=("animal_id", "find", "gender", "age", "name", "missing_day", "location", "description", "img", "used", "today"))
+  insert_df = pd.DataFrame(columns=("animal_id", "find", "gender", "age", "name", "missing_day", "location", "description", "img", "used", "update_day"))
   for index, row in animal_df.iterrows():
     if(db_data[db_data['animal_id'] == row[0]].empty) :
       insert_df = insert_df.append(pd.DataFrame({'animal_id' : [row[0]], "find": [row[1]], 'gender': [row[2]],

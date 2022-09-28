@@ -27,7 +27,7 @@ def selectDB(sql):
 
 # db 맞춤법 검사기 돌려서 update
 def update_db(sql, sql_keyword, id):
-    table = 'missing_person'
+    table = 'lost_article'
     conn = pymysql.connect(host='localhost',
                            user='ssafy',
                            password='ssafy',
@@ -39,12 +39,14 @@ def update_db(sql, sql_keyword, id):
         if(col == id[0]) :
             continue
         spell = spellCheck.spellCehck_Busan(col)
+        print(spell)
         result.append(spell)
         keyword.extend(spellCheck.keyword_analysis(spell))
 
     print('result', result, id[0])
 
-    spellCheck.coordinate_change(result[0], table)
+    sql_lost = "update lost_article set longitude = %s, latitude=%s where id = %s"
+    spellCheck.coordinate_change(sql_lost, result[0], table, id[0])
 
     print('keyword', keyword)
     try:
@@ -65,8 +67,8 @@ def update_db(sql, sql_keyword, id):
 def missing_lost_update():
 
     #lost_article
-    sql_select_lost = "select lost_id, name, category, location, description from lost_article where update_day = %s"
-    sql_update_lost = "update lost_article set name=%s, category=%s, location=%s, description=%s where lost_id=%s"
+    sql_select_lost = "select id, name, category, location, description from lost_article where update_day = %s"
+    sql_update_lost = "update lost_article set name=%s, category=%s, location=%s, description=%s where id=%s"
     sql_insert_keyword_lost = "insert into keyword (keyword, lost_id) values (%s, %s)"
 
     result_df = pd.DataFrame(selectDB(sql_select_lost))

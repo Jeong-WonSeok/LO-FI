@@ -13,6 +13,9 @@ from kiwipiepy import Kiwi
 import time
 from datetime import timedelta
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+import re
 
 # 맞춤법 검사기 실행 hanspell
 # def spellCheck(text):
@@ -22,10 +25,12 @@ from datetime import datetime
 #     return checked_sent
 
 # 맞춤법 검사기 실행 부산대
+
 def spellCehck_Busan(text):
     text = str(text)
     text = text.replace('\n', '\r\n')
     # print(text)
+    reg = re.compile(r'[a-zA-Z]')
     response = requests.post('http://164.125.7.61/speller/results', data={'text1': text})
 
     data = response.text.split('data = [', 1)[-1]
@@ -33,10 +38,16 @@ def spellCehck_Busan(text):
     try:
         data = json.loads(data)
         for err in data['errInfo']:
-            if(len(err['candWord'].split('|')) == 1):
+            if(reg.match(err['orgStr'])):
+                text = text
+            elif(len(err['candWord'].split('|')) == 1):
                 text = text.replace(str(err['orgStr']), str(err['candWord']))
+                if(err['candWord']==""):
+                    text = err['orgStr']
+
     except:
         text = text
+
     return text.strip()
 def keyword_analysis(text):
 
@@ -182,8 +193,10 @@ def map_keyword_analysis(text):
 #         update_db(sql_update_animal, sql_insert_keyword_animal, animal, "missing_animal")
 
 
-def coordinate_change(text, table):
-    api_key = "f1865c4489d9ec05c29359f8264f7412"
+def coordinate_change(sql, text, table, id):
+    load_dotenv(verbose=True)
+    api_key = os.getenv("API_KEY")
+    print(text)
 
     text = spellCehck_Busan(text)
     keyword = map_keyword_analysis(text);
@@ -194,7 +207,7 @@ def coordinate_change(text, table):
                            user='ssafy',
                            password='ssafy',
                            db='lo-fi')
-
+    print(id)
     while (1):
         params = {"query": text}
         headers = {"Authorization": "KakaoAK " + api_key}
@@ -206,16 +219,16 @@ def coordinate_change(text, table):
             coordinate = places.json()['documents'][0]
             break;
         except:
-            print(text.split(" ")[:-1])
+            # print(text.split(" ")[:-1])
             text = " ".join(text.split(" ")[:-1])
-    print('경도', coordinate['x'])
-    print('위도', coordinate['y'])
+    # print('경도', coordinate['x'])
+    # print('위도', coordinate['y'])
     print(table)
+
     if(coordinate != "null"):
-        sql = "insert into %s (longitude, latitude) values (%s, %s)"
 
         cursor = conn.cursor()
-        cursor.execute(sql, (table, str(coordinate['x']), str(coordinate['y'])))
+        cursor.execute(sql, (coordinate['x'], coordinate['y'], id))
         conn.commit()
         conn.close()
 
@@ -227,6 +240,9 @@ def coordinate_change(text, table):
 # sec = (end - start)
 # result = timedelta(seconds=sec)
 # print(result)
+
+print(spellCehck_Busan('내용 계산1파출소에서는 [2022.09.27] [kangol Nike 남성용 검정색 지갑 (블랙(검정)색)]을 습득/보관 하였습니다.분실하신 분께서는 본인을 증명할 수 있는 서류를 지참하시어 보관중으로 기재되어 있는 기관에방문하시어 보관물품을 수령하시기 바랍니다.특이사항 : 없음'))
+
 
 
 # 키워드 분석
