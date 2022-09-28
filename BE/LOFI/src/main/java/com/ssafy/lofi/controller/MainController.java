@@ -46,7 +46,7 @@ public class MainController {
             @RequestParam("esntlId") int esntlId,
             @RequestParam("authKey") String authKey,
             @RequestParam("rowSize") int rowSize
-    ) throws ParseException {
+    ) throws ParseException, java.text.ParseException {
 
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.add("esntlId", esntlId);
@@ -97,8 +97,8 @@ public class MainController {
 
     @Transactional
     @GetMapping("/article")
-    public void getLostArticle(String startDate, String endDate) throws IOException {
-        int numOfRows = 200;
+    public void getLostArticle(String startDate, String endDate) throws IOException, java.text.ParseException {
+        int numOfRows = 1000;
         int pageNo = 1;
 
         // 분실물 리스트 조회 API
@@ -123,8 +123,8 @@ public class MainController {
 
     @Transactional
     @GetMapping("/found")
-    public void getFoundArticle(String startDate, String endDate) throws IOException {
-        int numOfRows = 200;
+    public void getFoundArticle(String startDate, String endDate) throws IOException, java.text.ParseException {
+        int numOfRows = 1000;
         int pageNo = 1;
 
         // 습득물 리스트 조회 API

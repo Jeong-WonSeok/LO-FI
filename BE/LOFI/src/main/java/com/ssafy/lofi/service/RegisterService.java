@@ -82,7 +82,7 @@ public class RegisterService {
                 .name(missingPersonRequest.getName())
                 .gender(missingPersonRequest.getGender())
                 .age(missingPersonRequest.getMissingAge())
-                .date(missingPersonRequest.getMissingDate())
+                .date(stringDateConvertDate(missingPersonRequest.getMissingDate(), null))
                 .dress(missingPersonRequest.getMissingClothes())
                 .picture(missingPersonRequest.getPicture())
                 .build();
@@ -105,7 +105,7 @@ public class RegisterService {
         LostArticle lostArticle = LostArticle.builder()
                 .name(lostArticleRequest.getName())
                 .category(lostArticleRequest.getCategory())
-                .date(stringDateConvertDate(lostArticleRequest.getDate(), lostArticleRequest.getTime()).toString())
+                .date(stringDateConvertDate(lostArticleRequest.getDate(), lostArticleRequest.getTime()))
                 .location(lostArticleRequest.getLocation())
                 .picture(lostArticleRequest.getPicture())
                 .build();
@@ -121,7 +121,7 @@ public class RegisterService {
         FoundArticle foundArticle = FoundArticle.builder()
                 .name(foundArticleRequest.getName())
                 .category(foundArticleRequest.getCategory())
-                .date(stringDateConvertDate(foundArticleRequest.getDate(), foundArticleRequest.getTime()).toString())
+                .date(stringDateConvertDate(foundArticleRequest.getDate(), foundArticleRequest.getTime()))
                 .safeLocation(foundArticleRequest.getSafeLocation())
                 .foundLocation(foundArticleRequest.getFoundLocation())
                 .picture(foundArticleRequest.getPicture())

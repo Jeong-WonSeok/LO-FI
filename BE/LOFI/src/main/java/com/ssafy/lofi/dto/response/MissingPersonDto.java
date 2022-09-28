@@ -3,6 +3,8 @@ package com.ssafy.lofi.dto.response;
 import com.ssafy.lofi.db.entity.MissingPerson;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class MissingPersonDto {
     private Long id;
@@ -11,7 +13,7 @@ public class MissingPersonDto {
     private Integer age;
     private Integer ageNow;
     private String location;
-    private String date;
+    private Date date;
     private String description;
     private String category;
     private String dress;

@@ -3,6 +3,8 @@ package com.ssafy.lofi.dto.response;
 import com.ssafy.lofi.db.entity.FoundArticle;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class FoundArticleDto {
 
@@ -12,7 +14,7 @@ public class FoundArticleDto {
     private String category;
     private String safeLocation; // 보관 장소
     private String foundLocation; // 발견 장소
-    private String date; // 잃어버린 날짜
+    private Date date; // 잃어버린 날짜
     private String description; // 설명
     private String picture; // 이미지
     // 위도 경도 좌표
