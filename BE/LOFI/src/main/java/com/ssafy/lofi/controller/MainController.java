@@ -28,9 +28,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 
 @RestController
@@ -99,41 +97,53 @@ public class MainController {
 
     @Transactional
     @GetMapping("/article")
-    public void getLostArticle(String date) throws IOException {
-        int numOfRows = 100;
+    public void getLostArticle(String startDate, String endDate) throws IOException {
+        int numOfRows = 200;
         int pageNo = 1;
 
         // 분실물 리스트 조회 API
         List<String> idList = new ArrayList<>();
+        Map<String, Integer> idMap = new HashMap<>();
         boolean flag = true;
         while (flag){
-            flag = lostArticleService.getLostArticleList(numOfRows, pageNo++, idList, date);
+            flag = lostArticleService.getLostArticleList(numOfRows, pageNo++, idMap, startDate, endDate);
         }
 
         // idList 돌면서 이미 있는지 체크
-        lostArticleService.checkIdExist(idList);
+        List<String> insertList = new ArrayList<>();
+        List<String> deleteList = new ArrayList<>();
+        lostArticleService.checkIdExist(idMap, insertList, deleteList);
 
-        // idList 돌면서 분실물 상세조회 API 호출하고 db에 저장하기
-        lostArticleService.callDetailAPIAndSaveLostArticle(idList);
+        // insertList 돌면서 분실물 상세조회 API 호출하고 db에 저장하기
+        lostArticleService.callDetailAPIAndSaveLostArticle(insertList);
+
+        // deleteList 돌면서 db에서 deleted update해주기
+        lostArticleService.deleteLostArticle(deleteList);
     }
 
     @Transactional
     @GetMapping("/found")
-    public void getFoundArticle(String date) throws IOException {
-        int numOfRows = 10;
+    public void getFoundArticle(String startDate, String endDate) throws IOException {
+        int numOfRows = 200;
         int pageNo = 1;
 
         // 습득물 리스트 조회 API
         List<String> idList = new ArrayList<>();
+        Map<String, Integer> idMap = new HashMap<>();
         boolean flag = true;
         while (flag) {
-            flag = foundArticleService.getFoundArticleList(numOfRows, pageNo++, idList, date);
+            flag = foundArticleService.getFoundArticleList(numOfRows, pageNo++, idMap, startDate, endDate);
         }
 
         // idList 돌면서 이미 있는지 체크
-        foundArticleService.checkIdExist(idList);
+        List<String> insertList = new ArrayList<>();
+        List<String> deleteList = new ArrayList<>();
+        foundArticleService.checkIdExist(idMap, insertList, deleteList);
 
         // idList 돌면서 습득물 상세조회 API 호출하고 db에 저장하기
-        foundArticleService.callDetailAPIAndSaveFoundArticle(idList);
+        foundArticleService.callDetailAPIAndSaveFoundArticle(insertList);
+
+        // deleteList 돌면서 db에서 deleted update해주기
+        foundArticleService.deleteFoundArticle(deleteList);
     }
 }
