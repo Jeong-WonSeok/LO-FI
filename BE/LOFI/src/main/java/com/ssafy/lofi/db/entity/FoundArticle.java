@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.Column;
@@ -19,24 +20,25 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@DynamicInsert
 public class FoundArticle extends BaseEntity{
 
+    private String atcId;
     private String name;
-    @Nullable
-    private Long userId;
+    private String category;
     private String date;
     private String safeLocation;
     private String foundLocation;
+    @Nullable
+    private Long userId;
     private String picture;
-    private String category;
-    private String atcId;
     @Column(columnDefinition = "TEXT")
     private String description;
     @Column(columnDefinition = "boolean default false")
     private String deleted;
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     @CreationTimestamp
-    private Date updateDate;
+    private Date updateDay;
 
 
     public static FoundArticle of(FoundArticleDetailResponse detailResponse){

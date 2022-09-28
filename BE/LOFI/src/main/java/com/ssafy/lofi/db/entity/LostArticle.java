@@ -30,15 +30,16 @@ public class LostArticle extends BaseEntity{
     private String police;
     private String location;
     private String city;
+    @Nullable
     private Long userId;
     private String picture;
     @Column(columnDefinition = "TEXT")
     private String description;
     @Column(columnDefinition = "boolean default false")
     private String deleted;
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     @CreationTimestamp
-    private Date updateDate;
+    private Date updateDay;
 
     public static LostArticle of(LostArticleDetailResponse detailResponse) {
         return LostArticle.builder()

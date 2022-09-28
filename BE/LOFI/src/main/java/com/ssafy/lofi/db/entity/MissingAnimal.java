@@ -20,10 +20,10 @@ public class MissingAnimal extends BaseEntity{
 // "id", "find", "gender", "age", "name", "missingDay", "location", "description", "img", "updateDay", "latitude", "longitude"
 
     private String animalId;
+    private String name;
     private String find;
     private String gender;
     private String age; // ~ 살 ~ 살 미만
-    private String name;
     @Temporal(TemporalType.DATE)
     private Date missingDay;
     private String location;
