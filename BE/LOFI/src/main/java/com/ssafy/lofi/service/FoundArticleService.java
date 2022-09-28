@@ -18,20 +18,21 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Map;
 
 @Service("foundArticleService")
 @RequiredArgsConstructor
 public class FoundArticleService {
     private final FoundArticleRepository foundArticleRepository;
-    public boolean getFoundArticleList(int numOfRows, int pageNo, List<String> idList, String date) throws IOException {
+    public boolean getFoundArticleList(int numOfRows, int pageNo, Map<String, Integer> idMap, String startDate, String endDate) throws IOException {
         /*URL*/
         String urlBuilder = "http://apis.data.go.kr/1320000/LosfundInfoInqireService/getLosfundInfoAccToClAreaPd" +
                 "?" + URLEncoder.encode("serviceKey", "UTF-8") + "=z5aVcHaA2frLlaYTCzEF45A22OIUDm1rc1CcW54fwBAFwz%2F7VB3QHz2SWxUGa8aP3xbnVSAZkGrnIAwb%2FWc4OQ%3D%3D" + /*Service Key*/
                 "&" + URLEncoder.encode("PRDT_CL_CD_01", "UTF-8") + "=" + URLEncoder.encode("", "UTF-8") + /*대분류*/
                 "&" + URLEncoder.encode("PRDT_CL_CD_02", "UTF-8") + "=" + URLEncoder.encode("", "UTF-8") + /*중분류*/
                 "&" + URLEncoder.encode("FD_COL_CD", "UTF-8") + "=" + URLEncoder.encode("", "UTF-8") + /*습득물 색상*/
-                "&" + URLEncoder.encode("START_YMD", "UTF-8") + "=" + URLEncoder.encode(date, "UTF-8") + /*검색시작일*/
-                "&" + URLEncoder.encode("END_YMD", "UTF-8") + "=" + URLEncoder.encode(date, "UTF-8") + /*검색종료일*/
+                "&" + URLEncoder.encode("START_YMD", "UTF-8") + "=" + URLEncoder.encode(startDate, "UTF-8") + /*검색시작일*/
+                "&" + URLEncoder.encode("END_YMD", "UTF-8") + "=" + URLEncoder.encode(endDate, "UTF-8") + /*검색종료일*/
                 "&" + URLEncoder.encode("N_FD_LCT_CD", "UTF-8") + "=" + URLEncoder.encode("", "UTF-8") + /*습득지역*/
                 "&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode(Integer.toString(pageNo), "UTF-8") + /*페이지 번호*/
                 "&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode(Integer.toString(numOfRows), "UTF-8"); /*목록 건수*/
@@ -63,12 +64,14 @@ public class FoundArticleService {
         int totalCount = body.getInt("totalCount");
         if(totalCount - (pageNo - 1) * numOfRows == 1){
             JSONObject item = items.getJSONObject("item");
-            idList.add(item.getString("atcId"));
+            idMap.put(item.getString("atcId"), 0);
+//            idList.add(item.getString("atcId"));
         } else {
             JSONArray item = items.getJSONArray("item");
             for (int i = 0; i < item.length(); i++) {
                 org.json.JSONObject obj = item.getJSONObject(i);
-                idList.add(obj.getString("atcId"));
+                idMap.put(obj.getString("atcId"), 0);
+//                idList.add(obj.getString("atcId"));
             }
         }
 
@@ -78,8 +81,20 @@ public class FoundArticleService {
         return true;
     }
 
-    public void checkIdExist(List<String> idList){
-        idList.removeIf(id -> foundArticleRepository.findByAtcId(id) != null);
+    public void checkIdExist(Map<String, Integer> idMap, List<String> insertList, List<String> deleteList){
+        List<String> dbIdList = foundArticleRepository.findAllAtcId();
+        for (String id : dbIdList){
+            if(idMap.containsKey(id)){
+                idMap.put(id, 1);
+            }else {
+                deleteList.add(id);
+            }
+        }
+        for (Map.Entry<String, Integer> entry : idMap.entrySet()){
+            if(entry.getValue().equals(0)){
+                insertList.add(entry.getKey());
+            }
+        }
     }
 
     public void callDetailAPIAndSaveFoundArticle(List<String> idList) throws IOException {
@@ -110,14 +125,22 @@ public class FoundArticleService {
             JSONObject jsonObject = XML.toJSONObject(sb.toString());
             System.out.println(jsonObject.toString(0));
             JSONObject detailResponse = jsonObject.getJSONObject("response");
-            JSONObject detailBody = detailResponse.getJSONObject("body");
-            JSONObject detailItem = detailBody.getJSONObject("item");
+            if(detailResponse.get("body") != ""){
+                JSONObject detailBody = detailResponse.getJSONObject("body");
+                JSONObject detailItem = detailBody.getJSONObject("item");
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                FoundArticleDetailResponse foundArticleDetailResponse = mapper.readValue(detailItem.toString(), FoundArticleDetailResponse.class);
 
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            FoundArticleDetailResponse foundArticleDetailResponse = mapper.readValue(detailItem.toString(), FoundArticleDetailResponse.class);
+                foundArticleRepository.save(FoundArticle.of(foundArticleDetailResponse));
+            }
 
-            foundArticleRepository.save(FoundArticle.of(foundArticleDetailResponse));
+        }
+    }
+
+    public void deleteFoundArticle(List<String> deleteIdList){
+        for (String id : deleteIdList){
+            foundArticleRepository.deleteFoundArticle(id);
         }
     }
 }

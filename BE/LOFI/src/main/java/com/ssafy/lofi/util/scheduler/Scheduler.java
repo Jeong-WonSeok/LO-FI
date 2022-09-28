@@ -20,13 +20,13 @@ public class Scheduler {
 
     private final MainController mainController;
 
-    @Scheduled(cron = "0 0 0 1/1 * ?")
+    @Scheduled(cron = "0 0 4 1/1 * ?")
     public void scheduleMissingPerson() throws ParseException {
         mainController.deleteMissingPerson();
         mainController.getLostPerson(10000487, "5ea509f2f6344251", 100);
     }
 
-    @Scheduled(cron = "0 0 1 1/1 * ?")
+    @Scheduled(cron = "0 0 5 1/1 * ?")
     public void scheduleLostArticle() throws IOException {
         LocalDate now = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -35,11 +35,12 @@ public class Scheduler {
         mainController.getLostArticle(formattedNow, formattedBefore);
     }
 
-    @Scheduled(cron = "0 0 2 1/1 * ?")
+    @Scheduled(cron = "0 0 6 1/1 * ?")
     public void scheduleFoundArticle() throws IOException {
         LocalDate now = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String formattedNow = now.minusDays(1).format(formatter);
-        mainController.getFoundArticle(formattedNow);
+        String formattedBefore = now.minusMonths(1).format(formatter);
+        mainController.getFoundArticle(formattedNow, formattedBefore);
     }
 }

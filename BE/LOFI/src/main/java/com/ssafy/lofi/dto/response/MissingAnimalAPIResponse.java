@@ -19,5 +19,4 @@ public class MissingAnimalAPIResponse {
     private String resDescription;
     private String resImg;
     private Boolean resUsed;
-
 }
