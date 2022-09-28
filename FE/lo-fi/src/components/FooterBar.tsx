@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import home from '../assets/img/Footer/home.png'
 import select_home from '../assets/img/Footer/select_home.png'
 import plus from '../assets/img/Footer/plus.png'
@@ -15,13 +15,12 @@ export default function FooterBar() {
   const [Select, setSelect] = useState("main");
   const [check, setCheck] = useState(false);
 
-  const background = document.getElementById('button_background') as HTMLDivElement
-
+  const el =  useRef<HTMLInputElement>(null)
 
   // 프로필은 선택이 되는 문제가 있음
   useEffect(() => {
     window.addEventListener('click', (e) => {
-      if (e.target === background) {
+      if (e.target == el.current) {
         setCheck(false)
       } 
     })
@@ -38,9 +37,9 @@ export default function FooterBar() {
 
     return (
       window.removeEventListener('click', (e) => {
-        if (e.target === background) {
+        if (e.target == el.current) {
           setCheck(false)
-        } 
+        }
       })
     )
   }, [Select])
@@ -77,7 +76,7 @@ export default function FooterBar() {
           <p style={Select === 'user' ? {color: ""} : {color: "#676767"}}>Home</p>
         </Link>
         <div className='navigater category-button'>
-          <div id="button_background" className={check ? "" : "button_off"}>
+          <div id="button_background" className={check ? "" : "button_off"} ref={el}>
             <div className={check ? "button_open" : "button_off"}>
               <div className='category-add-buttons'>
                 <Link to="/add/animal" className='category-add-button' onClick={() => setCheck(!check)}>

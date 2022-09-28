@@ -61,6 +61,7 @@ export default function AddDetailPage(history: any) {
   let del_count = 0;
   const dispatch = useAppDispatch()
   const [isModal, setIsModal] = useState(false);
+  const [isDetailModal, setIsDetailModal] = useState(false);
   const previewFileList: string[] = [];
   const fileList: File[] = [];
   const myFileList: File[] = [];
@@ -91,6 +92,7 @@ export default function AddDetailPage(history: any) {
   useEffect(() => {
     if (target) {
       if (info.name && info.location) {
+        console.log(category)
         switch ( category ) {
           case "animal":
           case "person":
@@ -103,8 +105,9 @@ export default function AddDetailPage(history: any) {
               target.disabled = true
               return 
             }
-          case "article":
-          case "found":
+          case "lost-item":
+          case "take-item": 
+            console.log(Boolean(info.category))
             if (info.category) {
               target.classList.remove("sumbit_fail")
               target.disabled = false;
@@ -249,13 +252,22 @@ export default function AddDetailPage(history: any) {
   }
 
   const getAddress = (data: DataType) => {
-    setInfo((current) => {
-      let newInfo = {...current}
-      newInfo['location'] = data['address']
-      newInfo['lat'] = data['lat']
-      newInfo['lon'] = data['lon']
-      return newInfo
-    })
+    if (isModal) {
+      setInfo((current) => {
+        let newInfo = {...current}
+        newInfo['location'] = data['address']
+        newInfo['lat'] = data['lat']
+        newInfo['lon'] = data['lon']
+        return newInfo
+      })
+    } else if (isDetailModal) {
+      setInfo((current) => {
+        let newInfo = {...current}
+        newInfo['detail_location'] = data['address']
+        return newInfo
+      })
+    }
+    setIsDetailModal(false)
     setIsModal(false)
   }
 
@@ -276,6 +288,7 @@ export default function AddDetailPage(history: any) {
 
   const closeModal = () => {
     setIsModal(false)
+    setIsDetailModal(false)
   }
 
   // 이미지 제거
@@ -337,8 +350,9 @@ export default function AddDetailPage(history: any) {
   }
 
   const isSubmit = async () => {
+    console.log('제출')
     // 공통사항 검사
-    if (info.name && info.location && info.detail_location && info.date) {
+    if (info.name && info.location) {
       uploadS3Files(files)
       // 날짜 전처리
       var year = info.date.getFullYear();
@@ -357,6 +371,8 @@ export default function AddDetailPage(history: any) {
               "gender": info.gender,
               "location": info.location,
               "locationDescription": info.detail_location,
+              "lat": info.lat,
+              "lon": info.lon,
               "name": info.name,
               "picture": info.picture,
               "point": String(info.point),
@@ -382,13 +398,15 @@ export default function AddDetailPage(history: any) {
               "gender": info.gender,
               "location": info.location,
               "locationDescription": info.detail_location,
+              "lat": info.lat,
+              "lon": info.lon,
               "name": info.name,
               "picture": info.picture,
               "point": String(info.point),
               "time": info.time
             }
             console.log(sendData)
-            const res = await axios.post(requests.addAnimal, sendData, {headers: {
+            const res = await axios.post(requests.addPerson, sendData, {headers: {
               // Token: localStorage.getItem('token'),
             }})
 
@@ -398,19 +416,21 @@ export default function AddDetailPage(history: any) {
           }
           return
         case "lost_item":
-          if (info.category && info.description) {
+          if (info.category) {
             const sendData = {
               "date": result,
               "description": info.description,
               "location": info.location,
               "locationDescription": info.detail_location,
+              "lat": info.lat,
+              "lon": info.lon,
               "name": info.name,
               "picture": info.picture,
               "point": String(info.point),
               "time": info.time
             }
             console.log(sendData)
-            const res = await axios.post(requests.addAnimal, sendData, {headers: {
+            const res = await axios.post(requests.addArticle, sendData, {headers: {
               // Token: localStorage.getItem('token'),
             }})
 
@@ -420,19 +440,21 @@ export default function AddDetailPage(history: any) {
           }
           return
         case "take_item":
-          if (info.category && info.description) {
+          if (info.category) {
             const sendData = {
               "date": result,
               "description": info.description,
               "location": info.location,
-              "locationDescription": info.detail_location,
+              "safeLocation": info.detail_location,
+              "lat": info.lat,
+              "lon": info.lon,
               "name": info.name,
               "picture": info.picture,
               "point": String(info.point),
               "time": info.time
             }
             console.log(sendData)
-            const res = await axios.post(requests.addAnimal, sendData, {headers: {
+            const res = await axios.post(requests.addFound, sendData, {headers: {
               // Token: localStorage.getItem('token'),
             }})
 
@@ -452,7 +474,7 @@ export default function AddDetailPage(history: any) {
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
             <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
-            <button type="submit" className='submit-button sumbit_fail' id="sumbit" disabled onClick={isSubmit}>제출</button>
+            <button type="submit" className='submit-button sumbit_fail' id="sumbit" onClick={isSubmit}>제출</button>
           </div>
           <div className="input_required">
             는 필수 입력입니다
@@ -775,10 +797,16 @@ export default function AddDetailPage(history: any) {
             {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
             </div>
           <hr />
-          <div className='add-component'>
-            <label htmlFor="detail_location">상세위치</label>
-            <input type="text" id="detail_location" value={info.detail_location} onChange={handleDetail}/>
+          <div className='add-component required'>
+            <label htmlFor="detail_location">보관장소</label>
+            <div>
+              <button onClick={() => setIsDetailModal(true)} className={info.detail_location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
+              <span id="detail_location" className={info.detail_location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.detail_location}</span>
+            </div>
           </div>
+          <div>
+            {isDetailModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
+            </div>
           <hr />
           <div className="add-component" style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
             <label htmlFor="picture">사진</label>
