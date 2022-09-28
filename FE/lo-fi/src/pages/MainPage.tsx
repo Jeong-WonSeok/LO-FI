@@ -134,7 +134,7 @@ const MainPage = () => {
       </div>
       <Category/>
       
-      <div id="map" style={{height: '85vh'}}>
+      <div id="map" style={{height: '85vh', width: "100%"}}>
 
       </div>
     </div>

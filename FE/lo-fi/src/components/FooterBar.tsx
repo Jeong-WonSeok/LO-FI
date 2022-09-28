@@ -1,10 +1,7 @@
 import React, {useState, useEffect} from 'react'
-import main from '../assets/img/Footer/main_tap.png'
-import select_main from '../assets/img/Footer/select_main_tap.png'
-import search from '../assets/img/Footer/search_tap.png'
-import select_search from '../assets/img/Footer/select_search_tap.png'
-import chat from '../assets/img/Footer/chat.png'
-import select_chat from '../assets/img/Footer/select_chat.png'
+import home from '../assets/img/Footer/home.png'
+import select_home from '../assets/img/Footer/select_home.png'
+import plus from '../assets/img/Footer/plus.png'
 import user from '../assets/img/Footer/user.png'
 import select_user from '../assets/img/Footer/select_user.png'
 import animal from '../assets/img/Category/color_dog.png'
@@ -18,7 +15,17 @@ export default function FooterBar() {
   const [Select, setSelect] = useState("main");
   const [check, setCheck] = useState(false);
 
+  const background = document.getElementById('button_background') as HTMLDivElement
+
+
+  // 프로필은 선택이 되는 문제가 있음
   useEffect(() => {
+    window.addEventListener('click', (e) => {
+      if (e.target === background) {
+        setCheck(false)
+      } 
+    })
+
     if (window.location.href.includes('Profile')) {
       handleChangeTap('user')
     } else if (window.location.href.includes('search')) {
@@ -28,6 +35,14 @@ export default function FooterBar() {
     } else {
       handleChangeTap('main')
     }
+
+    return (
+      window.removeEventListener('click', (e) => {
+        if (e.target === background) {
+          setCheck(false)
+        } 
+      })
+    )
   }, [Select])
   
 
@@ -52,42 +67,46 @@ export default function FooterBar() {
     }
   };
 
+  
+
   return (
     <div className='Footer-center'>
       <div className="Footer_contain">
         <Link className="navigater" to="/" onClick={() => handleChangeTap('main')}>
-          <img src={Select === 'main' ? select_main : main} alt=""
-          width="40px" height="40px"/>
+          <img src={Select === 'main' ? select_home : home} alt="" width={25} height={25}/>
+          <p style={Select === 'user' ? {color: ""} : {color: "#676767"}}>Home</p>
         </Link>
         <div className='navigater category-button'>
-          <div className={check ? "button_open" : "button_off"}>
-            <div className='category-add-buttons'>
-              <Link to="/add/animal" className='category-add-button' onClick={() => setCheck(!check)}>
-                <img src={animal} alt="" width={30} height={30}/>
-                <p>반려동물</p>
-              </Link>
-              <Link to="/add/people" className='category-add-button'onClick={() => setCheck(!check)}>
-                <img src={people} alt="" width={30} height={30}/>
-                <p>사람</p>
-              </Link>
-              <Link to="/add/lost-item" className='category-add-button' onClick={() => setCheck(!check)}>
-                <img src={lost_item} alt="" width={30} height={30}/>
-                <p>분실물</p>
-              </Link>
-              <Link to="/add/take-item" className='category-add-button' onClick={() => setCheck(!check)}>
-                <img src={take_item} alt="" width={30} height={30}/>
-                <p>습득물</p>
-              </Link>
+          <div id="button_background" className={check ? "" : "button_off"}>
+            <div className={check ? "button_open" : "button_off"}>
+              <div className='category-add-buttons'>
+                <Link to="/add/animal" className='category-add-button' onClick={() => setCheck(!check)}>
+                  <img src={animal} alt="" width={30} height={30}/>
+                  <p>반려동물</p>
+                </Link>
+                <Link to="/add/people" className='category-add-button'onClick={() => setCheck(!check)}>
+                  <img src={people} alt="" width={30} height={30}/>
+                  <p>사람</p>
+                </Link>
+                <Link to="/add/lost-item" className='category-add-button' onClick={() => setCheck(!check)}>
+                  <img src={lost_item} alt="" width={30} height={30}/>
+                  <p>분실물</p>
+                </Link>
+                <Link to="/add/take-item" className='category-add-button' onClick={() => setCheck(!check)}>
+                  <img src={take_item} alt="" width={30} height={30}/>
+                  <p>습득물</p>
+                </Link>
+              </div>
             </div>
           </div>
           <input type="checkbox" id="plus" style={{display: "none"}} onChange={() => setCheck(!check)}/>
           <label htmlFor="plus">
-            <div className={check ? "open_category" : ""} style={{fontSize: "40px", lineHeight: "15px", width: "27px", height: "25px"}}>+</div>
+            <img className={check ? "open_category" : ""} src={plus} alt="" width={40} height={40}/>
           </label>
         </div>
         <Link className="navigater" to="/Profile/" onClick={() => handleChangeTap('user')}>
-          <img src={Select === 'user' ? select_user : user} alt=""
-          width="40px" height="40px" />
+          <img src={Select === 'user' ? select_user : user} alt="" width={25} height={25} />
+          <p style={Select === 'user' ? {color: ""} : {color: "#676767"}}>Profile</p>
         </Link>
       </div>
     </div>

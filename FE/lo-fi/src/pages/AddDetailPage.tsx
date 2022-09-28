@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback} from 'react'
+import React, { useRef, useState, useCallback, useEffect} from 'react'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
@@ -20,7 +20,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import MapMarker from '../components/MapMarker'
 import ImgList from '../components/AddPagePreviewImgList'
-import {addData} from '../redux/modules/mainData'
 import { useAppDispatch } from '../hooks/reduxHook';
 
 
@@ -31,6 +30,7 @@ export interface infoType {
     spiece: String,
     Gender: String,
     age: Number,
+    nowAge: Number,
     location: String,
     detail_location: String,
     date: Date,
@@ -72,7 +72,8 @@ export default function AddDetailPage(history: any) {
     category: "",
     speice: "",
     gender: "",
-    age: 1,
+    age: 0,
+    nowAge: 0,
     time: new Date().toTimeString().slice(0, 5),
     location: "",
     detail_location: "",
@@ -83,20 +84,45 @@ export default function AddDetailPage(history: any) {
     lon: 0,
     point: 0
   })
-
-  const [isInfo, setIsInfo] = useState({
-    isName: true,
-    isTime: true,
-    isCategory: true,
-    isSpeice: true,
-    isGender: true,
-    isAge: true,
-    isLocation: true,
-    isDetailLocation: true,
-    isDate: true,
-    isDescription: true,
-  })
   const { category } = useParams();
+
+  const target = document.getElementById('sumbit') as HTMLButtonElement
+
+  useEffect(() => {
+    if (target) {
+      if (info.name && info.location) {
+        switch ( category ) {
+          case "animal":
+          case "person":
+            if (info.age && info.gender && info.age && info.description) {
+              target.classList.remove("sumbit_fail")
+              target.disabled = false;
+              return
+            } else {
+              target.classList.add("sumbit_fail")
+              target.disabled = true
+              return 
+            }
+          case "article":
+          case "found":
+            if (info.category) {
+              target.classList.remove("sumbit_fail")
+              target.disabled = false;
+              return
+            } else {
+              target.disabled = true
+              target.classList.add("sumbit_fail")
+              return
+            }
+        }
+      } else {
+        // 조건 불충족시 버튼 비활성화
+        target.classList.add("sumbit_fail")
+        target.disabled = true;
+      }
+    }
+  }, [info])
+  
 
   // 이미지 업로드 로직
   const inputRef = useRef<HTMLInputElement | null> (null);
@@ -189,17 +215,22 @@ export default function AddDetailPage(history: any) {
   }
 
   const handleAge = (e: any) => {
+    const nowDay = new Date();
+    const nowyear = nowDay.getFullYear()
     setInfo(prevState => ({
       ...prevState,
-      "age": Number(e.target.value)
+      "age": Number(e.target.value),
+      "nowAge": nowyear - prevState.date.getFullYear() + e.target.value
     }))
   }
 
   const handleChangeDate = (date: any) => {
-    console.log(Date.now() - date)
+    const nowDay = new Date();
+    const nowyear = nowDay.getFullYear()
     setInfo(prevState => ({
       ...prevState,
-      "date" : date
+      "date" : date,
+      "nowAge": nowyear - date.getFullYear() + info.age
     }))
   }
 
@@ -234,6 +265,14 @@ export default function AddDetailPage(history: any) {
       "detail_location": e.target.value
     }))
   }
+
+  const handleCategory = (e: any) => {
+    console.log(e.target.value)
+    setInfo(prev => ({
+      ...prev, 
+      "category": e.target.value
+    }))
+  } 
 
   const closeModal = () => {
     setIsModal(false)
@@ -296,22 +335,24 @@ export default function AddDetailPage(history: any) {
       return
     }
   }
+
   const isSubmit = async () => {
     // 공통사항 검사
     if (info.name && info.location && info.detail_location && info.date) {
-      setIsInfo(prev => ({
-        ...prev,
-        "isName" : true,
-        "isLocation" :  true,
-        "isDate" :  true
-      }))
+      uploadS3Files(files)
+      // 날짜 전처리
+      var year = info.date.getFullYear();
+      var month = ("0" + (1 + info.date.getMonth())).slice(-2);
+      var day = ("0" + info.date.getDate()).slice(-2);
+      
+      const result = year + "-" + month + "-" + day
+      
       switch(category) {
         case "animal":
           if (info.speice && info.age && info.gender && info.description) {
-            await uploadS3Files(files);
             const sendData = {
               "age": String(info.age),
-              "date": String(info.date),
+              "date": result,
               "description": info.description,
               "gender": info.gender,
               "location": info.location,
@@ -321,84 +362,87 @@ export default function AddDetailPage(history: any) {
               "point": String(info.point),
               "time": info.time
             }
+            console.log(sendData)
             const res = await axios.post(requests.addAnimal, sendData, {headers: {
               // Token: localStorage.getItem('token'),
             }})
 
             console.log('받은 데이터',res)
 
-            dispatch(addData("animal", res))
             return history.push('/search')
-          } else {
-            return setIsInfo(prev => ({
-              ...prev,
-              "isSpeice" : (info.speice ? true : false),
-              "isAge" : (info.age ? true : false),
-              "isGender" : (info.gender ? true : false),
-              "isDescription" : (info.description ? true : false)
-            }))
           }
+          return
         case "people":
           if (info.age && info.gender && info.description) {
-            await uploadS3Files(files);
-            const res = await axios.post(requests.addAnimal, {Headers: {
-              Token: localStorage.getItem('token'),
-              data: info
+            const sendData = {
+              "age": String(info.age),
+              "nowAge": String(info.nowAge),
+              "date": result,
+              "description": info.description,
+              "gender": info.gender,
+              "location": info.location,
+              "locationDescription": info.detail_location,
+              "name": info.name,
+              "picture": info.picture,
+              "point": String(info.point),
+              "time": info.time
+            }
+            console.log(sendData)
+            const res = await axios.post(requests.addAnimal, sendData, {headers: {
+              // Token: localStorage.getItem('token'),
             }})
-            dispatch(addData("people", res))
+
+            console.log('받은 데이터',res)
+
             return history.push('/search')
-          } else {
-            return setIsInfo(prev => ({
-              ...prev,
-              "isAge" : (info.age ? true : false),
-              "isGender" : (info.gender ? true : false),
-              "isDescription" : (info.description ? true : false)
-            }))
           }
+          return
         case "lost_item":
           if (info.category && info.description) {
-            await uploadS3Files(files);
-            const res = await axios.post(requests.addAnimal, {headers: {
-              Token: localStorage.getItem('token'),
+            const sendData = {
+              "date": result,
+              "description": info.description,
+              "location": info.location,
+              "locationDescription": info.detail_location,
+              "name": info.name,
+              "picture": info.picture,
+              "point": String(info.point),
+              "time": info.time
+            }
+            console.log(sendData)
+            const res = await axios.post(requests.addAnimal, sendData, {headers: {
+              // Token: localStorage.getItem('token'),
             }})
-            dispatch(addData("lostItem", res))
+
+            console.log('받은 데이터',res)
+
             return history.push('/search')
-          } else {
-            return setIsInfo(prev => ({
-              ...prev,
-              "isCategory" : (info.category ? true : false),
-              "isDescription" : (info.description ? true : false)
-            }))
           }
+          return
         case "take_item":
           if (info.category && info.description) {
-            await uploadS3Files(files);
-            const res = await axios.post(requests.addAnimal, {Headers: {
-              Token: localStorage.getItem('token'),
-              data: info
+            const sendData = {
+              "date": result,
+              "description": info.description,
+              "location": info.location,
+              "locationDescription": info.detail_location,
+              "name": info.name,
+              "picture": info.picture,
+              "point": String(info.point),
+              "time": info.time
+            }
+            console.log(sendData)
+            const res = await axios.post(requests.addAnimal, sendData, {headers: {
+              // Token: localStorage.getItem('token'),
             }})
-            dispatch(addData("takeItem", res))
-            return history.push('/search') 
-          } else {
-            return setIsInfo(prev => ({
-              ...prev,
-              "isCategory" : (info.category ? true : false),
-              "isDescription" : (info.description ? true : false)
-            }))
-          }  
+
+            console.log('받은 데이터',res)
+
+            return history.push('/search')
+          }
+          return
     }} else {
-      setIsInfo(prev => ({
-        "isTime" : (info.time ? true : false),
-        "isCategory" : (info.category ? true : false),
-        "isSpeice" : (info.speice ? true : false),
-        "isAge" : (info.age ? true : false),
-        "isGender" : (info.gender ? true : false),
-        "isDescription" : (info.description ? true : false),
-        "isName" : (info.name ? true : false),
-        "isLocation" : (info.location ? true : false),
-        "isDetailLocation" : (info.detail_location ? true : false),
-        "isDate" : (info.date ? true : false)
-      }))
+      
     }
   }
 
@@ -408,44 +452,35 @@ export default function AddDetailPage(history: any) {
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
             <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
-            <button type="submit" className='submit-button' onClick={isSubmit}>제출</button>
+            <button type="submit" className='submit-button sumbit_fail' id="sumbit" disabled onClick={isSubmit}>제출</button>
           </div>
-          <div className='add-component'>
+          <div className="input_required">
+            는 필수 입력입니다
+          </div>
+          <div className='add-component required'>
             <label htmlFor="name">반려동물 이름</label>
             <input type="text" id="name" value={info.name} onChange={handleName}/>
           </div>
-          <div className='add-alert'>
-            {isInfo.isName ? "" : "이름을 입력해주세요"}
+          <hr />
+          <div className='add-component required'>
+            <label htmlFor="speice">반려동물 품종</label>
+            <input type="text" id="speice" value={info.speice} onChange={handleSpeice}/>
           </div>
           <hr />
-          <div className='add-component'>
-            <label htmlFor="name">반려동물 품종</label>
-            <input type="text" id="name" value={info.speice} onChange={handleSpeice}/>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isSpeice ? "" : "품종을 입력해주세요"}
-          </div>
-          <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="gender">성별</label>
             <div className='add-component-gender'>
               <img src={info.gender === "male" ? select_male : male} alt="" onClick={() => handleGender("male")} width={40} height={40}/>
               <img src={info.gender === "female" ? select_female : female} alt="" onClick={() => handleGender("female")} width={40} height={40}/>
             </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isGender ? "" : "성별을 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="age">실종당시 나이</label>
             <input type="number" id="age" value={info.age}  onChange={handleAge} />
           </div>
-          <div className='add-alert'>
-            {isInfo.isAge ? "" : "나이를 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="location">실종위치</label>
             <div>
               <button onClick={() => setIsModal(true)} className={info.location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
@@ -454,9 +489,6 @@ export default function AddDetailPage(history: any) {
           </div>
           <div>
             {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
-            </div>
-          <div className='add-alert'>
-            {isInfo.isDetailLocation ? "" : "위치를 입력해주세요"}
           </div>
           <hr />
           <div className='add-component'>
@@ -470,12 +502,12 @@ export default function AddDetailPage(history: any) {
               <input type="file" src="" alt="" id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: 'none'}}/>
               <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
             </div>
-            <div className={previewImg ? "picture_off" : ""}>사진은 최대 3장까지 등록 가능합니다.</div>
+            <div className={previewImg.length === 0 ? "picture_off" : ""}>사진은 최대 3장까지 등록 가능합니다.</div>
             <ImgList previewImg={previewImg} deleteImg={deleteImg} />
             <div className='add-alert'></div>
           </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="date">실종 일자</label>
             <div>
             <DatePicker 
@@ -486,21 +518,15 @@ export default function AddDetailPage(history: any) {
                 onChange={date => handleChangeDate(date)} />
             </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isDate ? "" : "날짜을 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="time">실종 시간</label>
             <input type="time" name="" id="time" value={info.time} onChange={handleTime}/>
           </div>
           <hr />
-          <div className='add-component add-componet-description'>
+          <div className='add-component add-componet-description required'>
             <label htmlFor="description" style={{marginBottom: "5px"}}>특징</label>
             <textarea name="" id="description" placeholder='특징을 적어주세요' value={info.description} onChange={resize}></textarea>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isDescription ? "" : "특징을 입력해주세요"}
           </div>
           <hr />
           <div className='add-component'>
@@ -518,36 +544,35 @@ export default function AddDetailPage(history: any) {
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
             <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
-            <button className='submit-button' onClick={isSubmit}>제출</button>
+            <button className='submit-button sumbit_fail' id="sumbit" disabled onClick={isSubmit}>제출</button>
           </div>
-          <div className='add-component'>
+          <div className="input_required">
+            는 필수 입력입니다
+          </div>
+          <div className='add-component required'>
             <label htmlFor="name">실종자 이름</label>
             <input type="text" id="name" value={info.name} onChange={handleName}/>
           </div>
-          <div className='add-alert'>
-            {isInfo.isName ? "" : "이름을 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="gender">성별</label>
             <div className='add-component-gender'>
               <img src={info.gender === "male" ? select_male : male} alt="" onClick={() => handleGender("male")} width={40} height={40}/>
               <img src={info.gender === "female" ? select_female : female} alt="" onClick={() => handleGender("female")} width={40} height={40}/>
             </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isGender ? "" : "성별을 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="age">실종당시 나이</label>
             <input type="number" id="age" value={info.age}  onChange={handleAge} />
           </div>
-          <div className='add-alert'>
-            {isInfo.isAge ? "" : "나이를 입력해주세요"}
+          <hr />
+          <div className='add-component required'>
+            <label htmlFor="nowAge">현재나이</label>
+            <span>{info.nowAge}</span>
           </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="detail_location">실종위치</label>
             <div>
               <button onClick={() => setIsModal(true)} className={info.location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
@@ -557,9 +582,6 @@ export default function AddDetailPage(history: any) {
           <div>
             {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
             </div>
-          <div className='add-alert'>
-            {isInfo.isDetailLocation ? "" : "위치를 입력해주세요"}
-          </div>
           <hr />
           <div className='add-component'>
             <label htmlFor="detail_location">상세위치</label>
@@ -573,7 +595,7 @@ export default function AddDetailPage(history: any) {
           </div>
           <ImgList previewImg={previewImg} deleteImg={deleteImg} />
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="date">실종 일자</label>
             <div>
             <DatePicker 
@@ -584,21 +606,15 @@ export default function AddDetailPage(history: any) {
                 onChange={date => handleChangeDate(date)} />
             </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isDate ? "" : "날짜을 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="time">실종 시간</label>
             <input type="time" name="" id="time" value={info.time} onChange={handleTime}/>
           </div>
           <hr />
-          <div className='add-component add-componet-description'>
+          <div className='add-component add-componet-description required'>
             <label htmlFor="description" style={{marginBottom: "5px"}}>실종 당시 인상착의</label>
             <textarea name="" id="description" placeholder='인상 착의를 적어주세요' value={info.description} onChange={resize}></textarea>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isDescription ? "" : "인상 착의를 입력해주세요"}
           </div>
           <hr />
           <div className='add-component'>
@@ -616,19 +632,19 @@ export default function AddDetailPage(history: any) {
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
             <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)} style={{cursor: "pointer"}}/>
-            <button className='submit-button' onClick={isSubmit}>제출</button>
+            <button className='submit-button sumbit_fail' id="sumbit" disabled onClick={isSubmit}>제출</button>
           </div>
-          <div className='add-component'>
+          <div className="input_required">
+            는 필수 입력입니다
+          </div>
+          <div className='add-component required'>
             <label htmlFor="name">물품명</label>
             <input type="text" id="name" value={info.name} onChange={handleName}/>
           </div>
-          <div className='add-alert'>
-            {isInfo.isName ? "" : "물품명을 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="add-category">분류</label>
-            <select name="" id="add-category">
+            <select name="" id="add-category" onChange={handleCategory}>
               <option value="">분류를 선택하세요</option>
               <option value="가방">가방</option>
               <option value="귀금속">귀금속</option>
@@ -651,11 +667,8 @@ export default function AddDetailPage(history: any) {
               <option value="기타물품">기타물품</option>
             </select>
           </div>
-          <div className='add-alert'>
-            {isInfo.isCategory ? "" : "분류를 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="detail_location">습득위치</label>
             <div>
               <button onClick={() => setIsModal(true)} className={info.location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
@@ -665,9 +678,6 @@ export default function AddDetailPage(history: any) {
           <div>
             {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
             </div>
-          <div className='add-alert'>
-            {isInfo.isDetailLocation ? "" : "위치를 입력해주세요"}
-          </div>
           <hr />
           <div className='add-component'>
             <label htmlFor="detail_location">상세위치</label>
@@ -681,7 +691,7 @@ export default function AddDetailPage(history: any) {
           </div>
           <ImgList previewImg={previewImg} deleteImg={deleteImg} />
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="date">분실 일자</label>
             <div>
             <DatePicker 
@@ -692,21 +702,15 @@ export default function AddDetailPage(history: any) {
                 onChange={date => handleChangeDate(date)} />
             </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isDate ? "" : "날짜을 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
-            <label htmlFor="time">실종 시간</label>
+          <div className='add-component required'>
+            <label htmlFor="time">분실 시간</label>
             <input type="time" name="" id="time" value={info.time} onChange={handleTime}/>
           </div>
           <hr />
           <div className='add-component add-componet-description'>
             <label htmlFor="description" style={{marginBottom: "5px"}}>특징</label>
             <textarea name="" id="description" placeholder='특징을 적어주세요' value={info.description} onChange={resize}></textarea>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isDescription ? "" : "특징을 입력해주세요"}
           </div>
           <hr />
           <div className='add-component'>
@@ -724,17 +728,17 @@ export default function AddDetailPage(history: any) {
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
             <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)} style={{cursor: "pointer"}}/>
-            <button className='submit-button' onClick={isSubmit}>제출</button>
+            <button className='submit-button sumbit_fail' id="sumbit" disabled onClick={isSubmit}>제출</button>
           </div>
-          <div className='add-component'>
+          <div className="input_required">
+            는 필수 입력입니다
+          </div>
+          <div className='add-component required'>
             <label htmlFor="name">물품명</label>
             <input type="text" id="name" value={info.name} onChange={handleName}/>
           </div>
-          <div className='add-alert'>
-            {isInfo.isName ? "" : "물품명을 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="add-category">분류</label>
             <select name="" id="add-category">
               <option value="">분류를 선택하세요</option>
@@ -759,11 +763,8 @@ export default function AddDetailPage(history: any) {
               <option value="기타물품">기타물품</option>
             </select>
           </div>
-          <div className='add-alert'>
-            {isInfo.isCategory ? "" : "분류를 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="detail_location">습득위치</label>
             <div>
               <button onClick={() => setIsModal(true)} className={info.location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
@@ -773,9 +774,6 @@ export default function AddDetailPage(history: any) {
           <div>
             {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
             </div>
-          <div className='add-alert'>
-            {isInfo.isDetailLocation ? "" : "위치를 입력해주세요"}
-          </div>
           <hr />
           <div className='add-component'>
             <label htmlFor="detail_location">상세위치</label>
@@ -789,7 +787,7 @@ export default function AddDetailPage(history: any) {
           </div>
           <ImgList previewImg={previewImg} deleteImg={deleteImg} />
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="date">습득 일자</label>
             <div>
             <DatePicker 
@@ -800,21 +798,15 @@ export default function AddDetailPage(history: any) {
                 onChange={date => handleChangeDate(date)} />
             </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isDate ? "" : "날짜을 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
-            <label htmlFor="time">실종 시간</label>
+          <div className='add-component required'>
+            <label htmlFor="time">습득 시간</label>
             <input type="time" name="" id="time" value={info.time} onChange={handleTime}/>
           </div>
           <hr />
           <div className='add-component add-componet-description'>
             <label htmlFor="description" style={{marginBottom: "5px"}}>특징</label>
             <textarea name="" id="description" placeholder='특징을 적어주세요' value={info.description} onChange={resize}></textarea>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isDescription ? "" : "특징을 입력해주세요"}
           </div>
           <hr />
         </div>
