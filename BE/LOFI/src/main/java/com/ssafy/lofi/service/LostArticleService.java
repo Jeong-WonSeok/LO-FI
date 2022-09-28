@@ -19,6 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -85,7 +86,7 @@ public class LostArticleService {
         return true;
     }
 
-    public void callDetailAPIAndSaveLostArticle(List<String> idList) throws IOException {
+    public void callDetailAPIAndSaveLostArticle(List<String> idList) throws IOException, ParseException {
         System.out.println(idList.toString());
         for (String atcId : idList){
             /*URL*/

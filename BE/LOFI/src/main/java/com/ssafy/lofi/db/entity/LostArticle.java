@@ -13,6 +13,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity
@@ -23,30 +25,34 @@ import java.util.Date;
 @NoArgsConstructor
 @DynamicInsert
 public class LostArticle extends BaseEntity{
+    @Nullable
+    private Long userId;
     private String atcId;
     private String name;
     private String category;
-    private String date;
+    @Temporal(TemporalType.DATE)
+    private Date date;
     private String police;
     private String location;
     private String city;
-    @Nullable
-    private Long userId;
     private String picture;
     @Column(columnDefinition = "TEXT")
     private String description;
-    @Column(columnDefinition = "boolean default false")
+    @Column(columnDefinition = "boolean default true")
     private String deleted;
     @Temporal(TemporalType.DATE)
     @CreationTimestamp
     private Date updateDay;
+    private Double latitude;
+    private Double longitude;
 
-    public static LostArticle of(LostArticleDetailResponse detailResponse) {
+    public static LostArticle of(LostArticleDetailResponse detailResponse) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         return LostArticle.builder()
                 .atcId(detailResponse.getAtcId())
                 .name(detailResponse.getLstPrdtNm())
                 .category(detailResponse.getPrdtClNm())
-                .date(detailResponse.getLstYmd())
+                .date(formatter.parse(detailResponse.getLstYmd()))
                 .police(detailResponse.getOrgNm())
                 .location(detailResponse.getLstPlace())
                 .city(detailResponse.getLstLctNm())

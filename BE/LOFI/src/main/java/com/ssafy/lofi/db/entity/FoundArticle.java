@@ -13,6 +13,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity
@@ -26,7 +28,8 @@ public class FoundArticle extends BaseEntity{
     private String atcId;
     private String name;
     private String category;
-    private String date;
+    @Temporal(TemporalType.DATE)
+    private Date date;
     private String safeLocation;
     private String foundLocation;
     @Nullable
@@ -34,17 +37,20 @@ public class FoundArticle extends BaseEntity{
     private String picture;
     @Column(columnDefinition = "TEXT")
     private String description;
-    @Column(columnDefinition = "boolean default false")
+    @Column(columnDefinition = "boolean default true")
     private String deleted;
     @Temporal(TemporalType.DATE)
     @CreationTimestamp
     private Date updateDay;
+    private Double latitude;
+    private Double longitude;
 
 
-    public static FoundArticle of(FoundArticleDetailResponse detailResponse){
+    public static FoundArticle of(FoundArticleDetailResponse detailResponse) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         return FoundArticle.builder()
                 .name(detailResponse.getFdPrdtNm())
-                .date(detailResponse.getFdYmd())
+                .date(formatter.parse(detailResponse.getFdYmd()))
                 .safeLocation(detailResponse.getDepPlace())
                 .foundLocation(detailResponse.getFdPlace())
                 .picture(detailResponse.getFdFilePathImg())
