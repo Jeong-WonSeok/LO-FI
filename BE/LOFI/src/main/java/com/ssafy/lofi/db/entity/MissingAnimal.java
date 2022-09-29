@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -37,6 +38,7 @@ public class MissingAnimal extends BaseEntity{
     private Date updateDay;
     private Double latitude;
     private Double longitude;
+    private Time time;
 //    private String picture;
 
     public static MissingAnimal of(MissingAnimalAPIResponse missingAnimalAPIResponse){

@@ -10,8 +10,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.sql.Time;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -57,27 +58,30 @@ public class RegisterService {
                 .description(missingAnimalRequest.getDescription())
                 .img(missingAnimalRequest.getPicture())
                 .location(missingAnimalRequest.getLocation())
-                .missingDay(stringDateConvertDate(missingAnimalRequest.getDate(),missingAnimalRequest.getTime() == null ? "" : missingAnimalRequest.getTime()))
+                .missingDay(stringDateConvertDate(missingAnimalRequest.getDate()))
                 .latitude(missingAnimalRequest.getLat())
                 .longitude(missingAnimalRequest.getLat())
+                .time(stringConvertTime(missingAnimalRequest.getTime()))
                 .build();
         missingAnlmalRepository.save(missingAnimal);
         return missingAnimal.getId();
     }
 
-    public Date stringDateConvertDate(String date, String time){
-        LocalDateTime result_dateTime;
+    public Date stringDateConvertDate(String date){
         LocalDate result_date;
-        if(!date.isEmpty() && !time.isEmpty()){
-            String result = date + " " + time;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            result_dateTime = LocalDateTime.parse(result,formatter);
-            return java.sql.Timestamp.valueOf(result_dateTime);
-        }else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            result_date = LocalDate.parse(date,formatter);
-            return java.sql.Date.valueOf(result_date);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        result_date = LocalDate.parse(date,formatter);
+        return java.sql.Date.valueOf(result_date);
+    }
+
+    public Time stringConvertTime(String time){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        if(time == null){
+            return java.sql.Time.valueOf("00:00:00");
         }
+
+        LocalTime result = LocalTime.parse(time,formatter);
+        return java.sql.Time.valueOf(result);
     }
 
     public Long registerMissingPerson(MissingPersonRequest missingPersonRequest, int userId) {
@@ -89,12 +93,13 @@ public class RegisterService {
                 .gender(missingPersonRequest.getGender())
                 .age(missingPersonRequest.getMissingAge())
                 .ageNow(missingPersonRequest.getAgeNow())
-                .date(stringDateConvertDate(missingPersonRequest.getMissingDate(), missingPersonRequest.getMissingTime() == null ? "" : missingPersonRequest.getMissingTime()))
+                .date(stringDateConvertDate(missingPersonRequest.getMissingDate()))
                 .dress(missingPersonRequest.getMissingClothes())
                 .picture(missingPersonRequest.getPicture())
                 .location(missingPersonRequest.getLocation())
                 .latitude(missingPersonRequest.getLat())
                 .longitude(missingPersonRequest.getLon())
+                .time(stringConvertTime(missingPersonRequest.getMissingTime()))
                 .build();
         missingPersonRepository.save(missingPerson);
         return missingPerson.getId();
@@ -115,12 +120,13 @@ public class RegisterService {
         LostArticle lostArticle = LostArticle.builder()
                 .name(lostArticleRequest.getName())
                 .category(lostArticleRequest.getCategory())
-                .date(stringDateConvertDate(lostArticleRequest.getDate(), lostArticleRequest.getTime()))
+                .date(stringDateConvertDate(lostArticleRequest.getDate()))
                 .location(lostArticleRequest.getLocation())
                 .picture(lostArticleRequest.getPicture())
                 .description(lostArticleRequest.getDescription())
                 .latitude(lostArticleRequest.getLat())
                 .longitude(lostArticleRequest.getLon())
+                .time(stringConvertTime(lostArticleRequest.getTime()))
                 .build();
         lostArticleRepository.save(lostArticle);
         return lostArticle.getId();
@@ -134,13 +140,14 @@ public class RegisterService {
         FoundArticle foundArticle = FoundArticle.builder()
                 .name(foundArticleRequest.getName())
                 .category(foundArticleRequest.getCategory())
-                .date(stringDateConvertDate(foundArticleRequest.getDate(), foundArticleRequest.getTime()))
+                .date(stringDateConvertDate(foundArticleRequest.getDate()))
                 .safeLocation(foundArticleRequest.getSafeLocation())
                 .foundLocation(foundArticleRequest.getFoundLocation())
                 .picture(foundArticleRequest.getPicture())
                 .description(foundArticleRequest.getDescription())
                 .latitude(foundArticleRequest.getLat())
                 .longitude(foundArticleRequest.getLon())
+                .time(stringConvertTime(foundArticleRequest.getTime()))
                 .build();
         foundArticleRepository.save(foundArticle);
         return foundArticle.getId();
