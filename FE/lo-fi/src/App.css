@@ -17,7 +17,7 @@
 
 
 /* 768px 보다 작을 때 */
-@media all and (max-width: 768px) {
+@media all and (max-width: 400px) {
   .App {
     display: flex;
     justify-content: center;
@@ -29,9 +29,9 @@
 }
 
 /* 768px 보다 클 때 */
-@media all and (min-width: 768px) {
+@media all and (min-width: 400px) {
   .App {
-    width: 768px !important;
+    width: 400px !important;
     display: flex;
     align-items: center;
     justify-content: center;

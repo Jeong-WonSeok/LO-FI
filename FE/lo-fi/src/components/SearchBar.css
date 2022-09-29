@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: row;
   font-family: 'DalSeoHealingMedium';
+  width: 400px;
+  margin: 0 auto;
 }
 
 .search_map {
@@ -9,7 +11,7 @@
   flex-direction: column;
   font-size: 12px;
   margin: 5px;
-  width: 45px;
+  width: 50px;
 }
 
 .search_map > img {

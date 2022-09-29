@@ -12,56 +12,56 @@ import { useAppDispatch, useAppSelector } from '../hooks/reduxHook'
 import { getData } from '../redux/modules/mainData'
 
 export default function Category() {
-  const [Select, setSelect] = useState("lost_item");
+  const [Select, setSelect] = useState("article");
 
   const dispatch = useAppDispatch();
 
   const handleChangeTap = (tag: string) => {
     // 선택하면 데이터가 바뀜
     switch (tag) {
-      case "dog":
-        dispatch(getData("animal"))
-        setSelect("dog");
+      case "animal":
+        // dispatch(getData("animal"))
+        setSelect("animal");
         return
-      case "lost_item":
-        dispatch(getData("lostItem"))
-        setSelect("lost_item");
+      case "article":
+        // dispatch(getData("article"))
+        setSelect("article");
         return
-      case "baby":
-        dispatch(getData("person"))
-        setSelect("baby");
+      case "person":
+        // dispatch(getData("person"))
+        setSelect("person");
         return
-      case "take_item":
-        dispatch(getData("takeItem"))
-        setSelect("take_item");
+      case "found":
+        // dispatch(getData("found"))
+        setSelect("found");
         return
     }
   }
 
   useEffect(() => {
-    dispatch(getData("lostItem"))
+    // dispatch(getData("article"))
   }, [])
   
 
   return (
     <div className="category-container">
-      <button className='category-buttons' onClick={() => handleChangeTap('dog')}>
-        <img src={Select === 'dog' ? select_dog : dog} alt="동물"
+      <button className='category-buttons' onClick={() => handleChangeTap('animal')}>
+        <img src={Select === 'animal' ? select_dog : dog} alt="동물"
         width="20px" height="20px"/>
         <span>실종동물</span>
       </button>
-      <button className='category-buttons' onClick={() => handleChangeTap('lost_item')}>
-        <img src={Select === 'lost_item' ? select_lost_item : lost_item} alt=""
+      <button className='category-buttons' onClick={() => handleChangeTap('article')}>
+        <img src={Select === 'article' ? select_lost_item : lost_item} alt=""
         width="20px" height="20px"/>
         <span>분실물</span>
       </button>
-      <button className='category-buttons' onClick={() => handleChangeTap('baby')}>
-        <img src={Select === 'baby' ? select_baby : baby} alt=""
+      <button className='category-buttons' onClick={() => handleChangeTap('person')}>
+        <img src={Select === 'person' ? select_baby : baby} alt=""
         width="20px" height="20px"/>
         <span>실종아동</span>
       </button>
-      <button className='category-buttons' onClick={() => handleChangeTap('take_item')}>
-        <img src={Select === 'take_item' ? select_take_item : take_item} alt=""
+      <button className='category-buttons' onClick={() => handleChangeTap('found')}>
+        <img src={Select === 'found' ? select_take_item : take_item} alt=""
         width="20px" height="20px" />
         <span>습득물</span>
       </button>
