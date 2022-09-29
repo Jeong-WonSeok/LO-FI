@@ -9,6 +9,7 @@ import com.ssafy.lofi.dto.response.MissingPersonAPIResponse;
 import com.ssafy.lofi.service.FoundArticleService;
 import com.ssafy.lofi.service.LostArticleService;
 import com.ssafy.lofi.service.MissingPersonService;
+import com.ssafy.lofi.service.PoliceService;
 import lombok.RequiredArgsConstructor;
 
 
@@ -40,6 +41,7 @@ public class MainController {
     private final MissingPersonService missingPersonService;
     private final LostArticleService lostArticleService;
     private final FoundArticleService foundArticleService;
+    private final PoliceService policeService;
     @Transactional
     @GetMapping("/person")
     public void getLostPerson(
@@ -145,5 +147,10 @@ public class MainController {
 
         // deleteList 돌면서 db에서 deleted update해주기
         foundArticleService.deleteFoundArticle(deleteList);
+    }
+
+    @GetMapping("/police")
+    public void updatePoliceAddress(){
+        policeService.updateAddress();
     }
 }
