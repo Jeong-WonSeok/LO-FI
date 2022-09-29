@@ -89,7 +89,6 @@ public class RegisterService {
                 .date(stringDateConvertDate(missingPersonRequest.getMissingDate(), null))
                 .dress(missingPersonRequest.getMissingClothes())
                 .picture(missingPersonRequest.getPicture())
-                .category(missingPersonRequest.getCategory())
                 .location(missingPersonRequest.getLocation())
                 .latitude(missingPersonRequest.getLat())
                 .longitude(missingPersonRequest.getLon())
