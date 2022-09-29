@@ -20,7 +20,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import MapMarker from '../components/MapMarker'
 import ImgList from '../components/AddPagePreviewImgList'
-import { useAppDispatch } from '../hooks/reduxHook';
 
 
 
@@ -489,7 +488,7 @@ export default function AddDetailPage(history: any) {
     case "animal":
       return (
         <div className='add-detail-container'>
-          <div className='detail-top-nav'> 
+          <div className='add-detail-top-nav'> 
             <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
             <button type="submit" className='submit-button' id="sumbit" onClick={isSubmit}>제출</button>
           </div>
@@ -541,7 +540,7 @@ export default function AddDetailPage(history: any) {
               <input type="file" src="" alt="" id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: 'none'}}/>
               <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
             </div>
-            <div className={previewImg.length === 0 ? "picture_off" : ""}>사진은 최대 3장까지 등록 가능합니다.</div>
+            <div className={previewImg.length === 0 ? "" : "picture_off"} style={{margin: "0 10px", fontSize: "13px"}}>사진은 최대 3장까지 등록 가능합니다.</div>
             <ImgList previewImg={previewImg} deleteImg={deleteImg} />
             <div className='add-alert'></div>
           </div>
@@ -581,7 +580,7 @@ export default function AddDetailPage(history: any) {
     case "person":
       return (
         <div className='add-detail-container'>
-          <div className='detail-top-nav'> 
+          <div className='add-detail-top-nav'> 
             <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
             <button className='submit-button' id="sumbit" onClick={isSubmit}>제출</button>
           </div>
@@ -632,6 +631,7 @@ export default function AddDetailPage(history: any) {
             <input type="file" src="" alt="" multiple id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
             <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
           </div>
+          <div className={previewImg.length === 0 ? "" : "picture_off"} style={{margin: "0 10px", fontSize: "13px"}}>사진은 최대 3장까지 등록 가능합니다.</div>
           <ImgList previewImg={previewImg} deleteImg={deleteImg} />
           <hr />
           <div className='add-component required'>
@@ -669,7 +669,7 @@ export default function AddDetailPage(history: any) {
     case "article" :
       return (
         <div className='add-detail-container'>
-          <div className='detail-top-nav'> 
+          <div className='add-detail-top-nav'> 
             <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
             <button className='submit-button' id="sumbit" onClick={isSubmit}>제출</button>
           </div>
@@ -728,6 +728,7 @@ export default function AddDetailPage(history: any) {
             <input type="file" src="" alt="" multiple id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
             <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
           </div>
+          <div className={previewImg.length === 0 ? "" : "picture_off"} style={{margin: "0 10px", fontSize: "13px"}}>사진은 최대 3장까지 등록 가능합니다.</div>
           <ImgList previewImg={previewImg} deleteImg={deleteImg} />
           <hr />
           <div className='add-component required'>
@@ -765,7 +766,7 @@ export default function AddDetailPage(history: any) {
     case "found":
       return (
         <div className='add-detail-container'>
-          <div className='detail-top-nav'> 
+          <div className='add-detail-top-nav'> 
             <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
             <button className='submit-button' id="sumbit" onClick={isSubmit}>제출</button>
           </div>
@@ -830,6 +831,7 @@ export default function AddDetailPage(history: any) {
             <input type="file" src="" alt="" multiple id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
             <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
           </div>
+          <div className={previewImg.length === 0 ? "" : "picture_off"} style={{margin: "0 10px", fontSize: "13px"}}>사진은 최대 3장까지 등록 가능합니다.</div>
           <ImgList previewImg={previewImg} deleteImg={deleteImg} />
           <hr />
           <div className='add-component required'>

@@ -14,15 +14,9 @@ const getDataAPI = async (type: string) => {
     return axios.get(requests.person)
   } else if (type === "article") {
     return axios.get(requests.article)
-    const res = await test_axios.get(`/1320000/LostGoodsInfoInqireService/getLostGoodsInfoAccToClAreaPd?serviceKey=${process.env.REACT_APP_LOST_ITEM_KEY}`)
-    return res.data.response.body.items.item
   } else if (type === "found") {
     return axios.get(requests.found)
-    const res = await test_axios.get(`/1320000/LosfundInfoInqireService/getLosfundInfoAccToClAreaPd?serviceKey=${process.env.REACT_APP_LOST_ITEM_KEY}`)
-    return res.data.response.body.items.item
-    // return axios.get(requests.takeItem)
   } else {
-    console.log('입력값', type)
     console.log('잘못된 입력입니다.')
   }
 }
@@ -32,7 +26,7 @@ const getSearchAPI = async (type: string, searchText: string) => {
     category: type,
     keyword: searchText
   }
-  return axios.get(requests.searchDetail, {params})
+  return await axios.get(requests.searchDetail, {params})
 }
 
 

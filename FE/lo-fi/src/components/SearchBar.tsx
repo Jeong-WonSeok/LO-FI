@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import map from '../assets/img/Category/map.png'
 import list from '../assets/img/Category/list.png'
 import search_icon from '../assets/img/icon/search_icon.png'
@@ -27,7 +27,7 @@ export default function SearchBar(props: any) {
   // 엔터를 입력하면 검색이 실시
   const Search = (e: any) => {
     console.log(SearchText)
-    if (e.key == "Enter") {
+    if (e.key === "Enter") {
       dispatch(searchData(category, SearchText))
     }
   }
