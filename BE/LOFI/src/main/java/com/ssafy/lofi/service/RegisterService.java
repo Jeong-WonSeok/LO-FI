@@ -56,7 +56,7 @@ public class RegisterService {
                 .description(missingAnimalRequest.getDescription())
                 .img(missingAnimalRequest.getPicture())
                 .location(missingAnimalRequest.getLocation())
-                .missingDay(stringDateConvertDate(missingAnimalRequest.getDate(),missingAnimalRequest.getTime()))
+                .missingDay(stringDateConvertDate(missingAnimalRequest.getDate(),missingAnimalRequest.getTime() == null ? "" : missingAnimalRequest.getTime()))
                 .latitude(missingAnimalRequest.getLat())
                 .longitude(missingAnimalRequest.getLat())
                 .build();
@@ -65,16 +65,18 @@ public class RegisterService {
     }
 
     public Date stringDateConvertDate(String date, String time){
-        LocalDateTime result_date;
-        if(!date.isEmpty() || !time.isEmpty()){
+        LocalDateTime result_dateTime;
+        LocalDate result_date;
+        if(!date.isEmpty() && !time.isEmpty()){
             String result = date + " " + time;
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            result_date = LocalDateTime.parse(result,formatter);
+            result_dateTime = LocalDateTime.parse(result,formatter);
+            return java.sql.Timestamp.valueOf(result_dateTime);
         }else {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            result_date = LocalDateTime.parse(date,formatter);
+            result_date = LocalDate.parse(date,formatter);
+            return java.sql.Date.valueOf(result_date);
         }
-        return java.sql.Timestamp.valueOf(result_date);
     }
 
     public Long registerMissingPerson(MissingPersonRequest missingPersonRequest, int userId) {
@@ -86,7 +88,7 @@ public class RegisterService {
                 .gender(missingPersonRequest.getGender())
                 .age(missingPersonRequest.getMissingAge())
                 .ageNow(missingPersonRequest.getAgeNow())
-                .date(stringDateConvertDate(missingPersonRequest.getMissingDate(), null))
+                .date(stringDateConvertDate(missingPersonRequest.getMissingDate(), missingPersonRequest.getMissingTime() == null ? "" : missingPersonRequest.getMissingTime()))
                 .dress(missingPersonRequest.getMissingClothes())
                 .picture(missingPersonRequest.getPicture())
                 .location(missingPersonRequest.getLocation())
