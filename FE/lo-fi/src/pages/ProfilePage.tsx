@@ -7,6 +7,15 @@ export default function ProfilePage() {
     username: "이싸피",
     point: 0,
   }
+
+  //로그아웃처리
+  const onDeleteToken = () =>{
+    //로컬스토리지 토큰 값 지우기
+    localStorage.clear();
+    //토큰 값 지워지고 메인으로
+    window.location.href='http://localhost:3000/'
+  }
+
   return (
     <div className='profile-container'>
       <h1 className='profile-username'>{user.username}</h1>
@@ -26,6 +35,10 @@ export default function ProfilePage() {
         <hr />
         <div className='profile-component'>
           회원정보
+        </div>
+        <hr/>
+        <div className='profile-component'>
+          <button onClick={onDeleteToken}>로그아웃</button>
         </div>
       </div>
     </div>
