@@ -20,8 +20,8 @@ public class LostArticleDto {
     private Date date; // 잃어버린 날짜
     private String picture; // 이미지
     // 위도 경도 좌표
-    private String lat; // 잃어버린 장소 좌표
-    private String lon; // 잃어버린 장소 좌표
+    private double lat; // 잃어버린 장소 좌표
+    private double lon; // 잃어버린 장소 좌표
 
     public LostArticleDto(LostArticle lostArticle){
         this.id = lostArticle.getId();
@@ -31,6 +31,8 @@ public class LostArticleDto {
         this.location = lostArticle.getLocation();
         this.date = lostArticle.getDate();
         this.police = lostArticle.getPolice();
-        //this.picture = missingAnimal.getPicture();
+        this.picture = lostArticle.getPicture();
+        this.lat = lostArticle.getLatitude();
+        this.lon = lostArticle.getLongitude();
     }
 }
