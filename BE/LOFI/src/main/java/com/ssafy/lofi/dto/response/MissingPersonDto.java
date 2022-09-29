@@ -14,6 +14,7 @@ public class MissingPersonDto {
     private Integer ageNow;
     private String location;
     private Date date;
+    private String time;
     private String description;
     private String category;
     private String dress;
@@ -34,6 +35,7 @@ public class MissingPersonDto {
         this.category = missingPerson.getCategory();
         this.dress = missingPerson.getDress();
         this.picture = missingPerson.getPicture();
+        this.time = missingPerson.getTime().toString();
         this.lat = missingPerson.getLatitude();
         this.lon = missingPerson.getLongitude();
     }

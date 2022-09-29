@@ -17,6 +17,7 @@ public class MissingAnimalDto {
     private String date;
     private String description;
     private String picture;
+    private String time;
     // 위도 경도 좌표
     private double lat;
     private double lon;
@@ -33,5 +34,6 @@ public class MissingAnimalDto {
         this.picture = missingAnimal.getAnimalId();
         this.lat = missingAnimal.getLatitude();
         this.lon = missingAnimal.getLongitude();
+        this.time = missingAnimal.getTime().toString();
     }
 }

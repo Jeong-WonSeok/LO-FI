@@ -22,6 +22,7 @@ public class LostArticleDto {
     // 위도 경도 좌표
     private double lat; // 잃어버린 장소 좌표
     private double lon; // 잃어버린 장소 좌표
+    private String time;
 
     public LostArticleDto(LostArticle lostArticle){
         this.id = lostArticle.getId();
@@ -34,5 +35,6 @@ public class LostArticleDto {
         this.picture = lostArticle.getPicture();
         this.lat = lostArticle.getLatitude();
         this.lon = lostArticle.getLongitude();
+        this.time = lostArticle.getTime().toString();
     }
 }
