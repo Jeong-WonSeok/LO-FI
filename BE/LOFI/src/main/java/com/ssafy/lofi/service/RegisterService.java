@@ -55,7 +55,10 @@ public class RegisterService {
                 .age(missingAnimalRequest.getAge())
                 .description(missingAnimalRequest.getDescription())
                 .img(missingAnimalRequest.getPicture())
+                .location(missingAnimalRequest.getLocation())
                 .missingDay(stringDateConvertDate(missingAnimalRequest.getDate(),missingAnimalRequest.getTime()))
+                .latitude(missingAnimalRequest.getLat())
+                .longitude(missingAnimalRequest.getLat())
                 .build();
         missingAnlmalRepository.save(missingAnimal);
         return missingAnimal.getId();
@@ -82,9 +85,14 @@ public class RegisterService {
                 .name(missingPersonRequest.getName())
                 .gender(missingPersonRequest.getGender())
                 .age(missingPersonRequest.getMissingAge())
+                .ageNow(missingPersonRequest.getAgeNow())
                 .date(stringDateConvertDate(missingPersonRequest.getMissingDate(), null))
                 .dress(missingPersonRequest.getMissingClothes())
                 .picture(missingPersonRequest.getPicture())
+                .category(missingPersonRequest.getCategory())
+                .location(missingPersonRequest.getLocation())
+                .latitude(missingPersonRequest.getLat())
+                .longitude(missingPersonRequest.getLon())
                 .build();
         missingPersonRepository.save(missingPerson);
         return missingPerson.getId();
@@ -108,6 +116,9 @@ public class RegisterService {
                 .date(stringDateConvertDate(lostArticleRequest.getDate(), lostArticleRequest.getTime()))
                 .location(lostArticleRequest.getLocation())
                 .picture(lostArticleRequest.getPicture())
+                .description(lostArticleRequest.getDescription())
+                .latitude(lostArticleRequest.getLat())
+                .longitude(lostArticleRequest.getLon())
                 .build();
         lostArticleRepository.save(lostArticle);
         return lostArticle.getId();
@@ -126,6 +137,8 @@ public class RegisterService {
                 .foundLocation(foundArticleRequest.getFoundLocation())
                 .picture(foundArticleRequest.getPicture())
                 .description(foundArticleRequest.getDescription())
+                .latitude(foundArticleRequest.getLat())
+                .longitude(foundArticleRequest.getLon())
                 .build();
         foundArticleRepository.save(foundArticle);
         return foundArticle.getId();
