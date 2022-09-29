@@ -83,15 +83,15 @@ export default function FooterBar() {
                   <img src={animal} alt="" width={30} height={30}/>
                   <p>반려동물</p>
                 </Link>
-                <Link to="/add/people" className='category-add-button'onClick={() => setCheck(!check)}>
+                <Link to="/add/person" className='category-add-button'onClick={() => setCheck(!check)}>
                   <img src={people} alt="" width={30} height={30}/>
                   <p>사람</p>
                 </Link>
-                <Link to="/add/lost-item" className='category-add-button' onClick={() => setCheck(!check)}>
+                <Link to="/add/article" className='category-add-button' onClick={() => setCheck(!check)}>
                   <img src={lost_item} alt="" width={30} height={30}/>
                   <p>분실물</p>
                 </Link>
-                <Link to="/add/take-item" className='category-add-button' onClick={() => setCheck(!check)}>
+                <Link to="/add/found" className='category-add-button' onClick={() => setCheck(!check)}>
                   <img src={take_item} alt="" width={30} height={30}/>
                   <p>습득물</p>
                 </Link>
