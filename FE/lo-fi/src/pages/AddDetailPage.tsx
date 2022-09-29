@@ -35,7 +35,6 @@ export interface infoType {
     detail_location: String,
     date: Date,
     description: String
-    picture: String,
     time: String,
     point: Number
   },
@@ -59,12 +58,12 @@ export interface getAddressType {
 
 export default function AddDetailPage(history: any) {
   let del_count = 0;
-  const dispatch = useAppDispatch()
   const [isModal, setIsModal] = useState(false);
   const [isDetailModal, setIsDetailModal] = useState(false);
   const previewFileList: string[] = [];
   const fileList: File[] = [];
   const myFileList: File[] = [];
+  let picture = '';
   const navigate = useNavigate();
   const [previewImg, setPreviewImg] = useState(previewFileList)
   const [files, setFiles] = useState(fileList)
@@ -78,7 +77,6 @@ export default function AddDetailPage(history: any) {
     time: new Date().toTimeString().slice(0, 5),
     location: "",
     detail_location: "",
-    picture: "",
     date: new Date(),
     description: "",
     lat: 0,
@@ -95,30 +93,39 @@ export default function AddDetailPage(history: any) {
         switch ( category ) {
           case "animal":
           case "person":
-            if (info.age && info.gender && info.age && info.description) {
-              target.classList.remove("sumbit_fail")
+            if (info.age && info.gender && info.description) {
+              target.classList.add("submit-success");
               target.disabled = false;
               return
             } else {
-              target.classList.add("sumbit_fail")
-              target.disabled = true
+              target.classList.remove("submit-success");
+              target.disabled = true;
               return 
             }
-          case "lost-item":
-          case "take-item": 
+          case "article":
             if (info.category) {
-              target.classList.remove("sumbit_fail")
+              target.disabled = false;
+              target.classList.add("submit-success");
+              return
+            } else {
+              target.disabled = true;
+              target.classList.remove("submit-success");
+              return
+            }
+          case "found": 
+            if (info.category && info.detail_location) {
+              target.classList.add("submit-success");
               target.disabled = false;
               return
             } else {
-              target.disabled = true
-              target.classList.add("sumbit_fail")
+              target.classList.remove("submit-success");
+              target.disabled = true;
               return
             }
         }
       } else {
         // 조건 불충족시 버튼 비활성화
-        target.classList.add("sumbit_fail")
+        target.classList.remove("submit-success");
         target.disabled = true;
       }
     }
@@ -221,7 +228,7 @@ export default function AddDetailPage(history: any) {
     setInfo(prevState => ({
       ...prevState,
       "age": Number(e.target.value),
-      "nowAge": nowyear - prevState.date.getFullYear() + e.target.value
+      "nowAge": Number(nowyear - prevState.date.getFullYear() + e.target.value)
     }))
   }
 
@@ -231,7 +238,7 @@ export default function AddDetailPage(history: any) {
     setInfo(prevState => ({
       ...prevState,
       "date" : date,
-      "nowAge": nowyear - date.getFullYear() + info.age
+      "nowAge": Number(nowyear - date.getFullYear() + info.age)
     }))
   }
 
@@ -277,7 +284,6 @@ export default function AddDetailPage(history: any) {
   }
 
   const handleCategory = (e: any) => {
-    console.log(e.target.value)
     setInfo(prev => ({
       ...prev, 
       "category": e.target.value
@@ -327,20 +333,15 @@ export default function AddDetailPage(history: any) {
 
   const uploadS3Files = (S3files: File[]) => {
     // 사진 데이터 s3에 저장하기
-    let picture_string = ""
     // for문을 돌려 upload 후 리턴된 경로를 info에 저장한다.
     if (S3files.length === 0) {
       return
     } else {
+      picture = ''
       for (let i=0; i < S3files.length; i++) {
-        s3.uploadFile(S3files[i], S3files[i].name).then((data) => {
-          // 잘들어가는 것을 확인
-          picture_string += data.location + " "
-          setInfo((prev) => {
-            let newInfo = {...prev};
-            newInfo['picture'] = picture_string
-            return newInfo
-          });
+        s3.uploadFile(S3files[i], S3files[i].name).then(async (data) => { 
+          // 이게 비동기적으로 처리되서 지금 사진이 안들어가는 것처럼 보임
+          picture += data.location + " "
         }).catch(err => console.error(err))
       }
       return
@@ -348,11 +349,14 @@ export default function AddDetailPage(history: any) {
   }
 
   const isSubmit = async () => {
-    console.log('제출')
+    // 중복 제출을 막기위해서
+    target.disabled = true;
     // 공통사항 검사
     if (info.name && info.location) {
-      uploadS3Files(files)
-      // 날짜 전처리
+      await uploadS3Files(files)
+
+      setTimeout( async () => {
+        // 날짜 전처리
       var year = info.date.getFullYear();
       var month = ("0" + (1 + info.date.getMonth())).slice(-2);
       var day = ("0" + info.date.getDate()).slice(-2);
@@ -364,6 +368,7 @@ export default function AddDetailPage(history: any) {
           if (info.speice && info.age && info.gender && info.description) {
             const sendData = {
               "age": String(info.age),
+              "breed": info.speice,
               "date": result,
               "description": info.description,
               "gender": info.gender,
@@ -372,8 +377,8 @@ export default function AddDetailPage(history: any) {
               "lat": info.lat,
               "lon": info.lon,
               "name": info.name,
-              "picture": info.picture,
-              "point": String(info.point),
+              "picture": picture,
+              "point": info.point,
               "time": info.time
             }
             console.log(sendData)
@@ -382,26 +387,27 @@ export default function AddDetailPage(history: any) {
             }})
 
             console.log('받은 데이터',res)
-
-            return history.push('/search')
+            
+            navigate(`/search/${category}/${res.data}`)
+            return 
           }
           return
-        case "people":
+        case "person":
           if (info.age && info.gender && info.description) {
             const sendData = {
-              "age": String(info.age),
-              "nowAge": String(info.nowAge),
-              "date": result,
-              "description": info.description,
+              "missingAge": info.age,
+              "ageNow": Number(info.nowAge),
+              "missingDate": result,
+              "missingClothes": info.description,
               "gender": info.gender,
               "location": info.location,
               "locationDescription": info.detail_location,
               "lat": info.lat,
               "lon": info.lon,
               "name": info.name,
-              "picture": info.picture,
-              "point": String(info.point),
-              "time": info.time
+              "picture": picture,
+              "point": info.point,
+              "missingTime": info.time
             }
             console.log(sendData)
             const res = await axios.post(requests.addPerson, sendData, {headers: {
@@ -409,22 +415,26 @@ export default function AddDetailPage(history: any) {
             }})
 
             console.log('받은 데이터',res)
-
-            return history.push('/search')
+            
+            navigate(`/search/${category}/${res.data}`)
+            return
           }
           return
-        case "lost_item":
+        case "article":
           if (info.category) {
+            const city = info.location.split(" ")
             const sendData = {
               "date": result,
+              "city": city[0],
+              "category": info.category,
               "description": info.description,
               "location": info.location,
               "locationDescription": info.detail_location,
               "lat": info.lat,
               "lon": info.lon,
               "name": info.name,
-              "picture": info.picture,
-              "point": String(info.point),
+              "picture": picture,
+              "point": info.point,
               "time": info.time
             }
             console.log(sendData)
@@ -434,22 +444,24 @@ export default function AddDetailPage(history: any) {
 
             console.log('받은 데이터',res)
 
-            return history.push('/search')
+            navigate(`/search/${category}/${res.data}`)
+            return 
           }
           return
-        case "take_item":
+        case "found":
           if (info.category) {
             const sendData = {
               "date": result,
+              "category": info.category,
               "description": info.description,
-              "location": info.location,
+              "foundLocation": info.location,
               "safeLocation": info.detail_location,
               "lat": info.lat,
               "lon": info.lon,
               "name": info.name,
-              "picture": info.picture,
-              "point": String(info.point),
-              "time": info.time
+              "picture": picture,
+              "point": info.point,
+              "time": info.time,
             }
             console.log(sendData)
             const res = await axios.post(requests.addFound, sendData, {headers: {
@@ -458,11 +470,14 @@ export default function AddDetailPage(history: any) {
 
             console.log('받은 데이터',res)
 
-            return history.push('/search')
+            navigate(`/search/${category}/${res.data}`)
+            return
           }
           return
-    }} else {
-      
+        }
+      }, 1000)
+    } else {
+      target.disabled = false;
     }
   }
 
@@ -472,7 +487,7 @@ export default function AddDetailPage(history: any) {
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
             <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
-            <button type="submit" className='submit-button sumbit_fail' id="sumbit" onClick={isSubmit}>제출</button>
+            <button type="submit" className='submit-button' id="sumbit" onClick={isSubmit}>제출</button>
           </div>
           <div className="input_required">
             는 필수 입력입니다
@@ -559,12 +574,12 @@ export default function AddDetailPage(history: any) {
           <hr />
         </div>
       )
-    case "people":
+    case "person":
       return (
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
             <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
-            <button className='submit-button sumbit_fail' id="sumbit" disabled onClick={isSubmit}>제출</button>
+            <button className='submit-button' id="sumbit" onClick={isSubmit}>제출</button>
           </div>
           <div className="input_required">
             는 필수 입력입니다
@@ -647,12 +662,12 @@ export default function AddDetailPage(history: any) {
           <hr />
         </div>
       )
-    case "lost-item" :
+    case "article" :
       return (
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
-            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)} style={{cursor: "pointer"}}/>
-            <button className='submit-button sumbit_fail' id="sumbit" disabled onClick={isSubmit}>제출</button>
+            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
+            <button className='submit-button' id="sumbit" onClick={isSubmit}>제출</button>
           </div>
           <div className="input_required">
             는 필수 입력입니다
@@ -689,7 +704,7 @@ export default function AddDetailPage(history: any) {
           </div>
           <hr />
           <div className='add-component required'>
-            <label htmlFor="detail_location">습득위치</label>
+            <label htmlFor="detail_location">분실위치</label>
             <div>
               <button onClick={() => setIsModal(true)} className={info.location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
               <span id="detail_location" className={info.location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.location}</span>
@@ -743,12 +758,12 @@ export default function AddDetailPage(history: any) {
           <hr />
         </div>
       )
-    case "take-item":
+    case "found":
       return (
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
-            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)} style={{cursor: "pointer"}}/>
-            <button className='submit-button sumbit_fail' id="sumbit" disabled onClick={isSubmit}>제출</button>
+            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
+            <button className='submit-button' id="sumbit" onClick={isSubmit}>제출</button>
           </div>
           <div className="input_required">
             는 필수 입력입니다
@@ -760,7 +775,7 @@ export default function AddDetailPage(history: any) {
           <hr />
           <div className='add-component required'>
             <label htmlFor="add-category">분류</label>
-            <select name="" id="add-category">
+            <select name="" id="add-category" onChange={handleCategory}>
               <option value="">분류를 선택하세요</option>
               <option value="가방">가방</option>
               <option value="귀금속">귀금속</option>

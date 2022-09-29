@@ -53,7 +53,7 @@ export default function List() {
         <div className='list-container'>
           {test.map((data: any) => {
             return (
-              <Link to={`${data.atcId}`} key={data.atcId} className='list-item-container'>
+              <Link to={`${category}/${data.atcId}`} key={data.atcId} className='list-item-container'>
                 <img src={data.image} alt="실종품 사진" width={100} height={100}/>
                 <div className='list-item-info'>
                   <div className='list-item-span'>

@@ -27,8 +27,8 @@ const requests = {
   //등록페이지
   addAnimal: "api/register/missingAnimal",
   addPerson: "api/register/missingPerson",
-  addArticle: "api/register/foundArticle",
-  addFound: "api/register/lostArticle",
+  addArticle: "api/register/lostArticle",
+  addFound: "api/register/foundArticle",
 }
 
 export default requests;
