@@ -9,7 +9,7 @@ public class MissingAnimalDto {
 
     private Long id;
     private Long animalId;
-    private String find;
+    private String breed;
     private String name;
     private String gender;
     private String age;
@@ -24,6 +24,7 @@ public class MissingAnimalDto {
     public MissingAnimalDto(MissingAnimal missingAnimal){
         this.id = missingAnimal.getId();
         this.name = missingAnimal.getName();
+        this.breed = missingAnimal.getKind();
         this.gender = missingAnimal.getGender();
         this.age = missingAnimal.getAge();
         this.location = missingAnimal.getLocation();

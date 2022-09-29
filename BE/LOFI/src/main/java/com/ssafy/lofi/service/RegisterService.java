@@ -51,6 +51,7 @@ public class RegisterService {
     public Long registerMissingAnimal(MissingAnimalRequest missingAnimalRequest, int userId) {
         MissingAnimal missingAnimal = MissingAnimal.builder()
                 .name(missingAnimalRequest.getName())
+                .kind(missingAnimalRequest.getBreed())
                 .gender(missingAnimalRequest.getGender())
                 .age(missingAnimalRequest.getAge())
                 .description(missingAnimalRequest.getDescription())

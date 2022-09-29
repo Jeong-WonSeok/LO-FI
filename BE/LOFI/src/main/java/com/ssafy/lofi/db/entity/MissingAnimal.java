@@ -23,7 +23,7 @@ public class MissingAnimal extends BaseEntity{
     private Long userId;
     private String animalId;
     private String name;
-    private String find;
+    private String kind;
     private String gender;
     private String age; // ~ 살 ~ 살 미만
     @Temporal(TemporalType.DATE)
