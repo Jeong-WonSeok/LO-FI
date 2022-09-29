@@ -339,6 +339,10 @@ export default function AddDetailPage(history: any) {
     } else {
       picture = ''
       for (let i=0; i < S3files.length; i++) {
+        // 추후 공백으로 분리하기 위해 파일명 내부의 공백을 없애준다.
+        S3files.forEach(files => {
+          files.name.replaceAll(" ", "_")
+        })
         s3.uploadFile(S3files[i], S3files[i].name).then(async (data) => { 
           // 이게 비동기적으로 처리되서 지금 사진이 안들어가는 것처럼 보임
           picture += data.location + " "
