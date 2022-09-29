@@ -15,7 +15,8 @@ public class MissingPersonRequest {
     private String missingClothes; // 실종 당시 인상착의
     private Integer missingAge; // 실종 당시 나이
     private Integer ageNow;
-    private String point; // 사례금
+    private int point; // 사례금
+    private String category;
     private double lat;
     private double lon;
 }

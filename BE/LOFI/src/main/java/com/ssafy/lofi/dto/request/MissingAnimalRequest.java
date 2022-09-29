@@ -13,7 +13,7 @@ public class MissingAnimalRequest {
     private String date; // 실종 일자
     private String time; // 실종 시간
     private String description; // 실종 동물 특징
-    private String point; // 사례금
+    private int point; // 사례금
     private String breed; // 품종
     private double lat;
     private double lon;
