@@ -1,68 +1,139 @@
-import React, {useEffect, useRef, useState, useCallback} from 'react'
+import React, { useRef, useState, useCallback, useEffect} from 'react'
 import { useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import DatePicker from 'react-datepicker'
+import { ko } from 'date-fns/esm/locale';
+
+import ReactS3Client from 'react-aws-s3-typescript'
+import { s3Config } from '../hooks/s3Config'
+
+import axios from '../api/axios'
+import requests from '../api/requests'
+
 import male from '../assets/img/icon/male.png'
 import select_male from '../assets/img/icon/select_male.png'
 import female from '../assets/img/icon/female.png'
 import select_female from '../assets/img/icon/select_female.png'
-import './AddDetailPage.css'
 import close from '../assets/img/icon/close.png'
-import { useNavigate } from 'react-router-dom'
-import DatePicker from 'react-datepicker'
+import './AddDetailPage.css'
 import 'react-datepicker/dist/react-datepicker.css';
-import { ko } from 'date-fns/esm/locale';
 
-export type infoType = {
-  name: String,
-  spiece: String,
-  Gender: String,
-  age: Number,
-  location: String,
-  detail_loctaion: String,
-  date: Date,
-  description: String
-  picture: FileList,
+import MapMarker from '../components/MapMarker'
+import ImgList from '../components/AddPagePreviewImgList'
+import { useAppDispatch } from '../hooks/reduxHook';
+
+
+
+export interface infoType {
+  info: {
+    name: String,
+    spiece: String,
+    Gender: String,
+    age: Number,
+    nowAge: Number,
+    location: String,
+    detail_location: String,
+    date: Date,
+    description: String
+    time: String,
+    point: Number
+  },
+  previewFileList: String[]
 }
 
+// 자식에서 부모로 데이터 넘겨주기 위해
+export interface Iprops {
+  getAddress: (address: string) => void
+}
 
-export default function AddDetailPage() {
-  const stringList: string[] = [];
+interface DataType {
+  address: string,
+  lat: number,
+  lon: number
+}
+
+export interface getAddressType {
+  address: string
+}
+
+export default function AddDetailPage(history: any) {
+  let del_count = 0;
+  const [isModal, setIsModal] = useState(false);
+  const [isDetailModal, setIsDetailModal] = useState(false);
+  const previewFileList: string[] = [];
+  const fileList: File[] = [];
+  const myFileList: File[] = [];
+  let picture = '';
   const navigate = useNavigate();
-  const [previewImg, setPreviewImg] = useState(stringList)
+  const [previewImg, setPreviewImg] = useState(previewFileList)
+  const [files, setFiles] = useState(fileList)
   const [ info, setInfo ] = useState({ 
     name: "",
     category: "",
     speice: "",
     gender: "",
-    age: 1,
+    age: 0,
+    nowAge: 0,
+    time: new Date().toTimeString().slice(0, 5),
     location: "",
-    detail_loctaion: "",
-    picture: stringList,
+    detail_location: "",
     date: new Date(),
-    description: ""
-  })
-
-  const [isInfo, setIsInfo] = useState({
-    isName: true,
-    isCategory: true,
-    isSpeice: true,
-    isGender: true,
-    isAge: true,
-    isLocation: true,
-    isDetailLocation: true,
-    isDate: true,
-    isDescription: true,
+    description: "",
+    lat: 0,
+    lon: 0,
+    point: 0
   })
   const { category } = useParams();
 
+  const target = document.getElementById('sumbit') as HTMLButtonElement
 
-  const inputRef = useRef<HTMLInputElement | null> (null);
-
-  const onUplopadImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      addImage(e.target.files)
-      return;
+  useEffect(() => {
+    if (target) {
+      if (info.name && info.location) {
+        switch ( category ) {
+          case "animal":
+          case "person":
+            if (info.age && info.gender && info.description) {
+              target.classList.add("submit-success");
+              target.disabled = false;
+              return
+            } else {
+              target.classList.remove("submit-success");
+              target.disabled = true;
+              return 
+            }
+          case "article":
+            if (info.category) {
+              target.disabled = false;
+              target.classList.add("submit-success");
+              return
+            } else {
+              target.disabled = true;
+              target.classList.remove("submit-success");
+              return
+            }
+          case "found": 
+            if (info.category && info.detail_location) {
+              target.classList.add("submit-success");
+              target.disabled = false;
+              return
+            } else {
+              target.classList.remove("submit-success");
+              target.disabled = true;
+              return
+            }
+        }
+      } else {
+        // 조건 불충족시 버튼 비활성화
+        target.classList.remove("submit-success");
+        target.disabled = true;
+      }
     }
-  }, []) 
+  }, [info])
+  
+
+  // 이미지 업로드 로직
+  const inputRef = useRef<HTMLInputElement | null> (null);
 
   const onUploadImageButtonClick = useCallback(() => {
     if (!inputRef.current) {
@@ -71,24 +142,52 @@ export default function AddDetailPage() {
     inputRef.current.click();
   }, []);
 
-  const addImage = ((files: FileList) => {
-    // 파일 리스트
+  const onUplopadImage = ( async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      // 파일이 3개 이상이면 잘라냄
+      if (previewImg.length < 3) {
+         // fileList를 Array의 형태로 
+        const uploadFiles = Array.prototype.slice.call(e.target.files)
+
+        uploadFiles.forEach((uploadFile) => {
+          myFileList.push(uploadFile)
+        });
+
+        setFiles(myFileList)
+        addImage(myFileList)
+        return;
+      } else {
+        const dataTranster = new DataTransfer()
+
+        Array.from(files)
+          .filter((file, fileidx) => {
+            if (fileidx !== 3) {
+              return file
+            }
+          })
+          .forEach(file => {
+            dataTranster.items.add(file)
+          })
+    
+        const InputFile = document.querySelector('#picture') as HTMLInputElement
+        InputFile.files = dataTranster.files;
+
+        return;
+      }
+    }
+  })
+
+  const addImage = ((files: Array<File>) => {
     const nowImageURLList = [...previewImg];
     for (let i=0; i < files.length; i++ ) {
+      
       // 미리보기가 가능하게 변수화
       let nowImageUrl: string = ""; 
       nowImageUrl = URL.createObjectURL(files[i]);
       nowImageURLList.push(nowImageUrl);
     }
     setPreviewImg(nowImageURLList)
-    console.log(info.picture)
   })
-
-  // 값이 변경될 때 마다 제출 여부를 실행함
-  // useEffect(() => {
-  //   isSubmit()
-  // }, [info])
-  
 
   // 데이터 입력시 선언
   // 입력이 늘어나면 그것에 맞춰 텍스트 박스의 길이가 늘어남
@@ -100,37 +199,6 @@ export default function AddDetailPage() {
     const textEle = document.getElementById('description') as HTMLTextAreaElement
     textEle.style.height = '1px';
     textEle.style.height = (12 + e.target.scrollHeight) + 'px';
-  }
-  
-  // 이미지 등록한거 스크롤
-  window.onload = function() {
-    const slider = document.querySelector('.add-img-list')  as HTMLDivElement;
-    let isMouseDown = false;
-    let startX = 0;
-    let scrollLeft = 0;
-    
-    slider.addEventListener('mousedown', (e) => {
-      isMouseDown = true;
-      startX = e.pageX - slider.offsetLeft
-      scrollLeft = slider.scrollLeft
-    })
-  
-    slider.addEventListener('mouseleave', () => {
-      isMouseDown = false;
-    })
-  
-    slider.addEventListener('mouseup', () => {
-      isMouseDown = false;
-    })
-  
-    slider.addEventListener('mousemove', (e) => {
-      if (!isMouseDown) return;
-  
-      e.preventDefault();
-      const x = e.pageX - slider.offsetLeft;
-      const walk = (x - startX) * 1;
-      slider.scrollLeft = scrollLeft - walk;
-    })
   }
 
   const handleName = (e: any) => {
@@ -155,108 +223,262 @@ export default function AddDetailPage() {
   }
 
   const handleAge = (e: any) => {
+    const nowDay = new Date();
+    const nowyear = nowDay.getFullYear()
     setInfo(prevState => ({
       ...prevState,
-      "age": Number(e.target.value)
-    }))
-  }
-
-  const handleLocation = (e: any) => {
-    setInfo(prev => ({
-      ...prev,
-      "location" : e.target.value
-    }))
-  }
-  
-  const handleDetailLoation = (e: any) => {
-    setInfo(prevState => ({
-      ...prevState,
-      "detail_loctaion": e.target.value
+      "age": Number(e.target.value),
+      "nowAge": Number(nowyear - prevState.date.getFullYear() + e.target.value)
     }))
   }
 
   const handleChangeDate = (date: any) => {
+    const nowDay = new Date();
+    const nowyear = nowDay.getFullYear()
     setInfo(prevState => ({
       ...prevState,
-      "date" : date
+      "date" : date,
+      "nowAge": Number(nowyear - date.getFullYear() + info.age)
     }))
   }
 
-  const isSubmit = () => {
+  const handlePoint = (e: any) => {
+    setInfo(prev => ({
+      ...prev,
+      "point": Number(e.target.value)
+    }))
+  }
+
+  const handleTime = (e: any) => {
+    setInfo(prev => ({
+      ...prev,
+      "time": e.target.value
+    }))
+  }
+
+  const getAddress = (data: DataType) => {
+    if (isModal) {
+      setInfo((current) => {
+        let newInfo = {...current}
+        newInfo['location'] = data['address']
+        newInfo['lat'] = data['lat']
+        newInfo['lon'] = data['lon']
+        return newInfo
+      })
+    } else if (isDetailModal) {
+      setInfo((current) => {
+        let newInfo = {...current}
+        newInfo['detail_location'] = data['address']
+        return newInfo
+      })
+    }
+    setIsDetailModal(false)
+    setIsModal(false)
+  }
+
+  const handleDetail = (e: any) => {
+    setInfo(prev => ({
+      ...prev,
+      "detail_location": e.target.value
+    }))
+  }
+
+  const handleCategory = (e: any) => {
+    setInfo(prev => ({
+      ...prev, 
+      "category": e.target.value
+    }))
+  } 
+
+  const closeModal = () => {
+    setIsModal(false)
+    setIsDetailModal(false)
+  }
+
+  // 이미지 제거
+  const deleteImg = (idx: number) => {
+    // 해당 인덱스 제거
+    setFiles((current) => {
+      let newFile = [...current]
+      newFile.splice(idx, 1)
+      return newFile
+    })
+
+    myFileList.splice(idx, 1)
+
+    setPreviewImg((current) => {
+      let newPreviewFile = [...current]
+      newPreviewFile.splice(idx, 1)
+      return newPreviewFile
+    })
+
+    const dataTranster = new DataTransfer()
+    
+    Array.from(files)
+      .filter((file, fileidx) => {
+        if (fileidx !== Number(idx) + del_count) {
+          return file
+        }
+      })
+      .forEach(file => {
+        dataTranster.items.add(file)
+      })
+
+    const InputFile = document.querySelector('#picture') as HTMLInputElement
+    InputFile.files = dataTranster.files;
+    del_count += 1
+  }
+
+  const s3 = new ReactS3Client(s3Config);
+
+  const uploadS3Files = (S3files: File[]) => {
+    // 사진 데이터 s3에 저장하기
+    // for문을 돌려 upload 후 리턴된 경로를 info에 저장한다.
+    if (S3files.length === 0) {
+      return
+    } else {
+      picture = ''
+      for (let i=0; i < S3files.length; i++) {
+        s3.uploadFile(S3files[i], S3files[i].name).then(async (data) => { 
+          // 이게 비동기적으로 처리되서 지금 사진이 안들어가는 것처럼 보임
+          picture += data.location + " "
+        }).catch(err => console.error(err))
+      }
+      return
+    }
+  }
+
+  const isSubmit = async () => {
+    // 중복 제출을 막기위해서
+    target.disabled = true;
     // 공통사항 검사
-    if (info.name && info.location && info.detail_loctaion && info.date) {
-      setIsInfo(prev => ({
-        ...prev,
-        "isName" : true,
-        "isLocation" :  true,
-        "isDetailLocation" :  true,
-        "isDate" :  true
-      }))
+    if (info.name && info.location) {
+      await uploadS3Files(files)
+
+      setTimeout( async () => {
+        // 날짜 전처리
+      var year = info.date.getFullYear();
+      var month = ("0" + (1 + info.date.getMonth())).slice(-2);
+      var day = ("0" + info.date.getDate()).slice(-2);
+      
+      const result = year + "-" + month + "-" + day
+      
       switch(category) {
         case "animal":
           if (info.speice && info.age && info.gender && info.description) {
-            // axios 요청 보내기
+            const sendData = {
+              "age": String(info.age),
+              "breed": info.speice,
+              "date": result,
+              "description": info.description,
+              "gender": info.gender,
+              "location": info.location,
+              "locationDescription": info.detail_location,
+              "lat": info.lat,
+              "lon": info.lon,
+              "name": info.name,
+              "picture": picture,
+              "point": info.point,
+              "time": info.time
+            }
+            console.log(sendData)
+            const res = await axios.post(requests.addAnimal, sendData, {headers: {
+              // Token: localStorage.getItem('token'),
+            }})
+
+            console.log('받은 데이터',res)
+            
+            navigate(`/search/${category}/${res.data}`)
             return 
-          } else {
-            return setIsInfo(prev => ({
-              ...prev,
-              "isSpeice" : (info.speice ? true : false),
-              "isAge" : (info.age ? true : false),
-              "isGender" : (info.gender ? true : false),
-              "isDescription" : (info.description ? true : false)
-            }))
           }
-        case "people":
+          return
+        case "person":
           if (info.age && info.gender && info.description) {
-            // axios 요청 보내기
-            return 
-          } else {
-            return setIsInfo(prev => ({
-              ...prev,
-              "isAge" : (info.age ? true : false),
-              "isGender" : (info.gender ? true : false),
-              "isDescription" : (info.description ? true : false)
-            }))
+            const sendData = {
+              "missingAge": info.age,
+              "ageNow": Number(info.nowAge),
+              "missingDate": result,
+              "missingClothes": info.description,
+              "gender": info.gender,
+              "location": info.location,
+              "locationDescription": info.detail_location,
+              "lat": info.lat,
+              "lon": info.lon,
+              "name": info.name,
+              "picture": picture,
+              "point": info.point,
+              "missingTime": info.time
+            }
+            console.log(sendData)
+            const res = await axios.post(requests.addPerson, sendData, {headers: {
+              // Token: localStorage.getItem('token'),
+            }})
+
+            console.log('받은 데이터',res)
+            
+            navigate(`/search/${category}/${res.data}`)
+            return
           }
-        case "lost_item":
-          if (info.category && info.description) {
-            // axios 요청 보내기
+          return
+        case "article":
+          if (info.category) {
+            const city = info.location.split(" ")
+            const sendData = {
+              "date": result,
+              "city": city[0],
+              "category": info.category,
+              "description": info.description,
+              "location": info.location,
+              "locationDescription": info.detail_location,
+              "lat": info.lat,
+              "lon": info.lon,
+              "name": info.name,
+              "picture": picture,
+              "point": info.point,
+              "time": info.time
+            }
+            console.log(sendData)
+            const res = await axios.post(requests.addArticle, sendData, {headers: {
+              // Token: localStorage.getItem('token'),
+            }})
+
+            console.log('받은 데이터',res)
+
+            navigate(`/search/${category}/${res.data}`)
             return 
-          } else {
-            return setIsInfo(prev => ({
-              ...prev,
-              "isCategory" : (info.category ? true : false),
-              "isDescription" : (info.description ? true : false)
-            }))
           }
-        case "take_item":
-          if (info.category && info.description) {
-            // axios 요청 보내기
-            return 
-          } else {
-            return setIsInfo(prev => ({
-              ...prev,
-              "isCategory" : (info.category ? true : false),
-              "isDescription" : (info.description ? true : false)
-            }))
-          }  
-      }
+          return
+        case "found":
+          if (info.category) {
+            const sendData = {
+              "date": result,
+              "category": info.category,
+              "description": info.description,
+              "foundLocation": info.location,
+              "safeLocation": info.detail_location,
+              "lat": info.lat,
+              "lon": info.lon,
+              "name": info.name,
+              "picture": picture,
+              "point": info.point,
+              "time": info.time,
+            }
+            console.log(sendData)
+            const res = await axios.post(requests.addFound, sendData, {headers: {
+              // Token: localStorage.getItem('token'),
+            }})
+
+            console.log('받은 데이터',res)
+
+            navigate(`/search/${category}/${res.data}`)
+            return
+          }
+          return
+        }
+      }, 1000)
     } else {
-      setIsInfo(prev => ({
-        "isCategory" : (info.category ? true : false),
-        "isSpeice" : (info.speice ? true : false),
-        "isAge" : (info.age ? true : false),
-        "isGender" : (info.gender ? true : false),
-        "isDescription" : (info.description ? true : false),
-        "isName" : (info.name ? true : false),
-        "isLocation" : (info.location ? true : false),
-        "isDetailLocation" : (info.detail_loctaion ? true : false),
-        "isDate" : (info.date ? true : false)
-      }))
-      
+      target.disabled = false;
     }
-    
-    
   }
 
   switch (category) {
@@ -264,98 +486,63 @@ export default function AddDetailPage() {
       return (
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
-            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-2)}/>
-            <button className='submit-button' onClick={isSubmit}>제출</button>
+            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
+            <button type="submit" className='submit-button' id="sumbit" onClick={isSubmit}>제출</button>
           </div>
-          <div className='add-component'>
+          <div className="input_required">
+            는 필수 입력입니다
+          </div>
+          <div className='add-component required'>
             <label htmlFor="name">반려동물 이름</label>
             <input type="text" id="name" value={info.name} onChange={handleName}/>
           </div>
-          <div className='add-alert'>
-            {isInfo.isName ? "" : "이름을 입력해주세요"}
+          <hr />
+          <div className='add-component required'>
+            <label htmlFor="speice">반려동물 품종</label>
+            <input type="text" id="speice" value={info.speice} onChange={handleSpeice}/>
           </div>
           <hr />
-          <div className='add-component'>
-            <label htmlFor="name">반려동물 품종</label>
-            <input type="text" id="name" value={info.speice} onChange={handleSpeice}/>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isSpeice ? "" : "품종을 입력해주세요"}
-          </div>
-          <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="gender">성별</label>
             <div className='add-component-gender'>
               <img src={info.gender === "male" ? select_male : male} alt="" onClick={() => handleGender("male")} width={40} height={40}/>
               <img src={info.gender === "female" ? select_female : female} alt="" onClick={() => handleGender("female")} width={40} height={40}/>
             </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isGender ? "" : "성별을 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="age">실종당시 나이</label>
             <input type="number" id="age" value={info.age}  onChange={handleAge} />
           </div>
-          <div className='add-alert'>
-            {isInfo.isAge ? "" : "나이를 입력해주세요"}
+          <hr />
+          <div className='add-component required'>
+            <label htmlFor="location">실종위치</label>
+            <div>
+              <button onClick={() => setIsModal(true)} className={info.location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
+              <span id="detail_location" className={info.location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.location}</span>
+            </div>
+          </div>
+          <div>
+            {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
           </div>
           <hr />
           <div className='add-component'>
-            {/* 추후에 선택상자로 표현할 예정 */}
-            <label htmlFor="location">실종 지역</label>
-            <select name="cars" id="location" value={info.location} onChange={handleLocation}>
-              <option value="">지역을 선택해주세요</option>
-              <option value="서울특별시">서울특별시</option>
-              <option value="강원도">강원도</option>
-              <option value="경기도">경기도</option>
-              <option value="경상남도">경상남도</option>
-              <option value="경상북도">경상북도</option>
-              <option value="광주광역시">광주광역시</option>
-              <option value="대구광역시">대구광역시</option>
-              <option value="대전광역시">대전광역시</option>
-              <option value="부산광역시">부산광역시</option>
-              <option value="울산광역시">울산광역시</option>
-              <option value="인천광역시">인천광역시</option>
-              <option value="전라남도">전라남도</option>
-              <option value="전라북도">전라북도</option>
-              <option value="충청남도">충청남도</option>
-              <option value="충청북도">충청북도</option>
-              <option value="제주특별자치도">제주특별자치도</option>
-              <option value="세종특별자치시">세종특별자치시</option>
-              <option value="해외">해외</option>
-              <option value="기타">기타</option>
-            </select>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isLocation ? "" : "지역을 입력해주세요"}
-          </div>
-          <hr />
-          <div className='add-component'>
-            <label htmlFor="detail_location">상세 지역</label>
-            <input type="text" id="detail_location" value={info.detail_loctaion} onChange={handleDetailLoation}/>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isDetailLocation ? "" : "상세지역을 입력해주세요"}
+            <label htmlFor="detail_location">상세위치</label>
+            <input type="text" id="detail_location" value={info.detail_location} onChange={handleDetail}/>
           </div>
           <hr />
           <div className='add-component' style={{display: "flex", flexDirection: "column"}}>
             <div style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
               <label htmlFor="picture">사진</label>
-              <input type="file" multiple src="" alt="" id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
+              <input type="file" src="" alt="" id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: 'none'}}/>
               <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
             </div>
-            <div id="add-img-list" className='add-img-list'>
-              {previewImg.map(imgUrl => {
-                return (
-                  <img src={imgUrl} alt="" key={imgUrl} width={250} height={250}/>
-                )
-              })}
-            </div>
+            <div className={previewImg.length === 0 ? "picture_off" : ""}>사진은 최대 3장까지 등록 가능합니다.</div>
+            <ImgList previewImg={previewImg} deleteImg={deleteImg} />
+            <div className='add-alert'></div>
           </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="date">실종 일자</label>
             <div>
             <DatePicker 
@@ -366,98 +553,84 @@ export default function AddDetailPage() {
                 onChange={date => handleChangeDate(date)} />
             </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isDate ? "" : "날짜을 입력해주세요"}
+          <hr />
+          <div className='add-component required'>
+            <label htmlFor="time">실종 시간</label>
+            <input type="time" name="" id="time" value={info.time} onChange={handleTime}/>
           </div>
           <hr />
-          <div className='add-component add-componet-description'>
+          <div className='add-component add-componet-description required'>
             <label htmlFor="description" style={{marginBottom: "5px"}}>특징</label>
             <textarea name="" id="description" placeholder='특징을 적어주세요' value={info.description} onChange={resize}></textarea>
           </div>
-          <div className='add-alert'>
-            {isInfo.isDescription ? "" : "특징을 입력해주세요"}
+          <hr />
+          <div className='add-component'>
+            <label htmlFor="point">사례금</label>
+            <div>
+              <input type="number" id="point" value={info.point} onChange={handlePoint} style={{textAlign: "right"}}/>
+              <span> point</span>
+            </div>
           </div>
           <hr />
         </div>
       )
-    case "people":
+    case "person":
       return (
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
-            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-2)}/>
-            <button className='submit-button' onClick={isSubmit}>제출</button>
+            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
+            <button className='submit-button' id="sumbit" onClick={isSubmit}>제출</button>
           </div>
-          <div className='add-component'>
+          <div className="input_required">
+            는 필수 입력입니다
+          </div>
+          <div className='add-component required'>
             <label htmlFor="name">실종자 이름</label>
             <input type="text" id="name" value={info.name} onChange={handleName}/>
           </div>
-          <div className='add-alert'>
-            {isInfo.isName ? "" : "이름을 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="gender">성별</label>
             <div className='add-component-gender'>
               <img src={info.gender === "male" ? select_male : male} alt="" onClick={() => handleGender("male")} width={40} height={40}/>
               <img src={info.gender === "female" ? select_female : female} alt="" onClick={() => handleGender("female")} width={40} height={40}/>
             </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isGender ? "" : "성별을 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="age">실종당시 나이</label>
             <input type="number" id="age" value={info.age}  onChange={handleAge} />
           </div>
-          <div className='add-alert'>
-            {isInfo.isAge ? "" : "나이를 입력해주세요"}
+          <hr />
+          <div className='add-component required'>
+            <label htmlFor="nowAge">현재나이</label>
+            <span>{info.nowAge}</span>
           </div>
           <hr />
-          <div className='add-component'>
-            {/* 추후에 선택상자로 표현할 예정 */}
-            <label htmlFor="location">실종 지역</label>
-            <select name="cars" id="location" value={info.location} onChange={handleLocation}>
-              <option value="">지역을 선택해주세요</option>
-              <option value="서울특별시">서울특별시</option>
-              <option value="강원도">강원도</option>
-              <option value="경기도">경기도</option>
-              <option value="경상남도">경상남도</option>
-              <option value="경상북도">경상북도</option>
-              <option value="광주광역시">광주광역시</option>
-              <option value="대구광역시">대구광역시</option>
-              <option value="대전광역시">대전광역시</option>
-              <option value="부산광역시">부산광역시</option>
-              <option value="울산광역시">울산광역시</option>
-              <option value="인천광역시">인천광역시</option>
-              <option value="전라남도">전라남도</option>
-              <option value="전라북도">전라북도</option>
-              <option value="충청남도">충청남도</option>
-              <option value="충청북도">충청북도</option>
-              <option value="제주특별자치도">제주특별자치도</option>
-              <option value="세종특별자치시">세종특별자치시</option>
-              <option value="해외">해외</option>
-              <option value="기타">기타</option>
-            </select>
+          <div className='add-component required'>
+            <label htmlFor="detail_location">실종위치</label>
+            <div>
+              <button onClick={() => setIsModal(true)} className={info.location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
+              <span id="detail_location" className={info.location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.location}</span>
+            </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isLocation ? "" : "지역을 입력해주세요"}
-          </div>
+          <div>
+            {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
+            </div>
           <hr />
           <div className='add-component'>
-            <label htmlFor="detail_location">상세 지역</label>
-            <input type="text" id="detail_location" value={info.detail_loctaion} onChange={handleDetailLoation}/>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isDetailLocation ? "" : "상세지역을 입력해주세요"}
+            <label htmlFor="detail_location">상세위치</label>
+            <input type="text" id="detail_location" value={info.detail_location} onChange={handleDetail}/>
           </div>
           <hr />
-          <div className='add-component'>
+          <div className="add-component" style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
             <label htmlFor="picture">사진</label>
-            <input type="file" src="" alt="" />
+            <input type="file" src="" alt="" multiple id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
+            <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
           </div>
+          <ImgList previewImg={previewImg} deleteImg={deleteImg} />
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="date">실종 일자</label>
             <div>
             <DatePicker 
@@ -468,38 +641,45 @@ export default function AddDetailPage() {
                 onChange={date => handleChangeDate(date)} />
             </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isDate ? "" : "날짜을 입력해주세요"}
+          <hr />
+          <div className='add-component required'>
+            <label htmlFor="time">실종 시간</label>
+            <input type="time" name="" id="time" value={info.time} onChange={handleTime}/>
           </div>
           <hr />
-          <div className='add-component add-componet-description'>
+          <div className='add-component add-componet-description required'>
             <label htmlFor="description" style={{marginBottom: "5px"}}>실종 당시 인상착의</label>
             <textarea name="" id="description" placeholder='인상 착의를 적어주세요' value={info.description} onChange={resize}></textarea>
           </div>
-          <div className='add-alert'>
-            {isInfo.isDescription ? "" : "인상 착의를 입력해주세요"}
+          <hr />
+          <div className='add-component'>
+            <label htmlFor="point">사례금</label>
+            <div>
+              <input type="number" id="point" value={info.point} onChange={handlePoint} style={{textAlign: "right"}}/>
+              <span> point</span>
+            </div>
           </div>
           <hr />
         </div>
       )
-    case "lost-item" :
+    case "article" :
       return (
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
-            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-2)}/>
-            <button className='submit-button' onClick={isSubmit}>제출</button>
+            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
+            <button className='submit-button' id="sumbit" onClick={isSubmit}>제출</button>
           </div>
-          <div className='add-component'>
+          <div className="input_required">
+            는 필수 입력입니다
+          </div>
+          <div className='add-component required'>
             <label htmlFor="name">물품명</label>
             <input type="text" id="name" value={info.name} onChange={handleName}/>
           </div>
-          <div className='add-alert'>
-            {isInfo.isName ? "" : "물품명을 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="add-category">분류</label>
-            <select name="" id="add-category">
+            <select name="" id="add-category" onChange={handleCategory}>
               <option value="">분류를 선택하세요</option>
               <option value="가방">가방</option>
               <option value="귀금속">귀금속</option>
@@ -522,53 +702,31 @@ export default function AddDetailPage() {
               <option value="기타물품">기타물품</option>
             </select>
           </div>
-          <div className='add-alert'>
-            {isInfo.isCategory ? "" : "분류를 입력해주세요"}
+          <hr />
+          <div className='add-component required'>
+            <label htmlFor="detail_location">분실위치</label>
+            <div>
+              <button onClick={() => setIsModal(true)} className={info.location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
+              <span id="detail_location" className={info.location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.location}</span>
+            </div>
           </div>
+          <div>
+            {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
+            </div>
           <hr />
           <div className='add-component'>
-            <label htmlFor="location">분실 지역</label>
-            <select name="cars" id="location" value={info.location} onChange={handleLocation}>
-              <option value="">지역을 선택하세요</option>
-              <option value="서울특별시">서울특별시</option>
-              <option value="강원도">강원도</option>
-              <option value="경기도">경기도</option>
-              <option value="경상남도">경상남도</option>
-              <option value="경상북도">경상북도</option>
-              <option value="광주광역시">광주광역시</option>
-              <option value="대구광역시">대구광역시</option>
-              <option value="대전광역시">대전광역시</option>
-              <option value="부산광역시">부산광역시</option>
-              <option value="울산광역시">울산광역시</option>
-              <option value="인천광역시">인천광역시</option>
-              <option value="전라남도">전라남도</option>
-              <option value="전라북도">전라북도</option>
-              <option value="충청남도">충청남도</option>
-              <option value="충청북도">충청북도</option>
-              <option value="제주특별자치도">제주특별자치도</option>
-              <option value="세종특별자치시">세종특별자치시</option>
-              <option value="해외">해외</option>
-              <option value="기타">기타</option>
-            </select>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isLocation ? "" : "지역을 입력해주세요"}
+            <label htmlFor="detail_location">상세위치</label>
+            <input type="text" id="detail_location" value={info.detail_location} onChange={handleDetail}/>
           </div>
           <hr />
-          <div className='add-component'>
-            <label htmlFor="detail_location">상세 지역</label>
-            <input type="text" id="detail_location" value={info.detail_loctaion} onChange={handleDetailLoation}/>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isDetailLocation ? "" : "상세지역을 입력해주세요"}
-          </div>
-          <hr />
-          <div className='add-component'>
+          <div className="add-component" style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
             <label htmlFor="picture">사진</label>
-            <input type="file" src="" alt="" />
+            <input type="file" src="" alt="" multiple id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
+            <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
           </div>
+          <ImgList previewImg={previewImg} deleteImg={deleteImg} />
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="date">분실 일자</label>
             <div>
             <DatePicker 
@@ -579,38 +737,45 @@ export default function AddDetailPage() {
                 onChange={date => handleChangeDate(date)} />
             </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isDate ? "" : "날짜을 입력해주세요"}
+          <hr />
+          <div className='add-component required'>
+            <label htmlFor="time">분실 시간</label>
+            <input type="time" name="" id="time" value={info.time} onChange={handleTime}/>
           </div>
           <hr />
           <div className='add-component add-componet-description'>
             <label htmlFor="description" style={{marginBottom: "5px"}}>특징</label>
             <textarea name="" id="description" placeholder='특징을 적어주세요' value={info.description} onChange={resize}></textarea>
           </div>
-          <div className='add-alert'>
-            {isInfo.isDescription ? "" : "특징을 입력해주세요"}
+          <hr />
+          <div className='add-component'>
+            <label htmlFor="point">사례금</label>
+            <div>
+              <input type="number" id="point" value={info.point} onChange={handlePoint} style={{textAlign: "right"}}/>
+              <span> point</span>
+            </div>
           </div>
           <hr />
         </div>
       )
-    case "take-item":
+    case "found":
       return (
         <div className='add-detail-container'>
           <div className='detail-top-nav'> 
-            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-2)}/>
-            <button className='submit-button' onClick={isSubmit}>제출</button>
+            <img className="detail-back" src={close} alt="" width={25} height={25} onClick={() => navigate(-1)}  style={{cursor: "pointer"}}/>
+            <button className='submit-button' id="sumbit" onClick={isSubmit}>제출</button>
           </div>
-          <div className='add-component'>
+          <div className="input_required">
+            는 필수 입력입니다
+          </div>
+          <div className='add-component required'>
             <label htmlFor="name">물품명</label>
             <input type="text" id="name" value={info.name} onChange={handleName}/>
           </div>
-          <div className='add-alert'>
-            {isInfo.isName ? "" : "물품명을 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="add-category">분류</label>
-            <select name="" id="add-category">
+            <select name="" id="add-category" onChange={handleCategory}>
               <option value="">분류를 선택하세요</option>
               <option value="가방">가방</option>
               <option value="귀금속">귀금속</option>
@@ -633,53 +798,37 @@ export default function AddDetailPage() {
               <option value="기타물품">기타물품</option>
             </select>
           </div>
-          <div className='add-alert'>
-            {isInfo.isCategory ? "" : "분류를 입력해주세요"}
-          </div>
           <hr />
-          <div className='add-component'>
-            <label htmlFor="location">습득 지역</label>
-            <select name="cars" id="location" value={info.location} onChange={handleLocation}>
-              <option value="">지역을 선택하세요</option>
-              <option value="서울특별시">서울특별시</option>
-              <option value="강원도">강원도</option>
-              <option value="경기도">경기도</option>
-              <option value="경상남도">경상남도</option>
-              <option value="경상북도">경상북도</option>
-              <option value="광주광역시">광주광역시</option>
-              <option value="대구광역시">대구광역시</option>
-              <option value="대전광역시">대전광역시</option>
-              <option value="부산광역시">부산광역시</option>
-              <option value="울산광역시">울산광역시</option>
-              <option value="인천광역시">인천광역시</option>
-              <option value="전라남도">전라남도</option>
-              <option value="전라북도">전라북도</option>
-              <option value="충청남도">충청남도</option>
-              <option value="충청북도">충청북도</option>
-              <option value="제주특별자치도">제주특별자치도</option>
-              <option value="세종특별자치시">세종특별자치시</option>
-              <option value="해외">해외</option>
-              <option value="기타">기타</option>
-            </select>
+          <div className='add-component required'>
+            <label htmlFor="detail_location">습득위치</label>
+            <div>
+              <button onClick={() => setIsModal(true)} className={info.location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
+              <span id="detail_location" className={info.location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.location}</span>
+            </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isLocation ? "" : "지역을 입력해주세요"}
-          </div>
+          <div>
+            {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
+            </div>
           <hr />
-          <div className='add-component'>
-            <label htmlFor="detail_location">상세 지역</label>
-            <input type="text" id="detail_location" value={info.detail_loctaion} onChange={handleDetailLoation}/>
+          <div className='add-component required'>
+            <label htmlFor="detail_location">보관장소</label>
+            <div>
+              <button onClick={() => setIsDetailModal(true)} className={info.detail_location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
+              <span id="detail_location" className={info.detail_location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.detail_location}</span>
+            </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isDetailLocation ? "" : "상세지역을 입력해주세요"}
-          </div>
+          <div>
+            {isDetailModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
+            </div>
           <hr />
-          <div className='add-component'>
+          <div className="add-component" style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
             <label htmlFor="picture">사진</label>
-            <input type="file" src="" alt="" />
+            <input type="file" src="" alt="" multiple id='picture' ref={inputRef} onChange={onUplopadImage} accept="image/*" style={{display: "none"}}/>
+            <button className="add-picture-button" onClick={onUploadImageButtonClick}>사진등록</button>
           </div>
+          <ImgList previewImg={previewImg} deleteImg={deleteImg} />
           <hr />
-          <div className='add-component'>
+          <div className='add-component required'>
             <label htmlFor="date">습득 일자</label>
             <div>
             <DatePicker 
@@ -690,16 +839,15 @@ export default function AddDetailPage() {
                 onChange={date => handleChangeDate(date)} />
             </div>
           </div>
-          <div className='add-alert'>
-            {isInfo.isDate ? "" : "날짜을 입력해주세요"}
+          <hr />
+          <div className='add-component required'>
+            <label htmlFor="time">습득 시간</label>
+            <input type="time" name="" id="time" value={info.time} onChange={handleTime}/>
           </div>
           <hr />
           <div className='add-component add-componet-description'>
             <label htmlFor="description" style={{marginBottom: "5px"}}>특징</label>
             <textarea name="" id="description" placeholder='특징을 적어주세요' value={info.description} onChange={resize}></textarea>
-          </div>
-          <div className='add-alert'>
-            {isInfo.isDescription ? "" : "특징을 입력해주세요"}
           </div>
           <hr />
         </div>

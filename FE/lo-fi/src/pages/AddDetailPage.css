@@ -1,20 +1,98 @@
 .submit-button{
     background-color: #B4E0D7;
     border-radius: 20px;
-    padding: 10px;
+    padding: 0 10px;
+    opacity: 0.5;
 }
 
-.pass {
+.submit-success {
     opacity: 1 !important;
+    -webkit-animation: jello-horizontal 0.9s both;
+    animation: jello-horizontal 0.9s both;
 }
 
+@-webkit-keyframes jello-horizontal {
+    0% {
+      -webkit-transform: scale3d(1, 1, 1);
+              transform: scale3d(1, 1, 1);
+    }
+    30% {
+      -webkit-transform: scale3d(1.25, 0.75, 1);
+              transform: scale3d(1.25, 0.75, 1);
+    }
+    40% {
+      -webkit-transform: scale3d(0.75, 1.25, 1);
+              transform: scale3d(0.75, 1.25, 1);
+    }
+    50% {
+      -webkit-transform: scale3d(1.15, 0.85, 1);
+              transform: scale3d(1.15, 0.85, 1);
+    }
+    65% {
+      -webkit-transform: scale3d(0.95, 1.05, 1);
+              transform: scale3d(0.95, 1.05, 1);
+    }
+    75% {
+      -webkit-transform: scale3d(1.05, 0.95, 1);
+              transform: scale3d(1.05, 0.95, 1);
+    }
+    100% {
+      -webkit-transform: scale3d(1, 1, 1);
+              transform: scale3d(1, 1, 1);
+    }
+  }
+  @keyframes jello-horizontal {
+    0% {
+      -webkit-transform: scale3d(1, 1, 1);
+              transform: scale3d(1, 1, 1);
+    }
+    30% {
+      -webkit-transform: scale3d(1.25, 0.75, 1);
+              transform: scale3d(1.25, 0.75, 1);
+    }
+    40% {
+      -webkit-transform: scale3d(0.75, 1.25, 1);
+              transform: scale3d(0.75, 1.25, 1);
+    }
+    50% {
+      -webkit-transform: scale3d(1.15, 0.85, 1);
+              transform: scale3d(1.15, 0.85, 1);
+    }
+    65% {
+      -webkit-transform: scale3d(0.95, 1.05, 1);
+              transform: scale3d(0.95, 1.05, 1);
+    }
+    75% {
+      -webkit-transform: scale3d(1.05, 0.95, 1);
+              transform: scale3d(1.05, 0.95, 1);
+    }
+    100% {
+      -webkit-transform: scale3d(1, 1, 1);
+              transform: scale3d(1, 1, 1);
+    }
+  }
+  
 
 .add-detail-container {
+    width:100%;
     display: flex;
     justify-content: center;
     flex-direction: column;
     font-family: 'DalseoHealingBold';
     font-size: 20px;
+    margin-bottom: 60px;
+}
+
+@media all and (max-width:768px) {
+    .add-detail-container {
+        width: 768px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        font-family: 'DalseoHealingBold';
+        font-size: 20px;
+        margin-bottom: 60px;       
+    }
 }
 
 .add-component {
@@ -23,12 +101,75 @@
     justify-content: space-between;
 }
 
+.add-component > input {
+    text-align: right;
+}
+
+#detail_location {
+    text-align: right;
+}
+
 .add-alert {
     margin: 0px 10px;
     color: red;
     text-align: end;
+    -webkit-animation: vibrate-1 0.3s linear both;
+    animation: vibrate-1 0.3s linear both;
 }
 
+@-webkit-keyframes vibrate-1 {
+    0% {
+      -webkit-transform: translate(0);
+              transform: translate(0);
+    }
+    20% {
+      -webkit-transform: translate(-2px, 2px);
+              transform: translate(-2px, 2px);
+    }
+    40% {
+      -webkit-transform: translate(-2px, -2px);
+              transform: translate(-2px, -2px);
+    }
+    60% {
+      -webkit-transform: translate(2px, 2px);
+              transform: translate(2px, 2px);
+    }
+    80% {
+      -webkit-transform: translate(2px, -2px);
+              transform: translate(2px, -2px);
+    }
+    100% {
+      -webkit-transform: translate(0);
+              transform: translate(0);
+    }
+  }
+  @keyframes vibrate-1 {
+    0% {
+      -webkit-transform: translate(0);
+              transform: translate(0);
+    }
+    20% {
+      -webkit-transform: translate(-2px, 2px);
+              transform: translate(-2px, 2px);
+    }
+    40% {
+      -webkit-transform: translate(-2px, -2px);
+              transform: translate(-2px, -2px);
+    }
+    60% {
+      -webkit-transform: translate(2px, 2px);
+              transform: translate(2px, 2px);
+    }
+    80% {
+      -webkit-transform: translate(2px, -2px);
+              transform: translate(2px, -2px);
+    }
+    100% {
+      -webkit-transform: translate(0);
+              transform: translate(0);
+    }
+  }
+  
 
 .add-component-gender {
     display: flex;
@@ -46,15 +187,6 @@
     width: 85px;
 }
 
-.add-img-list {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    overflow: scroll;
-    overflow-x: hidden;
-    overflow-y: hidden;
-}
-
 #description {
     min-height: 5rem;
     overflow-y: hidden;
@@ -70,6 +202,41 @@
     width: 200px !important;
 }
 
+.react-datepicker__input-container > input {
+    text-align: right;
+    width: 200px;
+}
+
 .react-datepicker-ignore-onclickoutside {
     width: 200px !important;
 }
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.off {
+    display: none;
+}
+
+.picture_off {
+    display: none;
+}
+
+.input_required:before {
+    content: "*";
+    color: red;
+}
+
+.input_required {
+    font-size: 15px;
+    margin: 10px;
+}
+
+.required > label:after{
+    content: "*";
+    color: red;
+}
+

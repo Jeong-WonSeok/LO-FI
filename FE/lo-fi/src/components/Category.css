@@ -1,22 +1,22 @@
-.buttons {
+.category-buttons {
   display: flex;
   width: auto; 
   padding: 5px;
-  margin: 0 5px;
+  margin: 0px 5px 10px;
   justify-content: space-between;
   box-shadow: 1px 3px 8px 3px #7AB4B8;
   border-radius: 5px;
   font-family: "DalSeoHealingBold";
 }
 
-.buttons > img {
+.category-buttons > img {
   margin-right: 4px;
 }
 
-.container {
+.category-container {
   width: auto;
   display: flex;
   justify-content: center;
-  margin: 20px 0 10px;
+  margin: 5px 0 10px;
   background-color: white;
 }

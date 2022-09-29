@@ -1,18 +1,49 @@
-import React, {useState} from 'react'
-import main from '../assets/img/Footer/main_tap.png'
-import select_main from '../assets/img/Footer/select_main_tap.png'
-import search from '../assets/img/Footer/search_tap.png'
-import select_search from '../assets/img/Footer/select_search_tap.png'
-import chat from '../assets/img/Footer/chat.png'
-import select_chat from '../assets/img/Footer/select_chat.png'
+import React, {useState, useEffect, useRef} from 'react'
+import home from '../assets/img/Footer/home.png'
+import select_home from '../assets/img/Footer/select_home.png'
+import plus from '../assets/img/Footer/plus.png'
 import user from '../assets/img/Footer/user.png'
 import select_user from '../assets/img/Footer/select_user.png'
+import animal from '../assets/img/Category/color_dog.png'
+import people from '../assets/img/Category/color_baby.png'
+import lost_item from '../assets/img/Category/color_lost_item.png'
+import take_item from '../assets/img/Category/color_take_item.png'
 import './FooterBar.css'
 import { Link } from 'react-router-dom'
-import { setEngine } from 'crypto'
 
 export default function FooterBar() {
   const [Select, setSelect] = useState("main");
+  const [check, setCheck] = useState(false);
+
+  const el =  useRef<HTMLInputElement>(null)
+
+  // 프로필은 선택이 되는 문제가 있음
+  useEffect(() => {
+    window.addEventListener('click', (e) => {
+      if (e.target == el.current) {
+        setCheck(false)
+      } 
+    })
+
+    if (window.location.href.includes('Profile')) {
+      handleChangeTap('user')
+    } else if (window.location.href.includes('search')) {
+      handleChangeTap('search')
+    } else if (window.location.href.includes('plus')) {
+      handleChangeTap('plus')
+    } else {
+      handleChangeTap('main')
+    }
+
+    return (
+      window.removeEventListener('click', (e) => {
+        if (e.target == el.current) {
+          setCheck(false)
+        }
+      })
+    )
+  }, [Select])
+  
 
   const handleChangeTap = (tag: string) => {
     // 선택하면 데이터가 바뀜
@@ -35,27 +66,46 @@ export default function FooterBar() {
     }
   };
 
+  
+
   return (
     <div className='Footer-center'>
       <div className="Footer_contain">
         <Link className="navigater" to="/" onClick={() => handleChangeTap('main')}>
-          <img src={Select === 'main' ? select_main : main} alt=""
-          width="40px" height="40px"/>
+          <img src={Select === 'main' ? select_home : home} alt="" width={25} height={25}/>
+          <p style={Select === 'user' ? {color: ""} : {color: "#676767"}}>Home</p>
         </Link>
-        <Link className="navigater" to="/search" onClick={() => handleChangeTap('search')}>
-          <img src={Select === 'search' ? select_search : search} alt=""
-          width="40px" height="40px"/>
-        </Link>
-        <Link className='navigater add_button' to="/add" onClick={() => handleChangeTap('add')}>
-          <div className='plus'>+</div>
-        </Link>
-        <Link className="navigater" to="/Search" onClick={() => handleChangeTap('chat')}>
-          <img src={Select === 'chat' ? select_chat : chat} alt=""
-          width="40px" height="40px"/>
-        </Link>
+        <div className='navigater category-button'>
+          <div id="button_background" className={check ? "" : "button_off"} ref={el}>
+            <div className={check ? "button_open" : "button_off"}>
+              <div className='category-add-buttons'>
+                <Link to="/add/animal" className='category-add-button' onClick={() => setCheck(!check)}>
+                  <img src={animal} alt="" width={30} height={30}/>
+                  <p>반려동물</p>
+                </Link>
+                <Link to="/add/person" className='category-add-button'onClick={() => setCheck(!check)}>
+                  <img src={people} alt="" width={30} height={30}/>
+                  <p>사람</p>
+                </Link>
+                <Link to="/add/article" className='category-add-button' onClick={() => setCheck(!check)}>
+                  <img src={lost_item} alt="" width={30} height={30}/>
+                  <p>분실물</p>
+                </Link>
+                <Link to="/add/found" className='category-add-button' onClick={() => setCheck(!check)}>
+                  <img src={take_item} alt="" width={30} height={30}/>
+                  <p>습득물</p>
+                </Link>
+              </div>
+            </div>
+          </div>
+          <input type="checkbox" id="plus" style={{display: "none"}} onChange={() => setCheck(!check)}/>
+          <label htmlFor="plus">
+            <img className={check ? "open_category" : ""} src={plus} alt="" width={40} height={40}/>
+          </label>
+        </div>
         <Link className="navigater" to="/Profile/" onClick={() => handleChangeTap('user')}>
-          <img src={Select === 'user' ? select_user : user} alt=""
-          width="40px" height="40px" />
+          <img src={Select === 'user' ? select_user : user} alt="" width={25} height={25} />
+          <p style={Select === 'user' ? {color: ""} : {color: "#676767"}}>Profile</p>
         </Link>
       </div>
     </div>

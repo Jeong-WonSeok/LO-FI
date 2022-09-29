@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Category from '../components/Category';
+import search_icon from '../assets/img/icon/search_icon.png'
+import list from '../assets/img/Category/list.png'
+import { useAppDispatch, useAppSelector } from '../hooks/reduxHook'
 import './MainPage.css'
+import { useNavigate } from 'react-router-dom';
 
 // 카카오 불러오기
 const kakao = (window as any).kakao
@@ -8,10 +12,19 @@ const kakao = (window as any).kakao
 
 
 const MainPage = () => {
+  const navigate = useNavigate();
+  const { data, pending, error } = useAppSelector(state => state.mainData)
+  
   const [location, setLocation] = useState({
     lat: 0,
     lon: 0
   })
+
+  const [SearchText, setSearchText] = useState("");
+
+  const handleChange = (e: any) => {
+    setSearchText(e.target.value);
+  }
 
   
 
@@ -26,7 +39,7 @@ const MainPage = () => {
     // 나갔다가 다시 돌아오면 위치 데이터가 들어오지 않음
     async function fecthmap() {
     // 현재 위치 가져오기
-    await getLocation();
+    getLocation()
     var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
     mapOption = { 
       center: new kakao.maps.LatLng(location.lat, location.lon), // 지도의 중심좌표
@@ -81,7 +94,7 @@ const MainPage = () => {
 
   }, [location]);
 
-  function getLocation() {
+  const getLocation = () => {
     if (navigator.geolocation) { // GPS를 지원하면
       // 이것으로 현재 위치를 가져온다.
       navigator.geolocation.getCurrentPosition(function(position) {
@@ -103,11 +116,25 @@ const MainPage = () => {
     }
   }
 
+  const goList = () => {
+    navigate('/search')
+  }
+
   return (
     <div style={{width: '100%'}}>
+      <div className='search_top_nav' >
+        <div className='search_map' onClick={goList}>
+          <img src={list} alt="" width={35} height={35} />
+          <span>목록으로</span>
+        </div>
+        <div className='search_box'>
+          <img src={search_icon} alt="" width={20} height={20}/>
+          <input className="search_input" type="text" value={SearchText} onChange={handleChange}/>
+        </div>
+      </div>
       <Category/>
       
-      <div id="map" style={{height: '90vh'}}>
+      <div id="map" style={{height: '85vh', width: "100%"}}>
 
       </div>
     </div>
