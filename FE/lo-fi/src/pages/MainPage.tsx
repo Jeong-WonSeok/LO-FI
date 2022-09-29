@@ -5,6 +5,8 @@ import './MainPage.css'
 // 카카오 불러오기
 const kakao = (window as any).kakao
 
+
+
 const MainPage = () => {
   const [location, setLocation] = useState({
     lat: 0,
@@ -14,6 +16,12 @@ const MainPage = () => {
   
 
   useEffect(() => {
+
+    //메인페이지에서 토큰이 있는지 확인하고 토큰이 없으면
+    //login페이지로 보냄
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href="http://localhost:3000/login"
+    
     // 좌표데이터를 가져온 후에 지도를 로드하기 위해
     // 나갔다가 다시 돌아오면 위치 데이터가 들어오지 않음
     async function fecthmap() {

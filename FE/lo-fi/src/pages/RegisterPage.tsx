@@ -14,39 +14,73 @@ const RegisterPage = () => {
   //   console.log(data.target);
   // }
 
-  // const [userData, setUserData] = useState([]);
+  //이메일, 비밀번호, 비밀번호 확인
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [checkPassword, setCheckPassword] = useState<string>("");
-  // const [provider, setProvider] = useState('lofi');
-  const [id, setId] = useState<string>("");
-  const [job, setJob] = useState<string>("");
-  const [name, setName] = useState<string>("");
 
+  //오류메시지
+  const [emailMessage, setEmailMessage] = useState<String>("");
+  const [passwordMessage, setPasswordMessage] = useState<String>("");
+  const [checkPasswordMessage, setCheckPasswordMessage] = useState<String>("");
 
-  const onChangeId = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setId(e.target.value);
-  };
+  //유효성 검사
+  const [isEmail, setIsEmail] = useState<boolean>(false);
+  const [isPassword, setIsPassword] = useState<boolean>(false);
+  const [isCheckPassword, setIsCheckPassword] = useState<boolean>(false);
 
-  const onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  };
+  // const onChangeId = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setId(e.target.value);
+  // };
 
-  const onChangeJob = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setJob(e.target.value);
-  };
+  // const onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setName(e.target.value);
+  // };
 
+  // const onChangeJob = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setJob(e.target.value);
+  // };
 
   const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
+    const emailRegex =
+      /([\w-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+    const emailCurrent = e.target.value;
+    setEmail(emailCurrent);
+
+    if (!emailRegex.test(emailCurrent)) {
+      setEmailMessage("이메일 형식을 확인해주세요.");
+      setIsEmail(false);
+    } else {
+      setEmailMessage("올바른 형식입니다.");
+      setIsEmail(true);
+    }
   };
 
   const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
+    const passwordRegex =
+      /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/;
+    const passwordCurrent = e.target.value;
+    setPassword(passwordCurrent);
+
+    if (!passwordRegex.test(passwordCurrent)) {
+      setPasswordMessage("숫자+영문자+특수문자 조합 8자리 이상 입력해주세요.");
+      setIsPassword(false);
+    } else {
+      setPasswordMessage("안전한 비밀번호입니다.");
+      setIsPassword(true);
+    }
   };
 
   const onChangeCheckPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCheckPassword(e.target.value);
+    const checkPasswordCurrent = e.target.value;
+    setCheckPassword(checkPasswordCurrent);
+    if (password === checkPasswordCurrent) {
+      setCheckPasswordMessage("비밀번호가 같습니다.");
+      setIsCheckPassword(true);
+    } else {
+      setCheckPasswordMessage("비밀번호가 다릅니다.");
+      setIsCheckPassword(false);
+    }
   };
 
   const onCheckPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,50 +99,25 @@ const RegisterPage = () => {
   //   })
   // }
 
-  //*************테스트용***************
-  // const test = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   axios
-  //     .post(
-  //       "https://reqres.in/api/users",
-  //       {
-  //         job : job,
-  //         name : name
-  //       },
-  //       {
-  //         headers: { "Content-Type": `application/json` },
-  //       }
-  //     )
-  //     .then((response) => {
-  //       console.log(response.data);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // };
-
   //backEnd로 회원가입 요청 보내기 (이메일, 비밀번호, 제공자)
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (email === "") {
-      alert("이메일을 입력해주세요");
-    }
-    if (password === "") {
-      alert("비밀번호를 입력해주세요");
-    }
-
     axios
-      .post("http://localhost:8080/api/register/signUp/", {
-        email: email,
-        password: password,
-        provider: "lofi",
-      },{
-        headers : {"Content-type": `application/json`}
-      })
+      .post(
+        "http://localhost:8080/api/register/signUp/",
+        {
+          email: email,
+          password: password,
+          provider: "lofi",
+        },
+        {
+          headers: { "Content-type": `application/json` },
+        }
+      )
       .then((response) => {
         console.log(response);
-        window.location.href="http://localhost:3000/login"
+        window.location.href = "http://localhost:3000/login";
       })
       .catch((error) => {
         console.log(error.response);
@@ -117,43 +126,9 @@ const RegisterPage = () => {
 
   return (
     <div className="register_container">
-      {/* <form onSubmit={test} className="register">
-        <div className="login_id">
-          <span className="text">id</span>
-          <input
-            type="text"
-            id="id"
-            placeholder="id"
-            onChange={onChangeId}
-          />
-        </div>
-        <div className="login_id">
-          <span className="text">job</span>
-          <input
-            type="text"
-            id="job"
-            placeholder="job"
-            onChange={onChangeJob}
-          />
-        </div>
-        <div className="login_id">
-          <span className="text">name</span>
-          <input
-            type="text"
-            id="name"
-            placeholder="Name"
-            onChange={onChangeName}
-          />
-        </div>
-        <button>버튼</button>
-      </form> */}
-
-
       <form onSubmit={onSubmit} className="register">
         <span id="register_text">회원가입</span>
-        <a>{email}</a>
-        {password}
-        {checkPassword}
+
         <div className="login_id">
           <span className="text">E-mail</span>
           <input
@@ -162,6 +137,15 @@ const RegisterPage = () => {
             placeholder="Email"
             onChange={onChangeEmail}
           />
+          {email.length > 0 && (
+            <span
+              className={` ${
+                isEmail ? "register_success_color" : "register_error_color"
+              }`}
+            >
+              {emailMessage}
+            </span>
+          )}
         </div>
         <button className="register_button">이메일 인증</button>
         <div className="login_id">
@@ -172,6 +156,15 @@ const RegisterPage = () => {
             placeholder="비밀번호"
             onChange={onChangePassword}
           />
+          {password.length > 0 && (
+            <span
+              className={` ${
+                isPassword ? "register_success_color" : "register_error_color"
+              }`}
+            >
+              {passwordMessage}
+            </span>
+          )}
         </div>
         <div className="login_id">
           <span className="text">비밀번호 확인</span>
@@ -182,8 +175,19 @@ const RegisterPage = () => {
             onChange={onChangeCheckPassword}
             onBlur={onCheckPassword}
           />
+          {checkPassword.length > 0 && (
+            <span
+              className={` ${
+                isCheckPassword
+                  ? "register_success_color"
+                  : "register_error_color"
+              }`}
+            >
+              {checkPasswordMessage}
+            </span>
+          )}
         </div>
-        <button className="register_button">회원가입</button>
+        <button disabled={!(isEmail&&isPassword&&isCheckPassword)} className="register_button">회원가입</button>
       </form>
     </div>
   );
