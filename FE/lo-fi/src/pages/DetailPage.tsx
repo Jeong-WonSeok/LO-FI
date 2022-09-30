@@ -1,39 +1,173 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import styled from 'styled-components';
+
 import box from '../assets/img/icon/box.png'
 import calendar from '../assets/img/icon/calendar.png'
 import pin from '../assets/img/icon/pin.png'
 import animal from '../assets/img/icon/animal.png'
+import default_img from '../assets/img/icon/default_img.png'
 import person from '../assets/img/icon/user.png'
 import phone from '../assets/img/icon/phone-call.png'
+import male from '../assets/img/icon/select_male.png'
+import female from '../assets/img/icon/select_female.png'
+
 import './DetailPage.css'
 import BackTopNab from '../components/BackTopNab'
+import DetailMap from '../components/DetailMap';
+import { useParams } from 'react-router-dom';
+import axios from '../api/axios'
+import requests from '../api/requests'
+
+// 캐로젤
+import Slider from "react-slick";
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
+import MailModal from '../components/MailModal';
+
+type dataType = {
+  id: number,
+  breed: string,
+  name: string,
+  gender: string,
+  age: number,
+  ageNow: number,
+  location: string,
+  foundLocation: string,
+  safeLocation: string,
+  date: string,
+  time: string,
+  category: string,
+  description: string,
+  dress: string,
+  picture: string,
+  lat: number,
+  lon: number,
+  picture_list: string[]
+  userId: number,
+  email: string,
+}
+
+type resType = {
+  email: string,
+  id: number,
+  point: number
+}
 
 export default function DetailPage() {
-  return (
-    <div className='detail-container'>
-      <BackTopNab back={-1}/>
+  const id = useParams();
+  const [openModal, setOpenModal] = useState(false)
+  const [openMailModal, setOpenMailModal] = useState(false)
+  const [data, setData] = useState({
+    id: 0,
+    breed: '',
+    name: '',
+    gender: '',
+    age: 0,
+    ageNow: 0,
+    location: '',
+    foundLocation: '',
+    safeLocation: '',
+    date: '',
+    time: '',
+    category: '',
+    description: '',
+    dress: '',
+    picture: '',
+    picture_list: [''],
+    lat: 0,
+    lon: 0,
+    userId: 0, 
+    email: ''
+  })
+
+  // 캐로젤 세팅
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToScroll: 1,
+    centerPadding: '0px'
+  };
+
+  const getData = async () => {
+    const params = { Id: id.id, category : id.category}
+    
+    // 데이터 받아오기
+    const res =  await axios.get(requests.detail, {params})
+    const inputData:dataType = res.data
+    // 이메일이 있다면 변경
+    if (inputData.userId) {
+      const userRes = await axios.get(requests.profile, {params: {userId: inputData.userId}})
+      setData((prev) => ({
+        ...prev,
+        "email": userRes.data.email
+      }))
+    }
+    
+    setData((current) => {
+      let newData = {...current}
+      newData = inputData
+      if (inputData.picture) { 
+        const list = inputData.picture.split(' ')
+        newData['picture_list'] = list.splice(0, list.length - 1)
+      } else {
+        newData['picture_list'] = ['']
+      }
+
+      return newData
+    })
+  }
+
+  useEffect(() => {
+   getData()
+  }, [])
+
+  const closeModal = () => {
+    setOpenModal(false)
+  }
+  
+  // 모달창 켜기
+  const closeMail = () => {
+    setOpenMailModal(false)
+  }
+
+  switch (id.category) {
+    case "animal":
+      return(
+      <div className='detail-container'>
+      <BackTopNab back={"/search"}/>
       <div className='deatil-info-container'>
-      <img className="detail-img" src="data:image/jpeg;base64,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" alt="" />
+        <div style={{width:"360px", padding: "10px"}}>
+            <StyledSlider {...settings}>
+                {data.picture_list.map((image, idx) => {
+                  return (
+                    <ProductImg src={image ? image : default_img} key={idx} alt=""/>
+                  )
+                })}
+              </StyledSlider>
+        </div>
       <div className='detail-info'>
         <div className='detail-span'>
           <img src={pin} alt="" width={20} height={20}/>
-          <span>대전 유성구 궁동</span>
+          <span>{data.location}</span>
+          <button className="detail-map-open" onClick={() => setOpenModal(true)}>지도보기</button>
+          {openModal && <DetailMap lon={data.lon} lat={data.lat} closeModal={closeModal}/>}
         </div>
         <div className='detail-span' >
           <img src={calendar} alt="" width={20} height={20} />
-          <span>2022.08.31</span>
+          <span>{data.date}</span>
         </div>
         <div className='detail-span'>
-          <img src={box} alt=""  width={20} height={20}/>
-          <span>캉골 에코백</span>
+          <img src={animal} alt=""  width={20} height={20}/>
+          <span>{data.name} / {data.breed} </span>
         </div>
         <div className='detail-span'>
           <img src={person} alt="" width={20} height={20} />
-          <span>대전 유성 경찰서</span>
+          <span>{data.description}</span>
         </div>
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>042-123-4567</span>
+          <span>{data.email}</span>
         </div>
       </div>
       <div className='detail-button'>
@@ -41,5 +175,197 @@ export default function DetailPage() {
       </div>
       </div>
     </div>
-  )
+      )
+    case "person":
+      return(
+      <div className='detail-container'>
+      <BackTopNab back={"/search"}/>
+      <div className='deatil-info-container'>
+        <div style={{width:"360px", padding: "10px"}}>
+            <StyledSlider {...settings}>
+                {data.picture_list.map((image, idx) => {
+                  return (
+                    <ProductImg src={image ? image : default_img} key={idx} alt=""/>
+                  )
+                })}
+              </StyledSlider>
+        </div>
+      <div className='detail-info'>
+        <div className='detail-span'>
+          <img src={pin} alt="" width={20} height={20}/>
+          <span>{data.location}</span>
+          <button className="detail-map-open" onClick={() => setOpenModal(true)}>지도보기</button>
+          {openModal && <DetailMap lon={data.lon} lat={data.lat} closeModal={closeModal}/>}
+        </div>
+        <div className='detail-span' >
+          <img src={calendar} alt="" width={20} height={20} />
+          <span>{data.date} {'/ ' + data.time.slice(0,5)} </span>
+        </div>
+        <div className='detail-span'>
+          <img src={data.gender === "male" ? male : female} alt=""  width={20} height={20}/>
+          <span>{data.name} / {data.age} / {data.ageNow} </span>
+        </div>
+        <div className='detail-span'>
+          <img src={person} alt="" width={20} height={20} />
+          <span>{data.dress}</span>
+        </div>
+        <div className='detail-span'>
+          <img src={phone} alt="" width={20} height={20} />
+          <span>{data.email}</span>
+        </div>
+      </div>
+      <div className='detail-button'>
+        <button>습득물 신고</button>
+      </div>
+      </div>
+    </div>
+      )
+    case "article":
+      return(
+      <div className='detail-container'>
+      <BackTopNab back={"/search"}/>
+      <div className='deatil-info-container'>
+        <div style={{width:"360px", padding: "10px"}}>
+            <StyledSlider {...settings}>
+                {data.picture_list.map((image, idx) => {
+                  return (
+                    <ProductImg src={image ? image : default_img} key={idx} alt=""/>
+                  )
+                })}
+              </StyledSlider>
+        </div>
+      <div className='detail-info'>
+        <div className='detail-span'>
+          <img src={pin} alt="" width={20} height={20}/>
+          <span>{data.location}</span>
+          <button className="detail-map-open" onClick={() => setOpenModal(true)}>지도보기</button>
+          {openModal && <DetailMap lon={data.lon} lat={data.lat} closeModal={closeModal}/>}
+        </div>
+        <div className='detail-span' >
+          <img src={calendar} alt="" width={20} height={20} />
+          <span>{data.date} {'/ ' + data.time.slice(0,5)} </span>
+        </div>
+        <div className='detail-span'>
+          <img src={box} alt=""  width={20} height={20}/>
+          <span>{data.name}</span>
+        </div>
+        <div className='detail-span'>
+          <img src={person} alt="" width={20} height={20} />
+          <span>{data.safeLocation}</span>
+        </div>
+        <div className='detail-span'>
+          <img src={phone} alt="" width={20} height={20} />
+          <span>{data.email}</span>
+        </div>
+      </div>
+      <div className='detail-button'>
+        <button>습득물 신고</button>
+      </div>
+      </div>
+    </div>
+      )
+    case "found":
+      return (
+        <div className='detail-container'>
+          <BackTopNab back={"/search"}/>
+          <div className='deatil-info-container'>
+          <div style={{width:"360px", padding: "10px"}}>
+            <StyledSlider {...settings}>
+                {data.picture_list.map((image, idx) => {
+                  return (
+                    <ProductImg src={image ? image : default_img} key={idx} alt=""/>
+                  )
+                })}
+              </StyledSlider>
+          </div>
+          <div className='detail-info'>
+            <div className='detail-span'>
+              <img src={pin} alt="" width={20} height={20}/>
+              <span>{data.safeLocation}</span>
+              <button className="detail-map-open" onClick={() => setOpenModal(true)}>지도보기</button>
+              {openModal && <DetailMap lon={data.lon} lat={data.lat} closeModal={closeModal}/>}
+            </div>
+            <div className='detail-span' >
+              <img src={calendar} alt="" width={20} height={20} />
+              <span>{data.date} {'/ ' + data.time.slice(0,5)} </span>
+            </div>
+            <div className='detail-span'>
+              <img src={box} alt=""  width={20} height={20}/>
+              <span>{data.name}</span>
+            </div>
+            <div className='detail-span'>
+              <img src={phone} alt="" width={20} height={20} />
+              <span>{data.email}</span>
+            </div>
+          </div>
+          <div className='detail-button'>
+            <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>
+            {openMailModal && <MailModal closeMail={closeMail} />}
+          </div>
+          </div>
+        </div>
+      )
+    default:
+      return (
+        <div>잘못된 접근입니다.</div>
+      )
+  }
 }
+
+const StyledSlider = styled(Slider)`
+  .slick-prev {
+    left: -24px !important;
+    z-index: 3;
+  }
+
+  .slick-prev:before, .slick-next:before {
+    color: black !important;
+  }
+
+  .slick-next {
+    right: -24px !important;
+    z-index: 3;
+  }
+
+  .slick-dots {
+    display: flex;
+    width: 100px;
+    margin: 0;
+    padding: 0;
+    left: 50%;
+    bottom: 10px;
+    transform: translate(-50%, -50%);
+  }
+
+  .slick-dots li {
+    width: 6px;
+    height: 6px;
+    margin: 0 3.5px;
+  }
+
+  .slick-dots li button {
+    width: 6px;
+    height: 6px;
+  }
+
+  .slick-dots li button:before {
+    width: 6px;
+    height: 6px;
+    color: white;
+  }
+
+  .slick-dots li.slick-active button:before {
+    color: white !important;
+  }
+
+  li {
+    margin: 0;
+    padding: 0;
+  }
+`;
+
+const ProductImg = styled.img`
+  width: 300px;
+  border-radius: 10px;
+  object-fit: cover;
+`;

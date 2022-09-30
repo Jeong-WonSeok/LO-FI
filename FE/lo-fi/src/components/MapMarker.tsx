@@ -1,10 +1,5 @@
-import { info } from 'console';
 import React, {useEffect, useState, useRef} from 'react'
 import './MapMarker.css'
-import {Iprops} from '../pages/AddDetailPage';
-import { current } from '@reduxjs/toolkit';
-import { lstat } from 'fs/promises';
-import { isLabeledStatement } from 'typescript';
 
 const kakao = (window as any).kakao
 
@@ -20,11 +15,15 @@ export default function MapMarker(props: any) {
 
   useEffect(() => {
     async function fecthmap() {
-    window.addEventListener('click', handleCloseModal)
+    window.addEventListener('click', (e) => {
+      if (e.target === el.current) {
+        props.closeModal()
+      }
+    })
     getLocation()
     setTimeout(() => {
     
-    var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    var mapContainer = document.getElementById('map-marker'), // 지도를 표시할 div 
     mapOption = {
         center: new kakao.maps.LatLng(lat, lon), // 지도의 중심좌표
         level: 3 // 지도의 확대 레벨
@@ -54,17 +53,6 @@ export default function MapMarker(props: any) {
         }   
       });
     });
-
-    function searchAddrFromCoords(coords: any, callback: any) {
-        // 좌표로 행정동 주소 정보를 요청합니다
-        geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), callback);         
-        setLocation((current) => {
-          let newLocation = {...current}
-          newLocation['lat'] = coords.getLat()
-          newLocation['lon'] = coords.getLng()
-          return newLocation
-        })
-    }
   
     function searchDetailAddrFromCoords(coords: any, callback: any) {
         // 좌표로 법정동 상세 주소 정보를 요청합니다
@@ -82,7 +70,11 @@ export default function MapMarker(props: any) {
     fecthmap()
 
     return(
-      window.removeEventListener('click', handleCloseModal)
+      window.removeEventListener('click', (e) => {
+        if (e.target === el.current) {
+          props.closeModal()
+        }
+      }, true)
     )
   }, [lat, lon])
 
@@ -109,13 +101,6 @@ export default function MapMarker(props: any) {
     }
   }
 
-  
-  const handleCloseModal = (e: any) => {
-    if (!el.current || !el.current.contains(e.target)) {
-      props.closeModal()
-    }
-  }
-
   // 부모 컴포넌트로 데이터 보내기
   const sendData = () => {
     const data = {
@@ -130,7 +115,7 @@ export default function MapMarker(props: any) {
   return (
   <div className="map_wrap" style={{zIndex: "8"}} ref={el}>
     <div style={{zIndex: "10"}}>
-      <div id="map" style={{width:'85vw', height: '85vh', overflow:'hidden'}}></div>
+      <div id="map-marker" style={{width:'85vw', height: '50vh', overflow:'hidden'}}></div>
       <div className="hAddr" style={{display: "flex", justifyContent: "space-between", flexDirection: "row"}}>
         <div>
           <p className="title">주소</p>

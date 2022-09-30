@@ -1,7 +1,7 @@
 .detail-container {
     font-family: 'DalSeoHealingBold';
     width: 100%;
-    
+    margin-bottom: 120px
 }
 
 .deatil-info-container {
@@ -11,13 +11,22 @@
     justify-content: center;
 }
 
+.detail-map-open {
+    background-color: #B4E0D7;
+    border-radius: 10px;
+    margin-left: 10px;
+    padding: 0 5px;
+    font-size: 14px;
+}
+
 .detail-img {
     margin: 20px;
 }
 
 .detail-info {
     padding-top: 20px;
-    width: 280px;
+    width: 100%;
+    padding: 20px
 }
 
 .detail-span {
