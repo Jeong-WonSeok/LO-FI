@@ -22,6 +22,7 @@ import requests from '../api/requests'
 import Slider from "react-slick";
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
+import MailModal from '../components/MailModal';
 
 type dataType = {
   id: number,
@@ -42,11 +43,20 @@ type dataType = {
   lat: number,
   lon: number,
   picture_list: string[]
+  userId: number,
+  email: string,
+}
+
+type resType = {
+  email: string,
+  id: number,
+  point: number
 }
 
 export default function DetailPage() {
   const id = useParams();
   const [openModal, setOpenModal] = useState(false)
+  const [openMailModal, setOpenMailModal] = useState(false)
   const [data, setData] = useState({
     id: 0,
     breed: '',
@@ -65,7 +75,9 @@ export default function DetailPage() {
     picture: '',
     picture_list: [''],
     lat: 0,
-    lon: 0
+    lon: 0,
+    userId: 0, 
+    email: ''
   })
 
   // 캐로젤 세팅
@@ -83,6 +95,15 @@ export default function DetailPage() {
     // 데이터 받아오기
     const res =  await axios.get(requests.detail, {params})
     const inputData:dataType = res.data
+    // 이메일이 있다면 변경
+    if (inputData.userId) {
+      const userRes = await axios.get(requests.profile, {params: {userId: inputData.userId}})
+      setData((prev) => ({
+        ...prev,
+        "email": userRes.data.email
+      }))
+    }
+    
     setData((current) => {
       let newData = {...current}
       newData = inputData
@@ -92,6 +113,7 @@ export default function DetailPage() {
       } else {
         newData['picture_list'] = ['']
       }
+
       return newData
     })
   }
@@ -104,6 +126,11 @@ export default function DetailPage() {
     setOpenModal(false)
   }
   
+  // 모달창 켜기
+  const closeMail = () => {
+    setOpenMailModal(false)
+  }
+
   switch (id.category) {
     case "animal":
       return(
@@ -140,7 +167,7 @@ export default function DetailPage() {
         </div>
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>042-123-4567</span>
+          <span>{data.email}</span>
         </div>
       </div>
       <div className='detail-button'>
@@ -184,7 +211,7 @@ export default function DetailPage() {
         </div>
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>042-123-4567</span>
+          <span>{data.email}</span>
         </div>
       </div>
       <div className='detail-button'>
@@ -228,7 +255,7 @@ export default function DetailPage() {
         </div>
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>042-123-4567</span>
+          <span>{data.email}</span>
         </div>
       </div>
       <div className='detail-button'>
@@ -268,11 +295,12 @@ export default function DetailPage() {
             </div>
             <div className='detail-span'>
               <img src={phone} alt="" width={20} height={20} />
-              <span>042-123-4567</span>
+              <span>{data.email}</span>
             </div>
           </div>
           <div className='detail-button'>
-            <button>습득물 신고</button>
+            <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>
+            {openMailModal && <MailModal closeMail={closeMail} />}
           </div>
           </div>
         </div>
