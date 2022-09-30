@@ -83,14 +83,16 @@ const MainPage = () => {
     marker.setMap(map);
 
     // 현재위치 표시
-    var gps_content = '<img class="pulse" draggable="false" unselectable="on" src="https://ssl.pstatic.net/static/maps/m/pin_rd.png" alt="">';
+    var gps_content = '<div class="now-location"><div class="location-back"></div></div>';
+    var gps_position = new kakao.maps.LatLng(location.lat,location.lon)
     var currentOverlay = new kakao.maps.CustomOverlay({
-        position: new kakao.maps.LatLng(location.lat,location.lon),
+        position: gps_position,
         content: gps_content,
         map: map,
-        zIndex: 3
+        zIndex: 3,
     });
     currentOverlay.setMap(map);
+
   }
   fecthmap();
 
