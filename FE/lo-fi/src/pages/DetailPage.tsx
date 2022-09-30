@@ -13,6 +13,7 @@ import female from '../assets/img/icon/select_female.png'
 
 import './DetailPage.css'
 import BackTopNab from '../components/BackTopNab'
+import DetailMap from '../components/DetailMap';
 import { useParams } from 'react-router-dom';
 import axios from '../api/axios'
 import requests from '../api/requests'
@@ -45,6 +46,7 @@ type dataType = {
 
 export default function DetailPage() {
   const id = useParams();
+  const [openModal, setOpenModal] = useState(false)
   const [data, setData] = useState({
     id: 0,
     breed: '',
@@ -97,26 +99,32 @@ export default function DetailPage() {
   useEffect(() => {
    getData()
   }, [])
+
+  const closeModal = () => {
+    setOpenModal(false)
+  }
   
   switch (id.category) {
     case "animal":
       return(
-        <div className='detail-container'>
+      <div className='detail-container'>
       <BackTopNab back={"/search"}/>
       <div className='deatil-info-container'>
         <div style={{width:"360px", padding: "10px"}}>
-          <StyledSlider {...settings}>
-              {data.picture_list.map((image) => {
-                return (
-                  <ProductImg src={image ? image : default_img} alt=""/>
-                )
-              })}
-            </StyledSlider>
+            <StyledSlider {...settings}>
+                {data.picture_list.map((image, idx) => {
+                  return (
+                    <ProductImg src={image ? image : default_img} key={idx} alt=""/>
+                  )
+                })}
+              </StyledSlider>
         </div>
       <div className='detail-info'>
         <div className='detail-span'>
           <img src={pin} alt="" width={20} height={20}/>
           <span>{data.location}</span>
+          <button className="detail-map-open" onClick={() => setOpenModal(true)}>지도보기</button>
+          {openModal && <DetailMap lon={data.lon} lat={data.lat} closeModal={closeModal}/>}
         </div>
         <div className='detail-span' >
           <img src={calendar} alt="" width={20} height={20} />
@@ -147,18 +155,20 @@ export default function DetailPage() {
       <BackTopNab back={"/search"}/>
       <div className='deatil-info-container'>
         <div style={{width:"360px", padding: "10px"}}>
-          <StyledSlider {...settings}>
-              {data.picture_list.map((image) => {
-                return (
-                  <ProductImg src={image ? image : default_img} alt=""/>
-                )
-              })}
-            </StyledSlider>
+            <StyledSlider {...settings}>
+                {data.picture_list.map((image, idx) => {
+                  return (
+                    <ProductImg src={image ? image : default_img} key={idx} alt=""/>
+                  )
+                })}
+              </StyledSlider>
         </div>
       <div className='detail-info'>
         <div className='detail-span'>
           <img src={pin} alt="" width={20} height={20}/>
           <span>{data.location}</span>
+          <button className="detail-map-open" onClick={() => setOpenModal(true)}>지도보기</button>
+          {openModal && <DetailMap lon={data.lon} lat={data.lat} closeModal={closeModal}/>}
         </div>
         <div className='detail-span' >
           <img src={calendar} alt="" width={20} height={20} />
@@ -189,18 +199,20 @@ export default function DetailPage() {
       <BackTopNab back={"/search"}/>
       <div className='deatil-info-container'>
         <div style={{width:"360px", padding: "10px"}}>
-          <StyledSlider {...settings}>
-              {data.picture_list.map((image) => {
-                return (
-                  <ProductImg src={image ? image : default_img} alt=""/>
-                )
-              })}
-            </StyledSlider>
+            <StyledSlider {...settings}>
+                {data.picture_list.map((image, idx) => {
+                  return (
+                    <ProductImg src={image ? image : default_img} key={idx} alt=""/>
+                  )
+                })}
+              </StyledSlider>
         </div>
       <div className='detail-info'>
         <div className='detail-span'>
           <img src={pin} alt="" width={20} height={20}/>
-          <span>{data.foundLocation}</span>
+          <span>{data.location}</span>
+          <button className="detail-map-open" onClick={() => setOpenModal(true)}>지도보기</button>
+          {openModal && <DetailMap lon={data.lon} lat={data.lat} closeModal={closeModal}/>}
         </div>
         <div className='detail-span' >
           <img src={calendar} alt="" width={20} height={20} />
@@ -232,9 +244,9 @@ export default function DetailPage() {
           <div className='deatil-info-container'>
           <div style={{width:"360px", padding: "10px"}}>
             <StyledSlider {...settings}>
-                {data.picture_list.map((image) => {
+                {data.picture_list.map((image, idx) => {
                   return (
-                    <ProductImg src={image ? image : default_img} alt=""/>
+                    <ProductImg src={image ? image : default_img} key={idx} alt=""/>
                   )
                 })}
               </StyledSlider>
@@ -242,7 +254,9 @@ export default function DetailPage() {
           <div className='detail-info'>
             <div className='detail-span'>
               <img src={pin} alt="" width={20} height={20}/>
-              <span>{data.foundLocation}</span>
+              <span>{data.safeLocation}</span>
+              <button className="detail-map-open" onClick={() => setOpenModal(true)}>지도보기</button>
+              {openModal && <DetailMap lon={data.lon} lat={data.lat} closeModal={closeModal}/>}
             </div>
             <div className='detail-span' >
               <img src={calendar} alt="" width={20} height={20} />
@@ -251,10 +265,6 @@ export default function DetailPage() {
             <div className='detail-span'>
               <img src={box} alt=""  width={20} height={20}/>
               <span>{data.name}</span>
-            </div>
-            <div className='detail-span'>
-              <img src={person} alt="" width={20} height={20} />
-              <span>{data.safeLocation}</span>
             </div>
             <div className='detail-span'>
               <img src={phone} alt="" width={20} height={20} />
@@ -277,7 +287,7 @@ export default function DetailPage() {
 const StyledSlider = styled(Slider)`
   .slick-prev {
     left: -24px !important;
-    z-index: 1000;
+    z-index: 3;
   }
 
   .slick-prev:before, .slick-next:before {
@@ -286,7 +296,7 @@ const StyledSlider = styled(Slider)`
 
   .slick-next {
     right: -24px !important;
-    z-index: 1000;
+    z-index: 3;
   }
 
   .slick-dots {
