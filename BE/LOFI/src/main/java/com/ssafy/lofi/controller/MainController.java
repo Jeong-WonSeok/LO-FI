@@ -10,6 +10,7 @@ import com.ssafy.lofi.service.FoundArticleService;
 import com.ssafy.lofi.service.LostArticleService;
 import com.ssafy.lofi.service.MissingPersonService;
 import com.ssafy.lofi.service.PoliceService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
 
@@ -149,6 +150,7 @@ public class MainController {
         foundArticleService.deleteFoundArticle(deleteList);
     }
 
+    @ApiOperation(value = "경찰서 주소 업데이트 사용 금지", notes = "무분별하게 실행 하지 말 것")
     @GetMapping("/police")
     public void updatePoliceAddress(){
         policeService.updateAddress();

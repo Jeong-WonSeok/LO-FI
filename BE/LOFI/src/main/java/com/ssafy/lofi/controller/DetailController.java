@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class DetailController {
     private final DetailService detailService;
 
-    @ApiOperation(value = "실종동물 조회", notes = "실종 동물 조회")
+    @ApiOperation(value = "잃어버린 동물,사람,물건 조회", notes = "animal, article, found, person 이 4가지 중 하나를 category에 입력")
     @GetMapping
     public ResponseEntity<?> getMissingAnimal(@RequestParam Long Id,@RequestParam String category){
         if(category.equals("animal")){
