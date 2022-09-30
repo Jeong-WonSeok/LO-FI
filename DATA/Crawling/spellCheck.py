@@ -192,6 +192,32 @@ def map_keyword_analysis(text):
 #     for animal in result_df.values:
 #         update_db(sql_update_animal, sql_insert_keyword_animal, animal, "missing_animal")
 
+def coordinate_change_dt(text):
+    load_dotenv(verbose=True)
+    api_key = os.getenv("API_KEY")
+    text = spellCehck_Busan(text)
+    keyword = map_keyword_analysis(text);
+    text = " ".join(keyword)
+    url = 'https://dapi.kakao.com/v2/local/search/keyword.json?'
+
+    while (1):
+        params = {"query": text}
+        headers = {"Authorization": "KakaoAK " + api_key}
+        places = requests.get(url, params=params, headers=headers)
+        if (len(text) == 0):
+            coordinate = "null"
+            break
+        try:
+            coordinate = places.json()['documents'][0]
+            break;
+        except:
+            # print(text.split(" ")[:-1])
+            text = " ".join(text.split(" ")[:-1])
+
+    # print('경도', coordinate['x'])
+    # print('위도', coordinate['y'])
+
+    return coordinate
 
 def coordinate_change(sql, text, table, id):
     load_dotenv(verbose=True)

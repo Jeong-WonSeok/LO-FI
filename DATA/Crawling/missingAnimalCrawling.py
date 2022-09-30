@@ -105,8 +105,7 @@ def animals_info_scraping(animal_info_url, wd):
     pass
 
   datenow = datetime.today().strftime("%Y-%m-%d")
-
-  return [id, find, gender, age, name, missingDay, location, description, img, True, datenow]
+  return [id, find, gender, age, name, missingDay, location, description, img, True, pd.to_datetime(datenow)]
 
 
 def dog_url_scraping():
