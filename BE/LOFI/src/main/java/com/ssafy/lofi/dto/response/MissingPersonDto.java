@@ -3,6 +3,8 @@ package com.ssafy.lofi.dto.response;
 import com.ssafy.lofi.db.entity.MissingPerson;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class MissingPersonDto {
     private Long id;
@@ -11,14 +13,15 @@ public class MissingPersonDto {
     private Integer age;
     private Integer ageNow;
     private String location;
-    private String date;
+    private Date date;
+    private String time;
     private String description;
     private String category;
     private String dress;
     private String picture;
     // 위도 경도 좌표
-    private String lat;
-    private String lon;
+    private double lat;
+    private double lon;
 
     public MissingPersonDto(MissingPerson missingPerson){
         this.id = missingPerson.getId();
@@ -32,5 +35,8 @@ public class MissingPersonDto {
         this.category = missingPerson.getCategory();
         this.dress = missingPerson.getDress();
         this.picture = missingPerson.getPicture();
+        this.time = missingPerson.getTime().toString();
+        this.lat = missingPerson.getLatitude();
+        this.lon = missingPerson.getLongitude();
     }
 }

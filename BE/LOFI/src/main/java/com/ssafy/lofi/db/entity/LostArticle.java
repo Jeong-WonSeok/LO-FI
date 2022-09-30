@@ -13,6 +13,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,6 +46,7 @@ public class LostArticle extends BaseEntity{
     private Date updateDay;
     private Double latitude;
     private Double longitude;
+    private Time time;
 
     public static LostArticle of(LostArticleDetailResponse detailResponse) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
