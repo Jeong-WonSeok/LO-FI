@@ -118,7 +118,7 @@ export default function DetailPage() {
         </div>
         <div className='detail-span' >
           <img src={calendar} alt="" width={20} height={20} />
-          <span>{data.date} / {data.time} </span>
+          <span>{data.date} {'/' + data.time} </span>
         </div>
         <div className='detail-span'>
           <img src={data.gender === "male" ? male : female} alt=""  width={20} height={20}/>

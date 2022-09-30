@@ -7,3 +7,9 @@
     width: 768px;
   }
 }
+
+.pulse {
+  width: 25px !important;
+  height: 25px !important;
+  z-index: 3
+}

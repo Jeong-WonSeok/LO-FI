@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Category from '../components/Category';
 import search_icon from '../assets/img/icon/search_icon.png'
+import now_location from '../assets/img/icon/now_location.jpg'
 import list from '../assets/img/Category/list.png'
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHook'
 import './MainPage.css'
@@ -35,7 +36,7 @@ const MainPage = () => {
     var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
     mapOption = { 
       center: new kakao.maps.LatLng(location.lat, location.lon), // 지도의 중심좌표
-      level: 3 // 지도의 확대 레벨
+      level: 2 // 지도의 확대 레벨
     };
 
     var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
@@ -70,17 +71,26 @@ const MainPage = () => {
       
       // 마커 이미지를 생성합니다    
       var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); 
-      
-      // 마커를 생성합니다
-      var marker = new kakao.maps.Marker({
-        map: map, // 마커를 표시할 지도
-        position: positions[i].latlng, // 마커를 표시할 위치
-        title : positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
-        image : markerImage // 마커 이미지 
-      });
+        var marker = new kakao.maps.Marker({
+          map: map, // 마커를 표시할 지도
+          position: positions[i].latlng, // 마커를 표시할 위치
+          title : positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+          image : markerImage // 마커 이미지 
+        });
     }
-  // 마커가 지도 위에 표시되도록 설정합니다
-  marker.setMap(map);
+
+    // 마커가 지도 위에 표시되도록 설정합니다
+    marker.setMap(map);
+
+    // 현재위치 표시
+    var gps_content = '<img class="pulse" draggable="false" unselectable="on" src="https://ssl.pstatic.net/static/maps/m/pin_rd.png" alt="">';
+    var currentOverlay = new kakao.maps.CustomOverlay({
+        position: new kakao.maps.LatLng(location.lat,location.lon),
+        content: gps_content,
+        map: map,
+        zIndex: 3
+    });
+    currentOverlay.setMap(map);
   }
   fecthmap();
 
@@ -104,7 +114,7 @@ const MainPage = () => {
         timeout: Infinity
       });
     } else {
-      alert('GPS를 지원하지 않습니다');
+      alert('GPS 정보를 불러드리지 못했습니다.\n 새로고침을 해주세요');
     }
   }
 
