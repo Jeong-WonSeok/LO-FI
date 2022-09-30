@@ -1,6 +1,5 @@
 import React from 'react'
 import arrowBack from '../assets/img/icon/arrow.png'
-import close from '../assets/img/icon/close.png'
 import { useNavigate } from 'react-router-dom'
 import './BackTopNab.css'
 

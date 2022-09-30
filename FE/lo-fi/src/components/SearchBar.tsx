@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import map from '../assets/img/Category/map.png'
 import list from '../assets/img/Category/list.png'
 import search_icon from '../assets/img/icon/search_icon.png'
@@ -27,7 +27,7 @@ export default function SearchBar(props: any) {
   // 엔터를 입력하면 검색이 실시
   const Search = (e: any) => {
     console.log(SearchText)
-    if (e.key == "Enter") {
+    if (e.key === "Enter") {
       dispatch(searchData(category, SearchText))
     }
   }
@@ -50,7 +50,7 @@ export default function SearchBar(props: any) {
           </div>
           <div className='search_box'>
             <img src={search_icon} alt="" width={20} height={20}/>
-            <input className="search_input" type="text" value={SearchText} onChange={handleChange} onKeyDown={Search}/>
+            <input className="search_input" placeholder="검색할 키워드를 입력해주세요" type="text" value={SearchText} onChange={handleChange} onKeyDown={Search}/>
           </div>
         </div>
       );
@@ -63,7 +63,7 @@ export default function SearchBar(props: any) {
           </div>
           <div className='search_box'>
             <img src={search_icon} alt="" width={20} height={20}/>
-            <input className="search_input" type="text" value={SearchText} onChange={handleChange} onKeyDown={Search}/>
+            <input className="search_input" placeholder="검색할 키워드를 입력해주세요" type="text" value={SearchText} onChange={handleChange} onKeyDown={Search}/>
           </div>
         </div>
       );

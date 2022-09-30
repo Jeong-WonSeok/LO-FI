@@ -6,7 +6,6 @@ import FooterBar from './components/FooterBar';
 import MainPage from './pages/MainPage';
 import SearchPage from './pages/SearchPage';
 import DetailPage from './pages/DetailPage';
-import AddPage from './pages/AddPage';
 import AddDetailPage from './pages/AddDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
@@ -23,7 +22,6 @@ function App() {
           <Route path='/register' element={<RegisterPage />}/>
           <Route path='/search' element={<SearchPage />}/>
           <Route path='/search/:category/:id' element={<DetailPage />}/>
-          <Route path='/add' element={<AddPage />}/>
           <Route path='/add/:category' element={<AddDetailPage/>}/>
           <Route path='/profile/' element={<ProfilePage/>}/>
           <Route path='/oauth2/:token' element={<GoogleLogin/>}/>

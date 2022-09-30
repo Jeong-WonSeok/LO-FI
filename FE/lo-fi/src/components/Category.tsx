@@ -20,26 +20,26 @@ export default function Category() {
     // 선택하면 데이터가 바뀜
     switch (tag) {
       case "animal":
-        // dispatch(getData("animal"))
+        dispatch(getData("animal"))
         setSelect("animal");
         return
       case "article":
-        // dispatch(getData("article"))
+        dispatch(getData("article"))
         setSelect("article");
         return
       case "person":
-        // dispatch(getData("person"))
+        dispatch(getData("person"))
         setSelect("person");
         return
       case "found":
-        // dispatch(getData("found"))
+        dispatch(getData("found"))
         setSelect("found");
         return
     }
   }
 
   useEffect(() => {
-    // dispatch(getData("article"))
+    dispatch(getData("article"))
   }, [])
   
 

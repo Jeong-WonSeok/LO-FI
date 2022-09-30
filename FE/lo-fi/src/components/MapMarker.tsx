@@ -1,7 +1,5 @@
-import { info } from 'console';
 import React, {useEffect, useState, useRef} from 'react'
 import './MapMarker.css'
-import {Iprops} from '../pages/AddDetailPage';
 
 const kakao = (window as any).kakao
 
