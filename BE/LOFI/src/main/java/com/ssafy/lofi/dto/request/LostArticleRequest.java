@@ -8,11 +8,13 @@ public class LostArticleRequest {
     private String category;
     private String date;
     private String time;
+    private String city;
     private String location;
     private String location_description;
+    private String description;
     private Long userId;
     private String picture;
-    private String point;
+    private int point;
     private double lat;
     private double lon;
 }
