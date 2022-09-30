@@ -1,0 +1,72 @@
+#map {
+  width: 100%
+}
+
+@media all and (min-width: 768px) {
+  #map {
+    width: 768px;
+  }
+}
+
+.location-back {
+  position: absolute;
+  left: -10px;
+  top: -10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgb(66, 102, 102);
+  -webkit-animation: ping 1.2s ease-in-out infinite both;
+  animation: ping 1.2s ease-in-out infinite both;
+  z-index: 3;
+}
+
+.now-location {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: rgb(89, 151, 151);
+  border: 3px solid white;
+  z-index: 5;
+}
+
+@-webkit-keyframes ping {
+  0% {
+    -webkit-transform: scale(0.2);
+            transform: scale(0.2);
+    opacity: 0.8;
+    z-index: 3;
+  }
+  80% {
+    -webkit-transform: scale(1.2);
+            transform: scale(1.2);
+    opacity: 0;
+    z-index: 3;
+  }
+  100% {
+    -webkit-transform: scale(2.2);
+            transform: scale(2.2);
+    opacity: 0;
+    z-index: 3;
+  }
+}
+@keyframes ping {
+  0% {
+    -webkit-transform: scale(0.2);
+            transform: scale(0.2);
+    opacity: 0.8;
+    z-index: 3;
+  }
+  80% {
+    -webkit-transform: scale(1.2);
+            transform: scale(1.2);
+    opacity: 0;
+    z-index: 3;
+  }
+  100% {
+    -webkit-transform: scale(2.2);
+            transform: scale(2.2);
+    opacity: 0;
+    z-index: 3;
+  }
+}
