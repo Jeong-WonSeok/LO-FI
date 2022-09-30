@@ -17,4 +17,3 @@ COPY --from=build /var/jenkins_home/workspace/deploytest1/FE/lo-fi/build ./build
 COPY --from=build /var/jenkins_home/workspace/deploytest1/FE/lo-fi/deploy_conf/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 3000
 CMD ["nginx", "-g","daemon off;"]
-#
