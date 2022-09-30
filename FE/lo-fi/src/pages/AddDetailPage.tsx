@@ -55,17 +55,16 @@ export interface getAddressType {
   address: string
 }
 
-export default function AddDetailPage(history: any) {
+export default function AddDetailPage() {
   let del_count = 0;
   const [isModal, setIsModal] = useState(false);
   const [isDetailModal, setIsDetailModal] = useState(false);
   const previewFileList: string[] = [];
-  const fileList: File[] = [];
   const myFileList: File[] = [];
   let picture = '';
   const navigate = useNavigate();
+  const [files, setFiles] = useState(myFileList)
   const [previewImg, setPreviewImg] = useState(previewFileList)
-  const [files, setFiles] = useState(fileList)
   const [ info, setInfo ] = useState({ 
     name: "",
     category: "",
@@ -149,42 +148,25 @@ export default function AddDetailPage(history: any) {
         const uploadFiles = Array.prototype.slice.call(e.target.files)
 
         uploadFiles.forEach((uploadFile) => {
-          myFileList.push(uploadFile)
+          setFiles((current) => {
+            let newfiles = [...current]
+            newfiles.push(uploadFile)
+            return newfiles
+          })
+          addImage(uploadFile)
         });
-
-        setFiles(myFileList)
-        addImage(myFileList)
         return;
       } else {
-        const dataTranster = new DataTransfer()
-
-        Array.from(files)
-          .filter((file, fileidx) => {
-            if (fileidx !== 3) {
-              return file
-            }
-          })
-          .forEach(file => {
-            dataTranster.items.add(file)
-          })
-    
-        const InputFile = document.querySelector('#picture') as HTMLInputElement
-        InputFile.files = dataTranster.files;
-
-        return;
+        alert('사진은 3개까지 등록가능합니다')
       }
     }
   })
 
-  const addImage = ((files: Array<File>) => {
+  const addImage = ((file: File) => {
     const nowImageURLList = [...previewImg];
-    for (let i=0; i < files.length; i++ ) {
-      
-      // 미리보기가 가능하게 변수화
-      let nowImageUrl: string = ""; 
-      nowImageUrl = URL.createObjectURL(files[i]);
-      nowImageURLList.push(nowImageUrl);
-    }
+    // 미리보기가 가능하게 변수화
+    const nowImageUrl = URL.createObjectURL(file);
+    nowImageURLList.push(nowImageUrl);
     setPreviewImg(nowImageURLList)
   })
 
@@ -298,12 +280,10 @@ export default function AddDetailPage(history: any) {
   const deleteImg = (idx: number) => {
     // 해당 인덱스 제거
     setFiles((current) => {
-      let newFile = [...current]
-      newFile.splice(idx, 1)
-      return newFile
+      let newfiles = [...current]
+      newfiles.splice(idx, 1)
+      return newfiles
     })
-
-    myFileList.splice(idx, 1)
 
     setPreviewImg((current) => {
       let newPreviewFile = [...current]
@@ -313,7 +293,7 @@ export default function AddDetailPage(history: any) {
 
     const dataTranster = new DataTransfer()
     
-    Array.from(files)
+    Array.from(myFileList)
       .filter((file, fileidx) => {
         if (fileidx !== Number(idx) + del_count) {
           return file
@@ -339,14 +319,12 @@ export default function AddDetailPage(history: any) {
       picture = ''
       for (let i=0; i < S3files.length; i++) {
         // 추후 공백으로 분리하기 위해 파일명 내부의 공백을 없애준다.
-        S3files.forEach(files => {
-          files.name.replaceAll(" ", "_")
-        })
-        s3.uploadFile(S3files[i], S3files[i].name).then(async (data) => { 
+        s3.uploadFile(S3files[i], S3files[i].name.replaceAll(" ", "_")).then(async (data) => { 
           // 이게 비동기적으로 처리되서 지금 사진이 안들어가는 것처럼 보임
           picture += data.location + " "
         }).catch(err => console.error(err))
       }
+      picture = picture.slice(0, -1)
       return
     }
   }

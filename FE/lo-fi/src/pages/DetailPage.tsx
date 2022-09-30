@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import styled from 'styled-components';
 
 import box from '../assets/img/icon/box.png'
 import calendar from '../assets/img/icon/calendar.png'
@@ -15,6 +16,32 @@ import BackTopNab from '../components/BackTopNab'
 import { useParams } from 'react-router-dom';
 import axios from '../api/axios'
 import requests from '../api/requests'
+
+// 캐로젤
+import Slider from "react-slick";
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
+
+type dataType = {
+  id: number,
+  breed: string,
+  name: string,
+  gender: string,
+  age: number,
+  ageNow: number,
+  location: string,
+  foundLocation: string,
+  safeLocation: string,
+  date: string,
+  time: string,
+  category: string,
+  description: string,
+  dress: string,
+  picture: string,
+  lat: number,
+  lon: number,
+  picture_list: string[]
+}
 
 export default function DetailPage() {
   const id = useParams();
@@ -33,24 +60,35 @@ export default function DetailPage() {
     category: '',
     description: '',
     dress: '',
-    picture: [''],
+    picture: '',
+    picture_list: [''],
     lat: 0,
     lon: 0
   })
+
+  // 캐로젤 세팅
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToScroll: 1,
+    centerPadding: '0px'
+  };
 
   const getData = async () => {
     const params = { Id: id.id, category : id.category}
     
     // 데이터 받아오기
     const res =  await axios.get(requests.detail, {params})
-    console.log('받은 데이터', res)
+    const inputData:dataType = res.data
     setData((current) => {
       let newData = {...current}
-      newData = res.data
-      if (res.data.picture) {
-        newData['picture'] = [res.data.picture]
+      newData = inputData
+      if (inputData.picture) { 
+        const list = inputData.picture.split(' ')
+        newData['picture_list'] = list.splice(0, list.length - 1)
       } else {
-        newData['picture'] = ['']
+        newData['picture_list'] = ['']
       }
       return newData
     })
@@ -66,12 +104,15 @@ export default function DetailPage() {
         <div className='detail-container'>
       <BackTopNab back={"/search"}/>
       <div className='deatil-info-container'>
-        {data.picture.map(image => {
-          return (
-            <img src={image ? image : default_img} alt="" />
-          )
-        })}
-      
+        <div style={{width:"360px", padding: "10px"}}>
+          <StyledSlider {...settings}>
+              {data.picture_list.map((image) => {
+                return (
+                  <ProductImg src={image ? image : default_img} alt=""/>
+                )
+              })}
+            </StyledSlider>
+        </div>
       <div className='detail-info'>
         <div className='detail-span'>
           <img src={pin} alt="" width={20} height={20}/>
@@ -105,12 +146,15 @@ export default function DetailPage() {
       <div className='detail-container'>
       <BackTopNab back={"/search"}/>
       <div className='deatil-info-container'>
-        {data.picture.map(image => {
-          return (
-            <img src={image ? image : default_img} alt="" />
-          )
-        })}
-      
+        <div style={{width:"360px", padding: "10px"}}>
+          <StyledSlider {...settings}>
+              {data.picture_list.map((image) => {
+                return (
+                  <ProductImg src={image ? image : default_img} alt=""/>
+                )
+              })}
+            </StyledSlider>
+        </div>
       <div className='detail-info'>
         <div className='detail-span'>
           <img src={pin} alt="" width={20} height={20}/>
@@ -118,7 +162,7 @@ export default function DetailPage() {
         </div>
         <div className='detail-span' >
           <img src={calendar} alt="" width={20} height={20} />
-          <span>{data.date} {'/' + data.time} </span>
+          <span>{data.date} {'/ ' + data.time.slice(0,5)} </span>
         </div>
         <div className='detail-span'>
           <img src={data.gender === "male" ? male : female} alt=""  width={20} height={20}/>
@@ -144,12 +188,15 @@ export default function DetailPage() {
       <div className='detail-container'>
       <BackTopNab back={"/search"}/>
       <div className='deatil-info-container'>
-        {data.picture.map(image => {
-          return (
-            <img src={image ? image : default_img} alt="" />
-          )
-        })}
-      
+        <div style={{width:"360px", padding: "10px"}}>
+          <StyledSlider {...settings}>
+              {data.picture_list.map((image) => {
+                return (
+                  <ProductImg src={image ? image : default_img} alt=""/>
+                )
+              })}
+            </StyledSlider>
+        </div>
       <div className='detail-info'>
         <div className='detail-span'>
           <img src={pin} alt="" width={20} height={20}/>
@@ -157,7 +204,7 @@ export default function DetailPage() {
         </div>
         <div className='detail-span' >
           <img src={calendar} alt="" width={20} height={20} />
-          <span>{data.date} / {data.time} </span>
+          <span>{data.date} {'/ ' + data.time.slice(0,5)} </span>
         </div>
         <div className='detail-span'>
           <img src={box} alt=""  width={20} height={20}/>
@@ -183,12 +230,15 @@ export default function DetailPage() {
         <div className='detail-container'>
           <BackTopNab back={"/search"}/>
           <div className='deatil-info-container'>
-            {data.picture.map(image => {
-              return (
-                <img src={image ? image : default_img} alt="" />
-              )
-            })}
-          
+          <div style={{width:"360px", padding: "10px"}}>
+            <StyledSlider {...settings}>
+                {data.picture_list.map((image) => {
+                  return (
+                    <ProductImg src={image ? image : default_img} alt=""/>
+                  )
+                })}
+              </StyledSlider>
+          </div>
           <div className='detail-info'>
             <div className='detail-span'>
               <img src={pin} alt="" width={20} height={20}/>
@@ -196,7 +246,7 @@ export default function DetailPage() {
             </div>
             <div className='detail-span' >
               <img src={calendar} alt="" width={20} height={20} />
-              <span>{data.date} / {data.time} </span>
+              <span>{data.date} {'/ ' + data.time.slice(0,5)} </span>
             </div>
             <div className='detail-span'>
               <img src={box} alt=""  width={20} height={20}/>
@@ -223,3 +273,61 @@ export default function DetailPage() {
       )
   }
 }
+
+const StyledSlider = styled(Slider)`
+  .slick-prev {
+    left: -24px !important;
+    z-index: 1000;
+  }
+
+  .slick-prev:before, .slick-next:before {
+    color: black !important;
+  }
+
+  .slick-next {
+    right: -24px !important;
+    z-index: 1000;
+  }
+
+  .slick-dots {
+    display: flex;
+    width: 100px;
+    margin: 0;
+    padding: 0;
+    left: 50%;
+    bottom: 10px;
+    transform: translate(-50%, -50%);
+  }
+
+  .slick-dots li {
+    width: 6px;
+    height: 6px;
+    margin: 0 3.5px;
+  }
+
+  .slick-dots li button {
+    width: 6px;
+    height: 6px;
+  }
+
+  .slick-dots li button:before {
+    width: 6px;
+    height: 6px;
+    color: white;
+  }
+
+  .slick-dots li.slick-active button:before {
+    color: white !important;
+  }
+
+  li {
+    margin: 0;
+    padding: 0;
+  }
+`;
+
+const ProductImg = styled.img`
+  width: 300px;
+  border-radius: 10px;
+  object-fit: cover;
+`;
