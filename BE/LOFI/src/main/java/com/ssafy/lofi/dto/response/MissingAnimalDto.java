@@ -9,7 +9,7 @@ public class MissingAnimalDto {
 
     private Long id;
     private Long animalId;
-    private String find;
+    private String breed;
     private String name;
     private String gender;
     private String age;
@@ -17,18 +17,23 @@ public class MissingAnimalDto {
     private String date;
     private String description;
     private String picture;
+    private String time;
     // 위도 경도 좌표
-    private String lat;
-    private String lon;
+    private double lat;
+    private double lon;
 
     public MissingAnimalDto(MissingAnimal missingAnimal){
         this.id = missingAnimal.getId();
         this.name = missingAnimal.getName();
+        this.breed = missingAnimal.getKind();
         this.gender = missingAnimal.getGender();
         this.age = missingAnimal.getAge();
         this.location = missingAnimal.getLocation();
         this.date = missingAnimal.getMissingDay().toString();
         this.description = missingAnimal.getDescription();
-        //this.picture = missingAnimal.getPicture();
+        this.picture = missingAnimal.getAnimalId();
+        this.lat = missingAnimal.getLatitude();
+        this.lon = missingAnimal.getLongitude();
+        this.time = missingAnimal.getTime().toString();
     }
 }

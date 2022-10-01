@@ -12,7 +12,7 @@ public class FoundArticleRequest {
     private String foundLocation;
     private Long userId;
     private String picture;
-    private String point;
+    private int point;
     private String description;
     private double lat;
     private double lon;

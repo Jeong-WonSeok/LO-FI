@@ -18,8 +18,9 @@ public class FoundArticleDto {
     private String description; // 설명
     private String picture; // 이미지
     // 위도 경도 좌표
-    private String lat; // 발견 장소 좌표
-    private String lon; // 발견 장소 좌표
+    private double lat; // 발견 장소 좌표
+    private double lon; // 발견 장소 좌표
+    private String time;
 
     public FoundArticleDto(FoundArticle foundArticle){
         this.id = foundArticle.getId();
@@ -29,6 +30,9 @@ public class FoundArticleDto {
         this.foundLocation = foundArticle.getFoundLocation();
         this.date = foundArticle.getDate();
         this.description = foundArticle.getDescription();
-        //this.picture = missingAnimal.getPicture();
+        this.picture = foundArticle.getPicture();
+        this.lat = foundArticle.getLatitude();
+        this.lon = foundArticle.getLongitude();
+        this.time = foundArticle.getTime().toString();
     }
 }

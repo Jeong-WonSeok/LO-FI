@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,6 +37,7 @@ public class MissingPerson extends BaseEntity {
     private String picture;
     private Double latitude;
     private Double longitude;
+    private Time time;
 
     public static MissingPerson of(MissingPersonAPIResponse missingPersonAPIResponse) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
