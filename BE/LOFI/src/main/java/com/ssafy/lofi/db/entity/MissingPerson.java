@@ -38,7 +38,7 @@ public class MissingPerson extends BaseEntity {
     private Double longitude;
 
     public static MissingPerson of(MissingPersonAPIResponse missingPersonAPIResponse) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
         return MissingPerson.builder()
                 .name(missingPersonAPIResponse.getNm())
                 .gender(missingPersonAPIResponse.getSexdstnDscd())
