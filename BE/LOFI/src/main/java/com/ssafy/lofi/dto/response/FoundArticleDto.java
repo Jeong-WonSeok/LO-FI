@@ -33,6 +33,6 @@ public class FoundArticleDto {
         this.picture = foundArticle.getPicture();
         this.lat = foundArticle.getLatitude();
         this.lon = foundArticle.getLongitude();
-        this.time = foundArticle.getTime().toString();
+        this.time = foundArticle.getTime() == null ? "00:00:00" : foundArticle.getTime().toString();
     }
 }

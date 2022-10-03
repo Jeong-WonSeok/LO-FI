@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import com.ssafy.lofi.dto.response.MissingPersonAPIResponse;
+import com.ssafy.lofi.dto.response.*;
 import com.ssafy.lofi.service.FoundArticleService;
 import com.ssafy.lofi.service.LostArticleService;
+import com.ssafy.lofi.service.MainService;
 import com.ssafy.lofi.service.MissingPersonService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
 
@@ -40,6 +42,7 @@ public class MainController {
     private final MissingPersonService missingPersonService;
     private final LostArticleService lostArticleService;
     private final FoundArticleService foundArticleService;
+    private final MainService mainService;
     @Transactional
     @GetMapping("/person")
     public void getLostPerson(
@@ -146,5 +149,35 @@ public class MainController {
 
         // deleteList 돌면서 db에서 deleted update해주기
         foundArticleService.deleteFoundArticle(deleteList);
+    }
+
+    @ApiOperation(value = "현재 위치기반 리스트", notes = "현재 위치와 조회할 탭 요청시 반환")
+    @GetMapping("/list")
+    public ResponseEntity<?> getList(@RequestParam String category, @RequestParam Double lat, @RequestParam Double lon){
+        String[] categorys = category.split(",");
+        Map<String,Object> result = new HashMap<>();
+
+        for (String s: categorys) {
+            switch (s){
+                case "animal":
+                    List<MissingAnimalDto> missingAnimalDtos = mainService.selectAnimalsBylatlon(lat,lon);
+                    result.put(s,missingAnimalDtos);
+                    break;
+                case "article":
+                    List<LostArticleDto> lostArticleDtos = mainService.selectArticlesBylatlon(lat,lon);
+                    result.put(s,lostArticleDtos);
+                    break;
+                case "found":
+                    List<FoundArticleDto> foundArticleDtos = mainService.selectFoundsArticleBylatlon(lat,lon);
+                    result.put(s,foundArticleDtos);
+                    break;
+                case "person":
+                    List<MissingPersonDto> missingPersonDtos = mainService.selectPersonsBylatlon(lat,lon);
+                    result.put(s,missingPersonDtos);
+                    break;
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }
