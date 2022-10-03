@@ -47,6 +47,7 @@ public class LostArticle extends BaseEntity{
     private Double latitude;
     private Double longitude;
     private Time time;
+    private String tel;
 
     public static LostArticle of(LostArticleDetailResponse detailResponse) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -60,6 +61,7 @@ public class LostArticle extends BaseEntity{
                 .city(detailResponse.getLstLctNm())
                 .picture(detailResponse.getLstFilePathImg())
                 .description(detailResponse.getUniq())
+                .tel(detailResponse.getTel())
                 .build();
     }
 }
