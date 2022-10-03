@@ -15,6 +15,9 @@ export default function MailModal(props:any) {
       }
     })
 
+    // const footer = document.getElementById('Footer_cotain') as HTMLDivElement
+    // footer.style.zIndex = '0'
+
     return (
       window.removeEventListener('click', (e) => {
         if (e.target === el.current) {
@@ -37,7 +40,7 @@ export default function MailModal(props:any) {
 
   const sendEmail = () => {
     setSend(true)
-    setTimeout(() => props.closeMail(), 2000)
+    setTimeout(() => props.closeMail(), 1500)
   }
 
   if (send) {
@@ -51,7 +54,7 @@ export default function MailModal(props:any) {
     )
   } else {
     return (
-      <div className='map_wrap' ref={el} >
+      <div className='mail-modal-background' ref={el} >
         <div className='mail-container'>
           <div className='mail-top-nav'>
             <img src={close} alt="" width={20} height={20} onClick={closeModal} />
