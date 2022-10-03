@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.lofi.db.entity.Police;
 import com.ssafy.lofi.db.repository.PoliceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -27,20 +28,23 @@ public class PoliceService {
     private final PoliceRepository policeRepository;
 
     public void updateAddress() {
-        //List<Police> list = policeRepository.findAll();
-//        for (Police police: list) {
-//            String jsonString = getKakaoApiFromAddress(police.getAddress());
-//            HashMap<String, String> xymap = getXYMapfromJson(jsonString);
-//            double lat = Double.parseDouble(xymap.get("x"));
-//            double lon = Double.parseDouble(xymap.get("y"));
-//            police.update(lat,lon);
-//            policeRepository.save(police);
-//        }
-        Police police = policeRepository.findById(1l).orElseThrow(() -> new IllegalArgumentException("해당 아이디를 가진 경찰서가 존재 하지 않습니다." + 1l));
-        String jsonString = getKakaoApiFromAddress(police.getAddress());
-        HashMap<String, String> xymap = getXYMapfromJson(jsonString);
-        double lat = Double.parseDouble(xymap.get("x"));
-        double lon = Double.parseDouble(xymap.get("y"));
+        List<Police> list = policeRepository.findAll();
+        for (Police police: list) {
+            String jsonString = getKakaoApiFromAddress(police.getAddress());
+            HashMap<String, String> xymap = getXYMapfromJson(jsonString);
+            if(xymap.get("상태").equals("없다")){
+                continue;
+            }
+            double lat = Double.parseDouble(xymap.get("x"));
+            double lon = Double.parseDouble(xymap.get("y"));
+            police.update(lat,lon);
+            policeRepository.save(police);
+        }
+//        Police police = policeRepository.findById(1l).orElseThrow(() -> new IllegalArgumentException("해당 아이디를 가진 경찰서가 존재 하지 않습니다." + 1l));
+//        String jsonString = getKakaoApiFromAddress(police.getAddress());
+//        HashMap<String, String> xymap = getXYMapfromJson(jsonString);
+//        double lat = Double.parseDouble(xymap.get("x"));
+//        double lon = Double.parseDouble(xymap.get("y"));
     }
 
     public String getKakaoApiFromAddress(String roadFullAddr) {
@@ -92,6 +96,12 @@ public class PoliceService {
             @SuppressWarnings("unchecked")
             List<Map<String, String>> docList
                     =  (List<Map<String, String>>) jsonMap.get("documents");
+            if(docList.isEmpty()){
+                XYMap.put("상태","없다");
+                return XYMap;
+            }else {
+                XYMap.put("상태","있다");
+            }
 
             Map<String, String> adList = (Map<String, String>) docList.get(0);
             XYMap.put("x",adList.get("x"));
