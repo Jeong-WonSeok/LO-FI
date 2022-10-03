@@ -29,7 +29,7 @@
 }
 
 .mail-top-nav > img {
-  height: 25px;
+  height: 20px;
   margin: auto 0;
 }
 
@@ -59,4 +59,39 @@
   padding: 10px;
   background-color: #faffdf;
   border-radius: 15px;
+}
+
+.send-finish {
+  display: flex;
+  justify-content: center;
+  background-color: white;
+  width: 80%;
+  padding: 20px 10px;
+  font-size: 16px;
+  border-radius: 20px;
+  -webkit-animation: fade-out 1.5s ease-out both;
+  animation: fade-out 1.5s ease-out both;
+}
+
+@-webkit-keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }

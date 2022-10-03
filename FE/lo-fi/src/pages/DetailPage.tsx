@@ -45,6 +45,7 @@ type dataType = {
   picture_list: string[]
   userId: number,
   email: string,
+  phone: string,
 }
 
 type resType = {
@@ -77,7 +78,8 @@ export default function DetailPage() {
     lat: 0,
     lon: 0,
     userId: 0, 
-    email: ''
+    email: '',
+    phone: ''
   })
 
   // 캐로젤 세팅
@@ -131,6 +133,14 @@ export default function DetailPage() {
     setOpenMailModal(false)
   }
 
+  const handleReport = () => {
+    if (data.email) {
+      setOpenMailModal(true)
+    } else {
+      
+    }
+  }
+
   switch (id.category) {
     case "animal":
       return(
@@ -167,11 +177,13 @@ export default function DetailPage() {
         </div>
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>{data.email}</span>
+          <span>{data.email ? data.email : data.phone}</span>
         </div>
       </div>
       <div className='detail-button'>
-        <button>습득물 신고</button>
+      {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
+            {data.phone && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.phone}>습득물 신고</a>}
+            {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
       </div>
       </div>
     </div>
@@ -211,11 +223,13 @@ export default function DetailPage() {
         </div>
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>{data.email}</span>
+          <span>{data.email ? data.email : data.phone}</span>
         </div>
       </div>
       <div className='detail-button'>
-        <button>습득물 신고</button>
+      {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
+            {data.phone && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.phone}>습득물 신고</a>}
+            {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
       </div>
       </div>
     </div>
@@ -255,11 +269,13 @@ export default function DetailPage() {
         </div>
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>{data.email}</span>
+          <span>{data.email ? data.email : data.phone}</span>
         </div>
       </div>
       <div className='detail-button'>
-        <button>습득물 신고</button>
+      {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
+            {data.phone && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.phone}>습득물 신고</a>}
+            {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
       </div>
       </div>
     </div>
@@ -295,12 +311,13 @@ export default function DetailPage() {
             </div>
             <div className='detail-span'>
               <img src={phone} alt="" width={20} height={20} />
-              <span>{data.email}</span>
+              <span>{data.email ? data.email : data.phone}</span>
             </div>
           </div>
           <div className='detail-button'>
-            <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>
-            {openMailModal && <MailModal closeMail={closeMail} />}
+            {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
+            {data.phone && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.phone}>습득물 신고</a>}
+            {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
           </div>
           </div>
         </div>
