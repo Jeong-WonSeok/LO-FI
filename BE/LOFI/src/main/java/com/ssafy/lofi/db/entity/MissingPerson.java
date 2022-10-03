@@ -40,7 +40,7 @@ public class MissingPerson extends BaseEntity {
     private Time time;
 
     public static MissingPerson of(MissingPersonAPIResponse missingPersonAPIResponse) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
         return MissingPerson.builder()
                 .name(missingPersonAPIResponse.getNm())
                 .gender(missingPersonAPIResponse.getSexdstnDscd())

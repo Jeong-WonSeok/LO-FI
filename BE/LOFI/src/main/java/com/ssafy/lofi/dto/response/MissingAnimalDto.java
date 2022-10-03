@@ -34,6 +34,6 @@ public class MissingAnimalDto {
         this.picture = missingAnimal.getAnimalId();
         this.lat = missingAnimal.getLatitude();
         this.lon = missingAnimal.getLongitude();
-        this.time = missingAnimal.getTime().toString();
+        this.time = missingAnimal.getTime() == null ? "00:00:00" : missingAnimal.getTime().toString();
     }
 }

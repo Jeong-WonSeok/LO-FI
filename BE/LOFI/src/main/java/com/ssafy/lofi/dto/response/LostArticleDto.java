@@ -35,6 +35,6 @@ public class LostArticleDto {
         this.picture = lostArticle.getPicture();
         this.lat = lostArticle.getLatitude();
         this.lon = lostArticle.getLongitude();
-        this.time = lostArticle.getTime().toString();
+        this.time = lostArticle.getTime() == null ? "00:00:00" : lostArticle.getTime().toString();
     }
 }

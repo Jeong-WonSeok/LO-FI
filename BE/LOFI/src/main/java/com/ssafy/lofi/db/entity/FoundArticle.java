@@ -46,6 +46,7 @@ public class FoundArticle extends BaseEntity{
     private Double latitude;
     private Double longitude;
     private Time time;
+    private String tel;
 
 
     public static FoundArticle of(FoundArticleDetailResponse detailResponse) throws ParseException {
@@ -59,6 +60,7 @@ public class FoundArticle extends BaseEntity{
                 .category(detailResponse.getPrdtClNm())
                 .atcId(detailResponse.getAtcId())
                 .description(detailResponse.getUniq())
+                .tel(detailResponse.getTel())
                 .build();
     }
 }
