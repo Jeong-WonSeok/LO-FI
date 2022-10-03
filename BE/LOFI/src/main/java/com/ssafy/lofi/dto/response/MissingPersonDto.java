@@ -35,7 +35,7 @@ public class MissingPersonDto {
         this.category = missingPerson.getCategory();
         this.dress = missingPerson.getDress();
         this.picture = missingPerson.getPicture();
-        this.time = missingPerson.getTime().toString();
+        this.time = missingPerson.getTime() == null ? "00:00:00" : missingPerson.getTime().toString();
         this.lat = missingPerson.getLatitude();
         this.lon = missingPerson.getLongitude();
     }

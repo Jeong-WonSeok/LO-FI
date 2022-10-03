@@ -10,6 +10,7 @@ import com.ssafy.lofi.service.FoundArticleService;
 import com.ssafy.lofi.service.LostArticleService;
 import com.ssafy.lofi.service.MainService;
 import com.ssafy.lofi.service.MissingPersonService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
 
@@ -149,6 +150,7 @@ public class MainController {
         foundArticleService.deleteFoundArticle(deleteList);
     }
 
+    @ApiOperation(value = "현재 위치기반 리스트", notes = "현재 위치와 조회할 탭 요청시 반환")
     @GetMapping("/list")
     public ResponseEntity<?> getList(@RequestParam String category, @RequestParam Double lat, @RequestParam Double lon){
         String[] categorys = category.split(",");
