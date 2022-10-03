@@ -14,7 +14,7 @@ import female from '../assets/img/icon/select_female.png'
 import './DetailPage.css'
 import BackTopNab from '../components/BackTopNab'
 import DetailMap from '../components/DetailMap';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from '../api/axios'
 import requests from '../api/requests'
 
@@ -55,6 +55,7 @@ type resType = {
 }
 
 export default function DetailPage() {
+  const navigate = useNavigate()
   const id = useParams();
   const [openModal, setOpenModal] = useState(false)
   const [openMailModal, setOpenMailModal] = useState(false)
@@ -122,6 +123,12 @@ export default function DetailPage() {
 
   useEffect(() => {
    getData()
+   
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.log('로그인 되지 않음')
+    navigate('/login')
+  }
   }, [])
 
   const closeModal = () => {
