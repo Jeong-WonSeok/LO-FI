@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import "./LoginPage.css";
 
 import logo from "../assets/img/icon/lofi_logo.png";
@@ -8,7 +8,7 @@ import Google_button from "../assets/img/social_login/btn_google_signin_dark_nor
 import google_Icon from "../assets/img/social_login/google_icon.png";
 import axios from 'axios';
 const LoginPage = () => {
-
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -37,7 +37,7 @@ const LoginPage = () => {
     .then((response) => {
       console.log(response.data.result);
       localStorage.setItem("token", response.data.result);
-      window.location.href="http://localhost:3000/"
+      navigate('/register')
     })
     .catch((error) => {
       console.log(error);

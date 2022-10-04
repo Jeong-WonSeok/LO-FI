@@ -150,7 +150,7 @@ export default function DetailPage() {
         {data.picture_list && <StyledSlider {...settings}>
             {data.picture_list.map((image, idx) => {
               return (
-                <ProductImg src={image} key={idx} alt=""/>
+                <ProductImg src={image ? image : default_img} key={idx} alt=""/>
               )
             })}
           </StyledSlider>}
@@ -198,11 +198,10 @@ export default function DetailPage() {
         {data.picture_list && <StyledSlider {...settings}>
             {data.picture_list.map((image, idx) => {
               return (
-                <ProductImg src={image} key={idx} alt=""/>
+                <ProductImg src={image ? image : default_img} key={idx} alt=""/>
               )
             })}
           </StyledSlider>}
-        {!data.picture_list && <ProductImg src={default_img} alt=""/> }
         </div>
       <div className='detail-info'>
         <div className='detail-span'>
@@ -245,7 +244,7 @@ export default function DetailPage() {
           {data.picture_list && <StyledSlider {...settings}>
               {data.picture_list.map((image, idx) => {
                 return (
-                  <ProductImg src={image} key={idx} alt=""/>
+                  <ProductImg src={image ? image : default_img} key={idx} alt=""/>
                 )
               })}
             </StyledSlider>}
@@ -292,7 +291,7 @@ export default function DetailPage() {
             {data.picture_list && <StyledSlider {...settings}>
                 {data.picture_list.map((image, idx) => {
                   return (
-                    <ProductImg src={image} key={idx} alt=""/>
+                    <ProductImg src={image ? image : default_img} key={idx} alt=""/>
                   )
                 })}
               </StyledSlider>}
