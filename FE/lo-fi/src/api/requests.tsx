@@ -13,10 +13,11 @@ const requests = {
   profile: "api/register/myPage",
 
   // 메인페이지(지도)
-  article: "api/main/article",
-  animal: "api/main/animal",
-  person: "api/main/person",
-  found: "api/main/found",
+  list: "api/main/list",
+  // article: "api/main/article",
+  // animal: "api/main/animal",
+  // person: "api/main/person",
+  // found: "api/main/found",
 
   // 상세페이지
   detail: "api/detail",
