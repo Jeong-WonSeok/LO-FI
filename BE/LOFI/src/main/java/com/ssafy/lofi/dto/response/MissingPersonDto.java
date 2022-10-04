@@ -8,6 +8,7 @@ import java.util.Date;
 @Data
 public class MissingPersonDto {
     private Long id;
+    private String email;
     private String name;
     private String gender;
     private Integer age;
