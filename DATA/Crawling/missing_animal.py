@@ -17,8 +17,8 @@ def selectDB(sql):
                            db='lo-fi')
 
     cursor = conn.cursor()
-    cursor.execute(sql, (datetime.today().strftime("%Y-%m-%d")))
-    # cursor.execute(sql)
+    # cursor.execute(sql, (datetime.today().strftime("%Y-%m-%d")))
+    cursor.execute(sql)
     result = cursor.fetchall()
     conn.commit()
     conn.close()
@@ -69,11 +69,12 @@ def update_db(sql, sql_keyword, id):
 def missing_animal_update():
 
     #animal
-    sql_select_animal = "select id, location, find, gender, description, name, age  from missing_animal where update_day = %s"
-    sql_update_animal = "update missing_animal set location = %s, find = %s, gender = %s, description = %s where id = %s"
+    sql_select_animal = "select id, location, kind, gender, description, name, age  from missing_animal"
+    sql_update_animal = "update missing_animal set location = %s, kind = %s, gender = %s, description = %s where id = %s"
     sql_insert_keyword_animal = "insert into keyword (keyword, animal_id) values (%s, %s)"
 
     result_df = pd.DataFrame(selectDB(sql_select_animal))
+    print(result_df)
     for animal in result_df.values:
         update_db(sql_update_animal, sql_insert_keyword_animal, animal)
 
