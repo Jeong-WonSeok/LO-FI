@@ -1,17 +1,7 @@
-import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom';
+import React from 'react'
 import './ProfilePage.css'
 
 export default function ProfilePage() {
-  const navigate = useNavigate()
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.log('로그인 되지 않음')
-      navigate('/login')
-    }
-  }, [])
-
   const user = {
     id : 1,
     username: "이싸피",

@@ -86,13 +86,6 @@ export default function AddDetailPage() {
   const target = document.getElementById('sumbit') as HTMLButtonElement
 
   useEffect(() => {
-    // 로그인하지 않을시 로그인화면으로 이동
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.log('로그인 되지 않음')
-      navigate('/login')
-    }
-
     if (target) {
       if (info.name && info.location) {
         switch ( category ) {

@@ -1,11 +1,11 @@
 import { combineReducers } from "redux";
 import user from './user';
-import mainData, {initialStateType} from './mainData';
+import mainData, {initialState} from './mainData';
 import { configureStore } from "@reduxjs/toolkit";
 
 // 타입 오류를 위해서 state의 타입을 가져온다.
 export interface rootState {
-  mainData: initialStateType;
+  mainData: initialState;
 }
 
 const rootReducer = combineReducers({

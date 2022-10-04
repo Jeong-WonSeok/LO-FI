@@ -70,7 +70,7 @@ export default function FooterBar() {
 
   return (
     <div className='Footer-center'>
-      <div className="Footer_contain" id="Footer_contain">
+      <div className="Footer_contain">
         <Link className="navigater" to="/" onClick={() => handleChangeTap('main')}>
           <img src={Select === 'main' ? select_home : home} alt="" width={25} height={25}/>
           <p style={Select === 'user' ? {color: ""} : {color: "#676767"}}>Home</p>

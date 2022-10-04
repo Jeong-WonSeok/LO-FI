@@ -1,24 +1,23 @@
 import axios from "../../api/axios";
+import test_axios from 'axios'
 import requests from "../../api/requests";
-import { handleActions } from "redux-actions";
+import { createAction, handleActions } from "redux-actions";
 import { Dispatch } from 'redux';
+import { data } from "jquery";
+import Category from "../../components/Category";
 
 // 데이터 버튼을 누를 때 마다 데이터를 가져올지 미리 데이터를 다 받아놓고 변경만 해야되는지 고민
-const getDataAPI = async (type: string, lat: number, lon:number) => {
-  const res = await axios.get(requests.list, {params: {
-    category: type,
-    lat : lat,
-    lon : lon
-  }})
-  switch (type) {
-    case "animal":
-      return res.data.aniaml
-    case "article":
-      return res.data.article
-    case "person":
-      return res.data.person
-    case "found":
-      return res.data.found
+const getDataAPI = async (type: string) => {
+  if (type === "animal") {
+    return axios.get(requests.animal)
+  } else if (type === "person") {
+    return axios.get(requests.person)
+  } else if (type === "article") {
+    return axios.get(requests.article)
+  } else if (type === "found") {
+    return axios.get(requests.found)
+  } else {
+    console.log('잘못된 입력입니다.')
   }
 }
 
@@ -41,12 +40,12 @@ const SEARCH_DATA_FAILURE = 'mainData/SEARCH_DATA_FAILURE';
 const SEARCH_STOP = 'mainData/SEARCH_STOP';
 
 // 액션 생성 함수
-export const getData = (category: string, lat: number, lon: number) => async (dispatch: Dispatch) => {
+export const getData = (category: string) => async (dispatch: Dispatch) => {
   // 요청을 시작했다는 것을 알림
   dispatch({type: GET_DATA_PENDING, payload: category})
 
   // 요청을 시작한다.
-  return await getDataAPI(category, lat, lon).then(
+  return await getDataAPI(category).then(
     res => {
       // 요청을 성곻했을 때, 응답내용을 payload로 보낸다.
       dispatch({
@@ -94,7 +93,7 @@ export const stopSearch = ()  => async (dispatch: Dispatch) => {
 }
 
 // 초기값 타입 설정
-export interface initialStateType {
+export interface initialState {
   pending: Boolean,
   error: Boolean,
   search: Boolean,
@@ -103,11 +102,11 @@ export interface initialStateType {
   search_data: Array<Object>,
 }
 // 초기값 설정
-const initialState:initialStateType = {
+const initialState: initialState = {
   pending: false,
   error: false,
   search: false,
-  category: "",
+  category: "article",
   data: [],
   search_data: []
 }
@@ -120,15 +119,14 @@ export default handleActions({
       ...state,
       pending: true,
       error: false,
-      data: [],
       category: String(action.payload)
     }
   },
-  [GET_DATA_SUCCESS]: (state, action) => {
+  [GET_DATA_SUCCESS]: (state, {payload}) => {
     return {
       ...state,
       pending: false,
-      data: state.data.concat(action.payload)
+      data: state.data.concat(payload)
     };
   },
   [GET_DATA_FAILURE]: (state, action) => {
@@ -145,7 +143,6 @@ export default handleActions({
       search: true,
       pending: true,
       error: false,
-      search_data: [],
       category: String(payload)
     };
   },
@@ -153,7 +150,7 @@ export default handleActions({
     return {
       ...state,
       pending: false,
-      search_data: state.search_data.concat(payload)
+      search_data: state.data.concat(payload)
     };
   },
   [SEARCH_DATA_FAILURE]: (state, action) => {

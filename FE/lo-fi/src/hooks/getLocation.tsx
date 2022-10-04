@@ -1,12 +1,14 @@
-export const getLocation = () => {
+export const getLocation = (location: any) => {
   if (navigator.geolocation) { // GPS를 지원하면
     // 이것으로 현재 위치를 가져온다.
     navigator.geolocation.getCurrentPosition(function(position) {
-      const location = {
-        "lat": position.coords.latitude,
-        "lon": position.coords.longitude
+      if (!location.lat && !location.lon) {
+        const result = {
+          "lat": position.coords.latitude,
+          "lon": position.coords.longitude
+        }
+        return result
       }
-      return location
     }, function(error) {
       console.error(error);
     }, {
@@ -15,6 +17,6 @@ export const getLocation = () => {
       timeout: Infinity
     });
   } else {
-    alert('GPS 정보를 불러드리지 못했습니다.\n 새로고침을 해주세요');
+    alert('GPS를 지원하지 않습니다');
   }
 }
