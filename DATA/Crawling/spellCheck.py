@@ -121,7 +121,7 @@ def coordinate_change_dt(text):
         headers = {"Authorization": "KakaoAK " + api_key}
         places = requests.get(url, params=params, headers=headers)
         if (len(text) == 0):
-            coordinate = "null"s
+            coordinate = "null"
             break
         else:
             try:
