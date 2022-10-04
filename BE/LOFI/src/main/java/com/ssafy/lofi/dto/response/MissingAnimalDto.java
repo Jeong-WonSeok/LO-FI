@@ -9,6 +9,8 @@ public class MissingAnimalDto {
 
     private Long id;
     private Long animalId;
+    private Long userId;
+    private String email;
     private String breed;
     private String name;
     private String gender;
@@ -31,7 +33,7 @@ public class MissingAnimalDto {
         this.location = missingAnimal.getLocation();
         this.date = missingAnimal.getMissingDay().toString();
         this.description = missingAnimal.getDescription();
-        this.picture = missingAnimal.getAnimalId();
+        this.picture = missingAnimal.getImg();
         this.lat = missingAnimal.getLatitude();
         this.lon = missingAnimal.getLongitude();
         this.time = missingAnimal.getTime() == null ? "00:00:00" : missingAnimal.getTime().toString();
