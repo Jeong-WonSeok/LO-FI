@@ -45,29 +45,29 @@ public class RegisterController {
 
     @ApiOperation(value = "실종동물 등록", notes = "입력된 실종동물 데이터 등록")
     @PostMapping(value = "/missingAnimal")
-    public ResponseEntity<?> registerMissingAnimal(@RequestBody MissingAnimalRequest missingAnimalRequest){
-        Long id = registerService.registerMissingAnimal(missingAnimalRequest,1);
+    public ResponseEntity<?> registerMissingAnimal(@RequestBody MissingAnimalRequest missingAnimalRequest,@AuthenticationPrincipal UserDetailsImpl userInfo){
+        Long id = registerService.registerMissingAnimal(missingAnimalRequest,userInfo.getId());
         return ResponseEntity.ok().body(id);
     }
 
     @ApiOperation(value = "실종자등록", notes = "입력된 실종자 데이터 등록")
     @PostMapping(value = "/missingPerson")
-    public ResponseEntity<?> registerMissingPerson(@RequestBody MissingPersonRequest missingPersonRequest){
-        Long id = registerService.registerMissingPerson(missingPersonRequest,1);
+    public ResponseEntity<?> registerMissingPerson(@RequestBody MissingPersonRequest missingPersonRequest,@AuthenticationPrincipal UserDetailsImpl userInfo){
+        Long id = registerService.registerMissingPerson(missingPersonRequest,userInfo.getId());
         return ResponseEntity.ok().body(id);
     }
 
     @ApiOperation(value = "분실물 등록", notes = "입력된 분실물 등록")
     @PostMapping(value = "/lostArticle")
-    public ResponseEntity<?> registerMissingPerson(@RequestBody LostArticleRequest lostArticleRequest){
-        Long id = registerService.registerLostArticle(lostArticleRequest,1);
+    public ResponseEntity<?> registerMissingPerson(@RequestBody LostArticleRequest lostArticleRequest,@AuthenticationPrincipal UserDetailsImpl userInfo){
+        Long id = registerService.registerLostArticle(lostArticleRequest,userInfo.getId());
         return ResponseEntity.ok().body(id);
     }
 
     @ApiOperation(value = "습득물 등록", notes = "입력된 습득물 등록")
     @PostMapping(value = "/foundArticle")
-    public ResponseEntity<?> registerMissingPerson(@RequestBody FoundArticleRequest foundArticleRequest){
-        Long id = registerService.registerFoundArticle(foundArticleRequest,1);
+    public ResponseEntity<?> registerMissingPerson(@RequestBody FoundArticleRequest foundArticleRequest,@AuthenticationPrincipal UserDetailsImpl userInfo){
+        Long id = registerService.registerFoundArticle(foundArticleRequest,userInfo.getId());
         return ResponseEntity.ok().body(id);
     }
     
