@@ -10,37 +10,60 @@ import select_baby from '../assets/img/Category/color_baby.png'
 import './Category.css';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHook'
 import { getData } from '../redux/modules/mainData'
+import { getPositionOfLineAndCharacter } from 'typescript'
 
 export default function Category() {
-  const [Select, setSelect] = useState("article");
+  const { category } = useAppSelector( state => state.mainData)
+  const [Select, setSelect] = useState("");
+  const [location, setLocation] = useState({
+    "lat": 0,
+    "lon": 0
+  })
 
   const dispatch = useAppDispatch();
 
   const handleChangeTap = (tag: string) => {
     // 선택하면 데이터가 바뀜
-    switch (tag) {
-      case "animal":
-        dispatch(getData("animal"))
-        setSelect("animal");
-        return
-      case "article":
-        dispatch(getData("article"))
-        setSelect("article");
-        return
-      case "person":
-        dispatch(getData("person"))
-        setSelect("person");
-        return
-      case "found":
-        dispatch(getData("found"))
-        setSelect("found");
-        return
-    }
+    dispatch(getData(tag, location.lat, location.lon))
+    setSelect(tag);
   }
 
   useEffect(() => {
-    dispatch(getData("article"))
-  }, [])
+    if (category) {
+      setSelect(category)
+    } else {
+      setSelect('article')
+    }
+    
+    getLocation()
+    setTimeout(() => {
+      dispatch(getData(Select, location.lat, location.lon))
+    }, 200)
+
+  }, [location])
+
+  
+  const getLocation = () => {
+    if (navigator.geolocation) { // GPS를 지원하면
+      // 이것으로 현재 위치를 가져온다.
+      navigator.geolocation.getCurrentPosition(function(position) {
+        if (!location.lat && !location.lon) {
+          setLocation(() => ({
+            "lat": position.coords.latitude,
+            "lon": position.coords.longitude
+          }))
+        }
+      }, function(error) {
+        console.error(error);
+      }, {
+        enableHighAccuracy: false,
+        maximumAge: 0,
+        timeout: Infinity
+      });
+    } else {
+      alert('GPS 정보를 불러드리지 못했습니다.\n 새로고침을 해주세요');
+    }
+  }
   
 
   return (

@@ -140,14 +140,6 @@ export default function DetailPage() {
     setOpenMailModal(false)
   }
 
-  const handleReport = () => {
-    if (data.email) {
-      setOpenMailModal(true)
-    } else {
-      
-    }
-  }
-
   switch (id.category) {
     case "animal":
       return(

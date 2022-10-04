@@ -10,11 +10,14 @@ import { useNavigate } from 'react-router-dom';
 // 카카오 불러오기
 const kakao = (window as any).kakao
 
-
+type positionType = {
+  title: String,
+  latlng: any
+}
 
 const MainPage = () => {
   const navigate = useNavigate();
-  const { data, pending, error } = useAppSelector(state => state.mainData)
+  const { data, pending, error, category } = useAppSelector(state => state.mainData)
   
   const [location, setLocation] = useState({
     lat: 0,
@@ -26,8 +29,6 @@ const MainPage = () => {
   const handleChange = (e: any) => {
     setSearchText(e.target.value);
   }
-
-  
 
   useEffect(() => {
 
@@ -47,31 +48,23 @@ const MainPage = () => {
     var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
     mapOption = { 
       center: new kakao.maps.LatLng(location.lat, location.lon), // 지도의 중심좌표
-      level: 2 // 지도의 확대 레벨
+      level: 3 // 지도의 확대 레벨
     };
 
     var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
     
     // 마커를 표시할 위치와 title 객체 배열입니다 
-    var positions = [
-      {
-        title: '카카오', 
-        latlng: new kakao.maps.LatLng(location.lat+0.0001, location.lon+0.0001)
-      },
-      {
-        title: '생태연못', 
-        latlng: new kakao.maps.LatLng(location.lat-0.0001, location.lon+0.0001)
-      },
-      {
-        title: '텃밭', 
-        latlng: new kakao.maps.LatLng(location.lat+0.0001, location.lon-0.0001)
-      },
-      {
-        title: '근린공원',
-        latlng: new kakao.maps.LatLng(location.lat-0.0001, location.lon-0.0001)
-      }
-    ];
+    var positions:positionType[] = []
 
+    if (data[0]) {
+      data.forEach((position: any) => {
+        return positions.push({
+          "title": position.name,
+          "latlng": new kakao.maps.LatLng(position.lat, position.lon)
+        })
+      })
+    }
+    
     // 마커 이미지의 이미지 주소입니다
     var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png"; 
       
@@ -91,7 +84,9 @@ const MainPage = () => {
     }
 
     // 마커가 지도 위에 표시되도록 설정합니다
-    marker.setMap(map);
+    if (positions.length) {
+      marker.setMap(map);
+    }
 
     // 현재위치 표시
     var gps_content = '<div class="now-location"><div class="location-back"></div></div>';
@@ -107,7 +102,7 @@ const MainPage = () => {
   }
   fecthmap();
 
-  }, [location]);
+  }, [location, data]);
 
   const getLocation = () => {
     if (navigator.geolocation) { // GPS를 지원하면
