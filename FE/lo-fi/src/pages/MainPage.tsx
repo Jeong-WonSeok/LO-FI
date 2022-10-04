@@ -38,10 +38,10 @@ const MainPage = () => {
     //메인페이지에서 토큰이 있는지 확인하고 토큰이 없으면
     //login페이지로 보냄
     const token = localStorage.getItem("token");
-    // if (!token) {
-    //   console.log('로그인 되지 않음')
-    //   navigate('/login')
-    // }
+    if (!token) {
+      console.log('로그인 되지 않음')
+      navigate('/login')
+    }
     
     // 좌표데이터를 가져온 후에 지도를 로드하기 위해
     // 나갔다가 다시 돌아오면 위치 데이터가 들어오지 않음

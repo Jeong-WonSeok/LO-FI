@@ -97,6 +97,7 @@ export default function DetailPage() {
     
     // 데이터 받아오기
     const res =  await axios.get(requests.detail, {params})
+    console.log(res.data)
     const inputData:dataType = res.data
     // 이메일이 있다면 변경
     if (inputData.userId) {
@@ -116,7 +117,6 @@ export default function DetailPage() {
       } else {
         newData['picture_list'] = ['']
       }
-      console.log(newData['picture_list'])
       return newData
     })
   }
@@ -171,8 +171,7 @@ export default function DetailPage() {
           <img src={animal} alt=""  width={20} height={20}/>
           <span>{data.name} / {data.breed} </span>
         </div>
-        <div className='detail-span'>
-          <img src={person} alt="" width={20} height={20} />
+        <div className='detail-span' style={{marginLeft: "20px"}}>
           <span>{data.description}</span>
         </div>
         <div className='detail-span'>
@@ -327,7 +326,10 @@ export default function DetailPage() {
       )
     default:
       return (
-        <div>잘못된 접근입니다.</div>
+        <div>
+          <BackTopNab back={"/search"}/>
+          <div>잘못된 접근입니다.</div>
+        </div>
       )
   }
 }
