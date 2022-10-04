@@ -14,11 +14,9 @@ const root = ReactDOM.createRoot(
 
 const render = () => root.render(
   // 개발단계시 오류를 잡기 위해 2번씩 실행된다.
-  <React.StrictMode>
     <Provider store={store}>
       <App />
     </Provider>
-  </React.StrictMode>
 );
 
 render();
