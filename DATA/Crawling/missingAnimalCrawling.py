@@ -225,7 +225,6 @@ others_df_clone = others_df
 
 animal_df = pd.concat([dogs_df_clone, cats_df_clone])
 animal_df = pd.concat([animal_df, others_df_clone])
-animal_df = others_df_clone
 
 ## DB연결
 engine = create_engine("mysql+pymysql://ssafy:ssafy@localhost:3306/lo-fi")

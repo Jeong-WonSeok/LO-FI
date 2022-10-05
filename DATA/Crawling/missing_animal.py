@@ -11,8 +11,8 @@ from datetime import datetime
 
 def selectDB(sql):
 
-    conn = pymysql.connect(host='localhost',
-                           user='ssafy',
+    conn = pymysql.connect(host='j7b102.p.ssafy.io',
+                           user='b102',
                            password='ssafy',
                            db='lo-fi')
 
@@ -28,30 +28,33 @@ def selectDB(sql):
 # db 맞춤법 검사기 돌려서 update
 def update_db(sql, sql_keyword, id):
     table = 'missing_animal'
-    conn = pymysql.connect(host='localhost',
-                           user='ssafy',
+    conn = pymysql.connect(host='j7b102.p.ssafy.io',
+                           user='b102',
                            password='ssafy',
                            db='lo-fi')
     result = []
     keyword = []
 
-    for col in id:
-        if(col == id[0] or col == id[5] or col == id[6]) :
-            continue
-        spell = spellCheck.spellCehck_Busan(col)
-        result.append(spell)
-        keyword.extend(spellCheck.keyword_analysis(spell))
+    try:
+        for col in id:
+            if(col == id[0] or col == id[5] or col == id[6]) :
+                continue
+            spell = spellCheck.spellCehck_Busan(col)
+            result.append(spell)
+            keyword.extend(spellCheck.keyword_analysis(spell))
 
-    print('result', result, id[0])
-    keyword.append(id[6].strip())
-    keyword.append(id[5].split('(')[-1].rsplit(')')[0])
+        print('result', result, id[0])
+        keyword.append(id[6].strip())
+        keyword.append(id[5].split('(')[-1].rsplit(')')[0])
 
-    keyword = set(keyword)
+        keyword = set(keyword)
 
-    sql_animal = "update missing_animal set longitude = %s, latitude=%s where id = %s"
-    spellCheck.coordinate_change(sql_animal, result[0], table, id[0])
+        sql_animal = "update missing_animal set longitude = %s, latitude=%s where id = %s"
+        spellCheck.coordinate_change(sql_animal, result[0], table, id[0])
 
-    print('keyword', keyword)
+        print('keyword', keyword)
+    except:
+        pass
     try:
         cursor = conn.cursor()
         cursor.execute(sql, (result[0], result[1], result[2], result[3], id[0]))

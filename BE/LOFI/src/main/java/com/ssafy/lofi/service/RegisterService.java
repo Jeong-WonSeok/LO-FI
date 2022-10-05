@@ -4,7 +4,7 @@ import com.ssafy.lofi.db.entity.*;
 import com.ssafy.lofi.db.repository.*;
 import com.ssafy.lofi.dto.request.*;
 import com.ssafy.lofi.dto.UserRole;
-import com.ssafy.lofi.dto.response.UserDto;
+import com.ssafy.lofi.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -155,5 +155,46 @@ public class RegisterService {
                 .build();
         foundArticleRepository.save(foundArticle);
         return foundArticle.getId();
+    }
+
+    public Map<String,Object> selectMyboard(Long userId){
+        Map<String,Object> result = new HashMap<>();
+
+        List<MissingAnimal> missingAnimals = missingAnlmalRepository.findAllByUserId(userId);
+
+        List<MissingAnimalDto> missingAnimalDtos = new ArrayList<>();
+        for (MissingAnimal missingAnimal: missingAnimals) {
+            MissingAnimalDto missingAnimalDto = new MissingAnimalDto(missingAnimal);
+            missingAnimalDtos.add(missingAnimalDto);
+        }
+        result.put("animal",missingAnimalDtos);
+
+        List<LostArticle> lostArticles = lostArticleRepository.findAllByUserId(userId);
+        List<LostArticleDto> lostArticleDtos = new ArrayList<>();
+
+        for (LostArticle lostArticle: lostArticles) {
+            LostArticleDto lostArticleDto = new LostArticleDto(lostArticle);
+            lostArticleDtos.add(lostArticleDto);
+        }
+        result.put("article",lostArticleDtos);
+
+        List<FoundArticle> foundArticles = foundArticleRepository.findAllByUserId(userId);
+
+        List<FoundArticleDto> foundArticleDtos = new ArrayList<>();
+        for (FoundArticle foundArticle: foundArticles) {
+            FoundArticleDto foundArticleDto = new FoundArticleDto(foundArticle);
+            foundArticleDtos.add(foundArticleDto);
+        }
+        result.put("found", foundArticleDtos);
+
+        List<MissingPerson> missingPersons = missingPersonRepository.findAllByUserId(userId);
+        List<MissingPersonDto> missingPersonDtos = new ArrayList<>();
+        for (MissingPerson missingPerson: missingPersons) {
+            MissingPersonDto missingPersonDto = new MissingPersonDto(missingPerson);
+            missingPersonDtos.add(missingPersonDto);
+        }
+        result.put("person",missingPersons);
+
+        return result;
     }
 }

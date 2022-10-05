@@ -16,4 +16,6 @@ public interface MissingAnlmalRepository extends JpaRepository<MissingAnimal, Lo
     @Query(nativeQuery = true, value = "select m.* from missing_animal as m " +
             "where (6371*acos(cos(radians(:lat))*cos(radians(m.latitude))*cos(radians(m.longitude)-radians(:lon))+sin(radians(:lat))*sin(radians(m.latitude)))) <= 0.3")
     List<MissingAnimal> findAllByLatLon(double lat, double lon);
+
+    List<MissingAnimal> findAllByUserId(Long userId);
 }

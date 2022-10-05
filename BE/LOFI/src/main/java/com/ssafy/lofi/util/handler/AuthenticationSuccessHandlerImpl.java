@@ -40,7 +40,7 @@ public class AuthenticationSuccessHandlerImpl extends SimpleUrlAuthenticationSuc
     }
 
     private String makeRedirectUrl(String token) {
-        return UriComponentsBuilder.fromUriString("https://j7b102.p.ssafy.io:3000/oauth2/redirect?token="+token)
+        return UriComponentsBuilder.fromUriString("https://j7b102.p.ssafy.io/oauth2/redirect?token="+token)
                 .build().toUriString();
     }
 
