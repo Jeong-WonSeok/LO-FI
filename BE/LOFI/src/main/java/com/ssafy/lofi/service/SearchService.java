@@ -1,9 +1,11 @@
 package com.ssafy.lofi.service;
 
-import com.ssafy.lofi.db.repository.FoundArticleRepository;
-import com.ssafy.lofi.db.repository.LostArticleRepository;
-import com.ssafy.lofi.db.repository.MissingAnlmalRepository;
-import com.ssafy.lofi.db.repository.MissingPersonRepository;
+import com.ssafy.lofi.db.entity.FoundArticle;
+import com.ssafy.lofi.db.entity.LostArticle;
+import com.ssafy.lofi.db.entity.MissingAnimal;
+import com.ssafy.lofi.db.repository.*;
+import com.ssafy.lofi.dto.response.FoundArticleDto;
+import com.ssafy.lofi.dto.response.LostArticleDto;
 import com.ssafy.lofi.dto.response.MissingAnimalDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ public class SearchService {
     private final LostArticleRepository lostArticleRepository;
     private final MissingAnlmalRepository missingAnlmalRepository;
     private final MissingPersonRepository missingPersonRepository;
+    private final KeywordRepository keywordRepository;
 
     public String[] keywordtoPython(String keyword) {
         RestTemplate restTemplate = new RestTemplate();
@@ -29,18 +32,25 @@ public class SearchService {
         return result.split(" ");
     }
 
-    public void getAnimal(String[] keywords, String category) {
+    public List<MissingAnimalDto> getAnimal(String[] keywords, String category) {
+        List<MissingAnimal> missingAnimals = new ArrayList<>();
+        if(keywords.length == 2){
+            missingAnimals = keywordRepository.findBykeywordtwoAnimal(keywords[0],keywords[1]);
+        }else if(keywords.length == 3){
+            missingAnimals = keywordRepository.findBykeywordthreeAnimal(keywords[0],keywords[1],keywords[2]);
+        }else {
+            missingAnimals = keywordRepository.findBykeywordoneAnimal(keywords[0]);
+        }
+
         List<MissingAnimalDto> missingAnimalDtos = new ArrayList<>();
-        //set<MissingAnimal> missingAnimals = missingAnlmalRepository.findBykeywords;
-//        for (MissingAnimal missingAnimal: missingAnimals) {
-//            MissingAnimalDto missingAnimalDto = new MissingAnimalDto(missingAnimal);
-//        }
-        //return missingAnimalDtos;
+        for (MissingAnimal missingAnimal: missingAnimals) {
+            MissingAnimalDto missingAnimalDto = new MissingAnimalDto(missingAnimal);
+            missingAnimalDtos.add(missingAnimalDto);
+        }
+        return missingAnimalDtos;
     }
 
     public void getPerson(String[] keywords, String category) {
-        // 중복 제거로 set 사용이용할려고 했으나 set 순서를 보장해주지 않아서
-        // 쿼리문에서 중복제거하여 list로 받는다.
         //set<MissingPerson> missingPersons = missingPersonRepository;
         //List<MissingPersonDto> missingPersonDtos = new ArrayList<>();
 //        for (MissingPerson missingPerson : missingPersons) {
@@ -49,12 +59,44 @@ public class SearchService {
 //        }
     }
 
-    public void getFound(String[] keywords, String category) {
-        //List<FoundArticle> foundArticle = foundArticleRepository
+    public List<FoundArticleDto> getFound(String[] keywords, String category) {
+        List<FoundArticle> foundArticles = new ArrayList<>();
+
+        if(keywords.length == 2){
+            foundArticles = keywordRepository.findBykeywordtwoFound(keywords[0],keywords[1]);
+        }else if(keywords.length == 3){
+            foundArticles = keywordRepository.findBykeywordthreeFound(keywords[0],keywords[1],keywords[2]);
+        }else {
+            foundArticles = keywordRepository.findBykeywordoneFound(keywords[0]);
+        }
+
+        List<FoundArticleDto> foundArticleDtos = new ArrayList<>();
+        for (FoundArticle foundArticle: foundArticles) {
+            FoundArticleDto foundArticleDto = new FoundArticleDto(foundArticle);
+            foundArticleDtos.add(foundArticleDto);
+        }
+
+        return foundArticleDtos;
     }
 
-    public void getArticle(String[] keywords, String category) {
+    public List<LostArticleDto> getArticle(String[] keywords, String category) {
+        List<LostArticle> lostArticles = new ArrayList<>();
 
+        if(keywords.length == 2){
+            lostArticles = keywordRepository.findBykeywordtwoArticle(keywords[0],keywords[1]);
+        }else if(keywords.length == 3){
+            lostArticles = keywordRepository.findBykeywordthreeArticle(keywords[0],keywords[1],keywords[2]);
+        }else {
+            lostArticles = keywordRepository.findBykeywordoneArticle(keywords[0]);
+        }
+        List<LostArticleDto> lostArticleDtos = new ArrayList<>();
+
+        for (LostArticle lostArticle: lostArticles) {
+            LostArticleDto lostArticleDto = new LostArticleDto(lostArticle);
+            lostArticleDtos.add(lostArticleDto);
+        }
+
+        return lostArticleDtos;
     }
 
 }

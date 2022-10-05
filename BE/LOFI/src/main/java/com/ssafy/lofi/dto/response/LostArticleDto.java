@@ -13,6 +13,7 @@ public class LostArticleDto {
     private Long id;
     private String atcId;
     private Long userId;
+    private String email;
     private String name;
     private String category;
     private String location; // 잃어버린 장소
@@ -23,6 +24,7 @@ public class LostArticleDto {
     private double lat; // 잃어버린 장소 좌표
     private double lon; // 잃어버린 장소 좌표
     private String time;
+    private String policeTel;
 
     public LostArticleDto(LostArticle lostArticle){
         this.id = lostArticle.getId();
@@ -35,6 +37,7 @@ public class LostArticleDto {
         this.picture = lostArticle.getPicture();
         this.lat = lostArticle.getLatitude();
         this.lon = lostArticle.getLongitude();
-        this.time = lostArticle.getTime().toString();
+        this.time = lostArticle.getTime() == null ? "00:00:00" : lostArticle.getTime().toString();
+        this.policeTel = lostArticle.getTel();
     }
 }
