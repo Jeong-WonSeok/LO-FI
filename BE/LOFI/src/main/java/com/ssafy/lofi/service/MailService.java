@@ -1,7 +1,9 @@
 package com.ssafy.lofi.service;
 
+import com.ssafy.lofi.db.repository.UserRepository;
 import com.ssafy.lofi.dto.response.MailDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -14,13 +16,15 @@ public class MailService {
 
     private final JavaMailSender javaMailSender;
 
-    //private fianl UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    @Value("${spring.mail.username}")
+    private String from;
 
     // 이메일 중복 확인 후 있으면 있다고 리턴 없으면 메일 인증 진행
     public String joinEmail(String email) {
         // 이메일 중복 확인
-        boolean flag = true; //userRepository.existsByEmail(email);
-
+        boolean flag = userRepository.existsByEmail(email);
         // 이메일이 존재하는 경우
         if(flag){
             // 인증번호 대신 이메일이 존재한다고 응답
@@ -52,7 +56,7 @@ public class MailService {
         message.setTo(mailDto.getEmail());
         message.setSubject(mailDto.getTitle());
         message.setText(mailDto.getMessage());
-        //message.setFrom(applicationYamlRead.getUsername());
+        message.setFrom(from);
         message.setReplyTo(mailDto.getEmail());
         javaMailSender.send(message);
     }
