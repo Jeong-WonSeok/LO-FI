@@ -4,7 +4,8 @@ const requests = {
   password: "api/acouunt/password",
   google: "api/account/google",
   kakao: "api/account/kakao",
-  logout: "api/account/logout",
+  logout: "api/account/logout", 
+  emailCheck: "api/account/emailCheck",
 
   // 회원가입
   signup: "api/register/signUp",
