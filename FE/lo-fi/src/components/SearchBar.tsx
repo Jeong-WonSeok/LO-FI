@@ -16,7 +16,7 @@ export default function SearchBar(props: any) {
 
   const handleChange = (e: any) => {
     setSearchText(e.target.value)
-    console.log(e.target.value)
+
     // 빈값이라면 검색 종료 및 원래 데이터로 돌려놓기
     if (!SearchText) {
       dispatch(stopSearch())
@@ -50,7 +50,7 @@ export default function SearchBar(props: any) {
           </div>
           <div className='search_box'>
             <img src={search_icon} alt="" width={20} height={20}/>
-            <input className="search_input" placeholder="검색할 키워드를 입력해주세요" type="text" value={SearchText} onChange={handleChange} onKeyDown={Search}/>
+            <input className="search_input" placeholder="키워드를 최대 3가지 입력해주세요" type="text" value={SearchText} onChange={handleChange} onKeyDown={Search}/>
           </div>
         </div>
       );
@@ -63,7 +63,7 @@ export default function SearchBar(props: any) {
           </div>
           <div className='search_box'>
             <img src={search_icon} alt="" width={20} height={20}/>
-            <input className="search_input" placeholder="검색할 키워드를 입력해주세요" type="text" value={SearchText} onChange={handleChange} onKeyDown={Search}/>
+            <input className="search_input" placeholder="키워드를 최대 3가지 입력해주세요" type="text" value={SearchText} onChange={handleChange} onKeyDown={Search}/>
           </div>
         </div>
       );

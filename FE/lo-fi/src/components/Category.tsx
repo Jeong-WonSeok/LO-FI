@@ -10,9 +10,8 @@ import select_baby from '../assets/img/Category/color_baby.png'
 import './Category.css';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHook'
 import { getData } from '../redux/modules/mainData'
-import { getPositionOfLineAndCharacter } from 'typescript'
 
-export default function Category() {
+const Category = () => {
   const { category } = useAppSelector( state => state.mainData)
   const [Select, setSelect] = useState("");
   const [location, setLocation] = useState({
@@ -91,3 +90,5 @@ export default function Category() {
     </div>
   )
 }
+
+export default React.memo(Category);

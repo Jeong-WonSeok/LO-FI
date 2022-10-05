@@ -44,7 +44,16 @@ export default function List() {
     if (error) {
 
     } else {
-      setList(data)
+      setList((current) => {
+        let newData = [...current]
+        if (data[0] == undefined) {
+          data.shift()
+          newData = data
+        } else {
+          newData = data
+        } 
+        return newData
+        })
     } 
   }, [data])
 
@@ -58,8 +67,8 @@ export default function List() {
   } else {
     if (!data[0] || error) {
       return (
-        <div className='list-container'>
-          찾으시는 데이터가 없습니다
+        <div className='list-container' style={{fontSize: "20px"}}>
+          찾는 데이터가 없습니다
         </div>
       )
     } else {
