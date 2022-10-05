@@ -15,7 +15,7 @@ public interface MissingPersonRepository extends JpaRepository<MissingPerson, Lo
     void truncateMissingPerson();
 
     @Query(nativeQuery = true, value = "select m.* from missing_person as m " +
-            "where (6371*acos(cos(radians(:lat))*cos(radians(m.latitude))*cos(radians(m.longitude)-radians(:lon))+sin(radians(:lat))*sin(radians(m.latitude)))) <= 0.3")
+            "where (6371*acos(cos(radians(:lat))*cos(radians(m.latitude))*cos(radians(m.longitude)-radians(:lon))+sin(radians(:lat))*sin(radians(m.latitude)))) <= 1")
     List<MissingPerson> findAllByLatLon(double lat, double lon);
 
     List<MissingPerson> findAllByUserId(Long userId);
