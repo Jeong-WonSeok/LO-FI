@@ -7,7 +7,7 @@ const requests = {
   logout: "api/account/logout",
 
   // 회원가입
-  signup: "api/register/singUp",
+  signup: "api/register/signUp",
   userUpdate: "api/register/update",
   userDelete: "api/register/delete",
   profile: "api/register/myPage",
