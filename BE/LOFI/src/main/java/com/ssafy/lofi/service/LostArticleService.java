@@ -7,6 +7,7 @@ import com.ssafy.lofi.db.repository.LostArticleRepository;
 import com.ssafy.lofi.dto.response.LostArticleDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.stereotype.Service;
@@ -63,27 +64,28 @@ public class LostArticleService {
         System.out.println(jsonObject.toString(0));
 
         // 분실물 리스트에서 id값만 꺼내기
-        org.json.JSONObject response = jsonObject.getJSONObject("response");
-        org.json.JSONObject body = response.getJSONObject("body");
-        org.json.JSONObject items = body.getJSONObject("items");
-        int totalCount = body.getInt("totalCount");
-        if(totalCount - (pageNo - 1) * numOfRows == 1){
-            JSONObject item = items.getJSONObject("item");
-            idMap.put(item.getString("atcId"), 0);
-//            idList.add(item.getString("atcId"));
-        } else {
-            JSONArray item = items.getJSONArray("item");
-            for (int i = 0; i < item.length(); i++) {
-                org.json.JSONObject obj = item.getJSONObject(i);
-                idMap.put(obj.getString("atcId"), 0);
-//                idList.add(obj.getString("atcId"));
-            }
-        }
 
-        if(totalCount < pageNo * numOfRows){
-            return false;
-        }
-        return true;
+            org.json.JSONObject response = jsonObject.getJSONObject("response");
+            org.json.JSONObject body = response.getJSONObject("body");
+            org.json.JSONObject items = body.getJSONObject("items");
+            int totalCount = body.getInt("totalCount");
+            if(totalCount - (pageNo - 1) * numOfRows == 1){
+                JSONObject item = items.getJSONObject("item");
+                idMap.put(item.getString("atcId"), 0);
+    //            idList.add(item.getString("atcId"));
+            } else {
+                JSONArray item = items.getJSONArray("item");
+                for (int i = 0; i < item.length(); i++) {
+                    org.json.JSONObject obj = item.getJSONObject(i);
+                    idMap.put(obj.getString("atcId"), 0);
+    //                idList.add(obj.getString("atcId"));
+                }
+            }
+            if(totalCount < pageNo * numOfRows){
+                return false;
+            }
+            return true;
+
     }
 
     public void callDetailAPIAndSaveLostArticle(List<String> idList) throws IOException, ParseException {
@@ -113,16 +115,21 @@ public class LostArticleService {
             rd.close();
             conn.disconnect();
             System.out.println(sb.toString());
-            org.json.JSONObject jsonObject1 = XML.toJSONObject(sb.toString());
-            org.json.JSONObject detailResponse = jsonObject1.getJSONObject("response");
-            org.json.JSONObject detailBody = detailResponse.getJSONObject("body");
-            org.json.JSONObject detailItem = detailBody.getJSONObject("item");
+            try {
+                org.json.JSONObject jsonObject1 = XML.toJSONObject(sb.toString());
+                org.json.JSONObject detailResponse = jsonObject1.getJSONObject("response");
+                org.json.JSONObject detailBody = detailResponse.getJSONObject("body");
+                org.json.JSONObject detailItem = detailBody.getJSONObject("item");
 
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            LostArticleDetailResponse lostArticleDetailResponse = mapper.readValue(detailItem.toString(), LostArticleDetailResponse.class);
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                LostArticleDetailResponse lostArticleDetailResponse = mapper.readValue(detailItem.toString(), LostArticleDetailResponse.class);
 
-            lostArticleRepository.save(LostArticle.of(lostArticleDetailResponse));
+                lostArticleRepository.save(LostArticle.of(lostArticleDetailResponse));
+
+            } catch (JSONException e){
+
+            }
         }
     }
 

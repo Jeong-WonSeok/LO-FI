@@ -7,6 +7,7 @@ import com.ssafy.lofi.db.repository.FoundArticleRepository;
 import com.ssafy.lofi.dto.response.FoundArticleDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.stereotype.Service;
@@ -125,8 +126,8 @@ public class FoundArticleService {
             conn.disconnect();
             JSONObject jsonObject = XML.toJSONObject(sb.toString());
             System.out.println(jsonObject.toString(0));
-            JSONObject detailResponse = jsonObject.getJSONObject("response");
-            if(detailResponse.get("body") != ""){
+            try {
+                JSONObject detailResponse = jsonObject.getJSONObject("response");
                 JSONObject detailBody = detailResponse.getJSONObject("body");
                 JSONObject detailItem = detailBody.getJSONObject("item");
                 ObjectMapper mapper = new ObjectMapper();
@@ -134,7 +135,10 @@ public class FoundArticleService {
                 FoundArticleDetailResponse foundArticleDetailResponse = mapper.readValue(detailItem.toString(), FoundArticleDetailResponse.class);
 
                 foundArticleRepository.save(FoundArticle.of(foundArticleDetailResponse));
+            } catch (JSONException e) {
+
             }
+
 
         }
     }
