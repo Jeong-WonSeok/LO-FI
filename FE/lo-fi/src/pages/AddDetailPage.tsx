@@ -86,6 +86,13 @@ export default function AddDetailPage() {
   const target = document.getElementById('sumbit') as HTMLButtonElement
 
   useEffect(() => {
+    // 로그인하지 않을시 로그인화면으로 이동
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.log('로그인 되지 않음')
+      navigate('/login')
+    }
+
     if (target) {
       if (info.name && info.location) {
         switch ( category ) {
@@ -322,9 +329,10 @@ export default function AddDetailPage() {
         s3.uploadFile(S3files[i], S3files[i].name.replaceAll(" ", "_")).then(async (data) => { 
           // 이게 비동기적으로 처리되서 지금 사진이 안들어가는 것처럼 보임
           picture += data.location + " "
-        }).catch(err => console.error(err))
+        }).catch(err => 
+          console.error('전송실패', err))
       }
-      picture = picture.slice(0, -1)
+      
       return
     }
   }
@@ -363,9 +371,7 @@ export default function AddDetailPage() {
               "time": info.time
             }
             console.log(sendData)
-            const res = await axios.post(requests.addAnimal, sendData, {headers: {
-              // Token: localStorage.getItem('token'),
-            }})
+            const res = await axios.post(requests.addAnimal, sendData)
 
             console.log('받은 데이터',res)
             
@@ -391,9 +397,7 @@ export default function AddDetailPage() {
               "missingTime": info.time
             }
             console.log(sendData)
-            const res = await axios.post(requests.addPerson, sendData, {headers: {
-              // Token: localStorage.getItem('token'),
-            }})
+            const res = await axios.post(requests.addPerson, sendData)
 
             console.log('받은 데이터',res)
             
@@ -419,9 +423,7 @@ export default function AddDetailPage() {
               "time": info.time
             }
             console.log(sendData)
-            const res = await axios.post(requests.addArticle, sendData, {headers: {
-              // Token: localStorage.getItem('token'),
-            }})
+            const res = await axios.post(requests.addArticle, sendData)
 
             console.log('받은 데이터',res)
 
@@ -445,9 +447,7 @@ export default function AddDetailPage() {
               "time": info.time,
             }
             console.log(sendData)
-            const res = await axios.post(requests.addFound, sendData, {headers: {
-              // Token: localStorage.getItem('token'),
-            }})
+            const res = await axios.post(requests.addFound, sendData)
 
             console.log('받은 데이터',res)
 
@@ -501,10 +501,8 @@ export default function AddDetailPage() {
             <div>
               <button onClick={() => setIsModal(true)} className={info.location ? "off" : "on"} style={{borderRadius: "20px", backgroundColor: "#B4E0D7", padding: "0 10px"}}>위치 찾기</button>
               <span id="detail_location" className={info.location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.location}</span>
+              {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
             </div>
-          </div>
-          <div>
-            {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
           </div>
           <hr />
           <div className='add-component'>
@@ -595,9 +593,6 @@ export default function AddDetailPage() {
               <span id="detail_location" className={info.location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.location}</span>
             </div>
           </div>
-          <div>
-            {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
-            </div>
           <hr />
           <div className='add-component'>
             <label htmlFor="detail_location">상세위치</label>
@@ -642,6 +637,7 @@ export default function AddDetailPage() {
             </div>
           </div>
           <hr />
+          {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
         </div>
       )
     case "article" :
@@ -692,9 +688,6 @@ export default function AddDetailPage() {
               <span id="detail_location" className={info.location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.location}</span>
             </div>
           </div>
-          <div>
-            {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
-            </div>
           <hr />
           <div className='add-component'>
             <label htmlFor="detail_location">상세위치</label>
@@ -739,6 +732,7 @@ export default function AddDetailPage() {
             </div>
           </div>
           <hr />
+          {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
         </div>
       )
     case "found":
@@ -789,9 +783,6 @@ export default function AddDetailPage() {
               <span id="detail_location" className={info.location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.location}</span>
             </div>
           </div>
-          <div>
-            {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
-            </div>
           <hr />
           <div className='add-component required'>
             <label htmlFor="detail_location">보관장소</label>
@@ -800,9 +791,6 @@ export default function AddDetailPage() {
               <span id="detail_location" className={info.detail_location ? "on" : "off"} onClick={() => setIsModal(true)} style={{width: "300px", textAlign:'right', cursor: "pointer"}}>{info.detail_location}</span>
             </div>
           </div>
-          <div>
-            {isDetailModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
-            </div>
           <hr />
           <div className="add-component" style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
             <label htmlFor="picture">사진</label>
@@ -834,6 +822,8 @@ export default function AddDetailPage() {
             <textarea name="" id="description" placeholder='특징을 적어주세요' value={info.description} onChange={resize}></textarea>
           </div>
           <hr />
+          {isModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
+          {isDetailModal && <MapMarker getAddress={getAddress} closeModal={closeModal}/>}
         </div>
       )
     default:

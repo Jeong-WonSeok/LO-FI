@@ -14,7 +14,7 @@ import female from '../assets/img/icon/select_female.png'
 import './DetailPage.css'
 import BackTopNab from '../components/BackTopNab'
 import DetailMap from '../components/DetailMap';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from '../api/axios'
 import requests from '../api/requests'
 
@@ -34,6 +34,8 @@ type dataType = {
   location: string,
   foundLocation: string,
   safeLocation: string,
+  police: string,
+  policeTel: string,
   date: string,
   time: string,
   category: string,
@@ -45,6 +47,7 @@ type dataType = {
   picture_list: string[]
   userId: number,
   email: string,
+  phone: string,
 }
 
 type resType = {
@@ -54,6 +57,7 @@ type resType = {
 }
 
 export default function DetailPage() {
+  const navigate = useNavigate()
   const id = useParams();
   const [openModal, setOpenModal] = useState(false)
   const [openMailModal, setOpenMailModal] = useState(false)
@@ -67,6 +71,8 @@ export default function DetailPage() {
     location: '',
     foundLocation: '',
     safeLocation: '',
+    police: '',
+    policeTel: '',
     date: '',
     time: '',
     category: '',
@@ -77,7 +83,8 @@ export default function DetailPage() {
     lat: 0,
     lon: 0,
     userId: 0, 
-    email: ''
+    email: '',
+    phone: ''
   })
 
   // 캐로젤 세팅
@@ -94,6 +101,7 @@ export default function DetailPage() {
     
     // 데이터 받아오기
     const res =  await axios.get(requests.detail, {params})
+    console.log(res.data)
     const inputData:dataType = res.data
     // 이메일이 있다면 변경
     if (inputData.userId) {
@@ -113,13 +121,18 @@ export default function DetailPage() {
       } else {
         newData['picture_list'] = ['']
       }
-
       return newData
     })
   }
 
   useEffect(() => {
    getData()
+   
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.log('로그인 되지 않음')
+    navigate('/login')
+  }
   }, [])
 
   const closeModal = () => {
@@ -138,13 +151,14 @@ export default function DetailPage() {
       <BackTopNab back={"/search"}/>
       <div className='deatil-info-container'>
         <div style={{width:"360px", padding: "10px"}}>
-            <StyledSlider {...settings}>
-                {data.picture_list.map((image, idx) => {
-                  return (
-                    <ProductImg src={image ? image : default_img} key={idx} alt=""/>
-                  )
-                })}
-              </StyledSlider>
+        {data.picture_list && <StyledSlider {...settings}>
+            {data.picture_list.map((image, idx) => {
+              return (
+                <ProductImg src={image ? image : default_img} key={idx} alt=""/>
+              )
+            })}
+          </StyledSlider>}
+        {!data.picture_list && <ProductImg src={default_img} alt=""/> }
         </div>
       <div className='detail-info'>
         <div className='detail-span'>
@@ -161,19 +175,21 @@ export default function DetailPage() {
           <img src={animal} alt=""  width={20} height={20}/>
           <span>{data.name} / {data.breed} </span>
         </div>
-        <div className='detail-span'>
-          <img src={person} alt="" width={20} height={20} />
+        <div className='detail-span' style={{marginLeft: "20px"}}>
           <span>{data.description}</span>
         </div>
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>{data.email}</span>
+          <span>{data.email ? data.email : data.policeTel}</span>
         </div>
       </div>
       <div className='detail-button'>
-        <button>습득물 신고</button>
+      {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
+      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
+            
       </div>
       </div>
+      {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
     </div>
       )
     case "person":
@@ -182,13 +198,13 @@ export default function DetailPage() {
       <BackTopNab back={"/search"}/>
       <div className='deatil-info-container'>
         <div style={{width:"360px", padding: "10px"}}>
-            <StyledSlider {...settings}>
-                {data.picture_list.map((image, idx) => {
-                  return (
-                    <ProductImg src={image ? image : default_img} key={idx} alt=""/>
-                  )
-                })}
-              </StyledSlider>
+        {data.picture_list && <StyledSlider {...settings}>
+            {data.picture_list.map((image, idx) => {
+              return (
+                <ProductImg src={image ? image : default_img} key={idx} alt=""/>
+              )
+            })}
+          </StyledSlider>}
         </div>
       <div className='detail-info'>
         <div className='detail-span'>
@@ -211,13 +227,15 @@ export default function DetailPage() {
         </div>
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>{data.email}</span>
+          <span>{data.email ? data.email : data.policeTel}</span>
         </div>
       </div>
       <div className='detail-button'>
-        <button>습득물 신고</button>
+      {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
+      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
       </div>
       </div>
+      {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
     </div>
       )
     case "article":
@@ -226,13 +244,14 @@ export default function DetailPage() {
       <BackTopNab back={"/search"}/>
       <div className='deatil-info-container'>
         <div style={{width:"360px", padding: "10px"}}>
-            <StyledSlider {...settings}>
-                {data.picture_list.map((image, idx) => {
-                  return (
-                    <ProductImg src={image ? image : default_img} key={idx} alt=""/>
-                  )
-                })}
-              </StyledSlider>
+          {data.picture_list && <StyledSlider {...settings}>
+              {data.picture_list.map((image, idx) => {
+                return (
+                  <ProductImg src={image ? image : default_img} key={idx} alt=""/>
+                )
+              })}
+            </StyledSlider>}
+          {!data.picture_list && <ProductImg src={default_img} alt=""/> }
         </div>
       <div className='detail-info'>
         <div className='detail-span'>
@@ -249,19 +268,22 @@ export default function DetailPage() {
           <img src={box} alt=""  width={20} height={20}/>
           <span>{data.name}</span>
         </div>
+        { data.police &&         
         <div className='detail-span'>
           <img src={person} alt="" width={20} height={20} />
-          <span>{data.safeLocation}</span>
-        </div>
+          <span>{data.police}</span>
+        </div>}
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>{data.email}</span>
+          <span>{data.email ? data.email : data.policeTel}</span>
         </div>
       </div>
       <div className='detail-button'>
-        <button>습득물 신고</button>
+      {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
+      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
       </div>
       </div>
+      {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
     </div>
       )
     case "found":
@@ -270,13 +292,14 @@ export default function DetailPage() {
           <BackTopNab back={"/search"}/>
           <div className='deatil-info-container'>
           <div style={{width:"360px", padding: "10px"}}>
-            <StyledSlider {...settings}>
+            {data.picture_list && <StyledSlider {...settings}>
                 {data.picture_list.map((image, idx) => {
                   return (
                     <ProductImg src={image ? image : default_img} key={idx} alt=""/>
                   )
                 })}
-              </StyledSlider>
+              </StyledSlider>}
+            {!data.picture_list && <ProductImg src={default_img} alt=""/> }
           </div>
           <div className='detail-info'>
             <div className='detail-span'>
@@ -295,19 +318,23 @@ export default function DetailPage() {
             </div>
             <div className='detail-span'>
               <img src={phone} alt="" width={20} height={20} />
-              <span>{data.email}</span>
+              <span>{data.email ? data.email : data.policeTel}</span>
             </div>
           </div>
           <div className='detail-button'>
-            <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>
-            {openMailModal && <MailModal closeMail={closeMail} />}
+            { <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
+            {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
           </div>
           </div>
+          {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
         </div>
       )
     default:
       return (
-        <div>잘못된 접근입니다.</div>
+        <div>
+          <BackTopNab back={"/search"}/>
+          <div>잘못된 접근입니다.</div>
+        </div>
       )
   }
 }

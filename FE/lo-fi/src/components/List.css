@@ -2,6 +2,10 @@
   width: 400px;
   border-radius: 20px;
   font-family: "DalSeoHealingMedium";
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   margin: 20px auto 60px;
 }
 
@@ -10,6 +14,10 @@
     width: 100%;
     border-radius: 20px;
     font-family: "DalSeoHealingMedium";
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     margin-top: 20px;
     margin-bottom: 60px;
   }
@@ -17,6 +25,7 @@
 
 .list-item-container {
   height: 133px;
+  width: 95%;
   display: flex;
   justify-content: space-between;
   padding: 10px;
@@ -34,6 +43,7 @@
 
 .list-item-info {
   display: flex;
+  width: 63%;
   flex-direction: column;
   padding: 12px 20px 12px 0;
 }
