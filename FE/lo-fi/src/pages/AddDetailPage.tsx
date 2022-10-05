@@ -329,9 +329,10 @@ export default function AddDetailPage() {
         s3.uploadFile(S3files[i], S3files[i].name.replaceAll(" ", "_")).then(async (data) => { 
           // 이게 비동기적으로 처리되서 지금 사진이 안들어가는 것처럼 보임
           picture += data.location + " "
-        }).catch(err => console.error(err))
+        }).catch(err => 
+          console.error('전송실패', err))
       }
-      picture = picture.slice(0, -1)
+      
       return
     }
   }

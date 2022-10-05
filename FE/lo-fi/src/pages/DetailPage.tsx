@@ -34,6 +34,8 @@ type dataType = {
   location: string,
   foundLocation: string,
   safeLocation: string,
+  police: string,
+  policeTel: string,
   date: string,
   time: string,
   category: string,
@@ -69,6 +71,8 @@ export default function DetailPage() {
     location: '',
     foundLocation: '',
     safeLocation: '',
+    police: '',
+    policeTel: '',
     date: '',
     time: '',
     category: '',
@@ -176,12 +180,12 @@ export default function DetailPage() {
         </div>
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>{data.email ? data.email : data.phone}</span>
+          <span>{data.email ? data.email : data.policeTel}</span>
         </div>
       </div>
       <div className='detail-button'>
       {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
-      {data.phone && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.phone}>습득물 신고</a>}
+      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
             
       </div>
       </div>
@@ -223,12 +227,12 @@ export default function DetailPage() {
         </div>
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>{data.email ? data.email : data.phone}</span>
+          <span>{data.email ? data.email : data.policeTel}</span>
         </div>
       </div>
       <div className='detail-button'>
       {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
-      {data.phone && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.phone}>습득물 신고</a>}
+      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
       </div>
       </div>
       {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
@@ -264,18 +268,19 @@ export default function DetailPage() {
           <img src={box} alt=""  width={20} height={20}/>
           <span>{data.name}</span>
         </div>
+        { data.police &&         
         <div className='detail-span'>
           <img src={person} alt="" width={20} height={20} />
-          <span>{data.safeLocation}</span>
-        </div>
+          <span>{data.police}</span>
+        </div>}
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>{data.email ? data.email : data.phone}</span>
+          <span>{data.email ? data.email : data.policeTel}</span>
         </div>
       </div>
       <div className='detail-button'>
       {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
-      {data.phone && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.phone}>습득물 신고</a>}
+      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
       </div>
       </div>
       {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
@@ -313,12 +318,12 @@ export default function DetailPage() {
             </div>
             <div className='detail-span'>
               <img src={phone} alt="" width={20} height={20} />
-              <span>{data.email ? data.email : data.phone}</span>
+              <span>{data.email ? data.email : data.policeTel}</span>
             </div>
           </div>
           <div className='detail-button'>
             { <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
-            {data.phone && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.phone}>습득물 신고</a>}
+            {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
           </div>
           </div>
           {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}

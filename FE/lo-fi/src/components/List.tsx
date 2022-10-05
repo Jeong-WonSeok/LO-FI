@@ -44,7 +44,16 @@ export default function List() {
     if (error) {
 
     } else {
-      setList(data)
+      setList((current) => {
+        let newData = [...current]
+        if (data[0] == undefined) {
+          data.shift()
+          newData = data
+        } else {
+          newData = data
+        } 
+        return newData
+        })
     } 
   }, [data])
 
