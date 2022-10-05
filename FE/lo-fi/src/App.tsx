@@ -13,10 +13,6 @@ import DetailPage from './pages/DetailPage';
 import AddPage from './pages/AddPage';
 import AddDetailPage from './pages/AddDetailPage';
 import ProfilePage from './pages/ProfilePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import KakaoLogin from './pages/KakaoLogin';
-
 function App() {
   return (
     <div className="App">
