@@ -1,15 +1,15 @@
 // import axios from "axios";
-import axios from "../api/axios"
+import axios from "../api/axios";
 import requests from "../api/requests";
 import { stringify } from "querystring";
 import React, { ReactEventHandler } from "react";
 import { useState } from "react";
 import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 import "./RegisterPage.css";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   // const [user, setUser] = useState();
 
   // const handleRegister = (data:any) => {
@@ -33,6 +33,11 @@ const RegisterPage = () => {
   const [isPassword, setIsPassword] = useState<boolean>(false);
   const [isCheckPassword, setIsCheckPassword] = useState<boolean>(false);
 
+  //이메일 체크 (백엔드에서 받아온 인증번호)
+  const [emailAuth, setEmailAuth] = useState<String>("");
+
+  //이메일 체크 (사용자가 입력한 인증번호)
+  const [emailAuthInput, setEmailAuthInput] = useState<String>("");
   // const onChangeId = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   setId(e.target.value);
   // };
@@ -93,40 +98,74 @@ const RegisterPage = () => {
     }
   };
 
-  //***********이메일************** */
-  // const onCheckEmail = (e: any) => {
-  // axios
-  //   .get("http://localhost:8080/api/account/emailCheck/", {
+  //사용자가 입력한 인증번호 값을 EmailAuthInput에 저장함
+  const onChangeEmailAuth = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmailAuthInput(e.target.value);
+  }
 
-  //     email : {email}
+  //***********이메일 체크************** */
 
-  //   })
-  // }
+  const onCheckEmail = () => {
+    console.log(email);
+    //로컬 테스트 api
+    // axios.get(`http://localhost:8080/api/account/emailCheck?email=${email}`)
+    //서버 api
+    axios.get(requests.emailCheck+`?email=${email}`)
+    .then((response) => {
+      console.log(response);
+      if (response.data==="exists") {
+        alert("이미 존재하는 이메일입니다.")
+        navigate('/login')
+      } else {
+        setEmailAuth(response.data);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+  };
 
   //backEnd로 회원가입 요청 보내기 (이메일, 비밀번호, 제공자)
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    axios
-      .post(
-        requests.signup,
-        {
-          email: email,
-          password: password,
-          provider: "lofi",
-        },
-        {
-          headers: { "Content-type": `application/json` },
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        // window.location.href = "http://localhost:3000/login";
-        navigate('/login')
-      })
-      .catch((error) => {
-        console.error(error.response);
-      });
+    // console.log("서버에 저장된 인증번호")
+    // console.log(emailAuth);
+    // console.log("내가 보내는 인증번호")
+    // console.log(emailAuthInput);
+    
+    // 인증번호를 입력하지 않은경우
+    if(emailAuthInput=='') {
+      alert("인증번호를 입력해주세요.")
+    }
+    // 입력한 인증번호와 실제 인증번호가 같을 경우
+    else if(emailAuth==emailAuthInput) {
+      axios
+        .post(
+          requests.signup,
+          // "http://localhost:8080/api/register/signUp",
+          {
+            email: email,
+            password: password,
+            provider: "lofi",
+          },
+          {
+            headers: { "Content-type": `application/json` },
+          }
+        )
+        .then((response) => {
+          // console.log(response);
+          // window.location.href = "http://localhost:3000/login";
+          navigate("/login");
+        })
+        .catch((error) => {
+          // console.error(error.response);
+        });
+        //인증번호 다른 경우
+    } else  {
+      alert("다시 인증해주세요.")
+    }
+
   };
 
   return (
@@ -152,7 +191,17 @@ const RegisterPage = () => {
             </span>
           )}
         </div>
-        <button className="register_button">이메일 인증</button>
+        <button type="button" className="register_button" onClick={onCheckEmail}>
+          인증번호 받기
+        </button>
+        <div className="login_id">
+          <input
+            type="password"
+            id="emailcheck"
+            placeholder="인증번호 입력"
+            onChange={onChangeEmailAuth}
+          />
+        </div>
         <div className="login_id">
           <span className="text">비밀번호</span>
           <input
@@ -192,7 +241,12 @@ const RegisterPage = () => {
             </span>
           )}
         </div>
-        <button disabled={!(isEmail&&isPassword&&isCheckPassword)} className="register_button">회원가입</button>
+        <button
+          disabled={!(isEmail && isPassword && isCheckPassword)}
+          className="register_button"
+        >
+          회원가입
+        </button>
       </form>
     </div>
   );
