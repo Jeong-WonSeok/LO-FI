@@ -2,9 +2,81 @@
   width: 100%
 }
 
-@media all and (min-width: 768px) {
+.marker-info {
+  height: 100px;
+  width: 250px;
+  padding: 10px;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 7px 7px 8px 1px #7ab4b8;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'DalSeoHealingMedium';
+  position: relative;
+  bottom: 100px;
+  -webkit-animation: scale-in-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  animation: scale-in-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+
+@-webkit-keyframes scale-in-bottom {
+  0% {
+    -webkit-transform: scale(0);
+            transform: scale(0);
+    -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+    opacity: 1;
+  }
+}
+@keyframes scale-in-bottom {
+  0% {
+    -webkit-transform: scale(0);
+            transform: scale(0);
+    -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+    opacity: 1;
+  }
+}
+
+
+.list-item-marker-info {
+  display: flex;
+  width: 63%;
+  flex-direction: column;
+  padding: 12px 20px 12px 0;
+}
+
+.marker-info-list-item-span > img {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+}
+
+.marker-info > img {
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+}
+
+
+@media all and (min-width: 400px) {
   #map {
-    width: 768px;
+    width: 400px;
   }
 }
 
@@ -70,3 +142,4 @@
     z-index: 3;
   }
 }
+

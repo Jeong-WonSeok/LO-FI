@@ -2,7 +2,7 @@
   "name": "lo-fi",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://apis.data.go.kr/",
+  "proxy": "http://localhost:8080/",
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.5",
     "@testing-library/jest-dom": "^5.16.5",
@@ -21,6 +21,7 @@
     "axios": "^0.27.2",
     "http-proxy-middleware": "^2.0.6",
     "immutable": "^4.1.0",
+    "jwt-decode": "^3.1.2",
     "react": "^18.2.0",
     "react-aws-s3-typescript": "^1.1.4",
     "react-datepicker": "^4.8.0",

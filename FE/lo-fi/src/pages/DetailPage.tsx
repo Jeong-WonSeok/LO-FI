@@ -34,6 +34,8 @@ type dataType = {
   location: string,
   foundLocation: string,
   safeLocation: string,
+  police: string,
+  policeTel: string,
   date: string,
   time: string,
   category: string,
@@ -69,6 +71,8 @@ export default function DetailPage() {
     location: '',
     foundLocation: '',
     safeLocation: '',
+    police: '',
+    policeTel: '',
     date: '',
     time: '',
     category: '',
@@ -97,6 +101,7 @@ export default function DetailPage() {
     
     // 데이터 받아오기
     const res =  await axios.get(requests.detail, {params})
+    console.log(res.data)
     const inputData:dataType = res.data
     // 이메일이 있다면 변경
     if (inputData.userId) {
@@ -116,7 +121,6 @@ export default function DetailPage() {
       } else {
         newData['picture_list'] = ['']
       }
-      console.log(newData['picture_list'])
       return newData
     })
   }
@@ -150,7 +154,7 @@ export default function DetailPage() {
         {data.picture_list && <StyledSlider {...settings}>
             {data.picture_list.map((image, idx) => {
               return (
-                <ProductImg src={image} key={idx} alt=""/>
+                <ProductImg src={image ? image : default_img} key={idx} alt=""/>
               )
             })}
           </StyledSlider>}
@@ -171,18 +175,17 @@ export default function DetailPage() {
           <img src={animal} alt=""  width={20} height={20}/>
           <span>{data.name} / {data.breed} </span>
         </div>
-        <div className='detail-span'>
-          <img src={person} alt="" width={20} height={20} />
+        <div className='detail-span' style={{marginLeft: "20px"}}>
           <span>{data.description}</span>
         </div>
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>{data.email ? data.email : data.phone}</span>
+          <span>{data.email ? data.email : data.policeTel}</span>
         </div>
       </div>
       <div className='detail-button'>
       {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
-      {data.phone && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.phone}>습득물 신고</a>}
+      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
             
       </div>
       </div>
@@ -198,11 +201,10 @@ export default function DetailPage() {
         {data.picture_list && <StyledSlider {...settings}>
             {data.picture_list.map((image, idx) => {
               return (
-                <ProductImg src={image} key={idx} alt=""/>
+                <ProductImg src={image ? image : default_img} key={idx} alt=""/>
               )
             })}
           </StyledSlider>}
-        {!data.picture_list && <ProductImg src={default_img} alt=""/> }
         </div>
       <div className='detail-info'>
         <div className='detail-span'>
@@ -225,12 +227,12 @@ export default function DetailPage() {
         </div>
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>{data.email ? data.email : data.phone}</span>
+          <span>{data.email ? data.email : data.policeTel}</span>
         </div>
       </div>
       <div className='detail-button'>
       {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
-      {data.phone && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.phone}>습득물 신고</a>}
+      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
       </div>
       </div>
       {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
@@ -245,7 +247,7 @@ export default function DetailPage() {
           {data.picture_list && <StyledSlider {...settings}>
               {data.picture_list.map((image, idx) => {
                 return (
-                  <ProductImg src={image} key={idx} alt=""/>
+                  <ProductImg src={image ? image : default_img} key={idx} alt=""/>
                 )
               })}
             </StyledSlider>}
@@ -266,18 +268,19 @@ export default function DetailPage() {
           <img src={box} alt=""  width={20} height={20}/>
           <span>{data.name}</span>
         </div>
+        { data.police &&         
         <div className='detail-span'>
           <img src={person} alt="" width={20} height={20} />
-          <span>{data.safeLocation}</span>
-        </div>
+          <span>{data.police}</span>
+        </div>}
         <div className='detail-span'>
           <img src={phone} alt="" width={20} height={20} />
-          <span>{data.email ? data.email : data.phone}</span>
+          <span>{data.email ? data.email : data.policeTel}</span>
         </div>
       </div>
       <div className='detail-button'>
       {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
-      {data.phone && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.phone}>습득물 신고</a>}
+      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
       </div>
       </div>
       {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
@@ -292,7 +295,7 @@ export default function DetailPage() {
             {data.picture_list && <StyledSlider {...settings}>
                 {data.picture_list.map((image, idx) => {
                   return (
-                    <ProductImg src={image} key={idx} alt=""/>
+                    <ProductImg src={image ? image : default_img} key={idx} alt=""/>
                   )
                 })}
               </StyledSlider>}
@@ -315,12 +318,12 @@ export default function DetailPage() {
             </div>
             <div className='detail-span'>
               <img src={phone} alt="" width={20} height={20} />
-              <span>{data.email ? data.email : data.phone}</span>
+              <span>{data.email ? data.email : data.policeTel}</span>
             </div>
           </div>
           <div className='detail-button'>
             { <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
-            {data.phone && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.phone}>습득물 신고</a>}
+            {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
           </div>
           </div>
           {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
@@ -328,7 +331,10 @@ export default function DetailPage() {
       )
     default:
       return (
-        <div>잘못된 접근입니다.</div>
+        <div>
+          <BackTopNab back={"/search"}/>
+          <div>잘못된 접근입니다.</div>
+        </div>
       )
   }
 }

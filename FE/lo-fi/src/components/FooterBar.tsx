@@ -20,7 +20,7 @@ export default function FooterBar() {
   // 프로필은 선택이 되는 문제가 있음
   useEffect(() => {
     window.addEventListener('click', (e) => {
-      if (e.target == el.current) {
+      if (e.target === el.current) {
         setCheck(false)
       } 
     })
@@ -37,7 +37,7 @@ export default function FooterBar() {
 
     return (
       window.removeEventListener('click', (e) => {
-        if (e.target == el.current) {
+        if (e.target === el.current) {
           setCheck(false)
         }
       })
@@ -67,7 +67,7 @@ export default function FooterBar() {
   };
 
   
-
+  if (window.location.href.includes('/register') || window.location.href.includes('/login')) return null;
   return (
     <div className='Footer-center'>
       <div className="Footer_contain" id="Footer_contain">

@@ -23,3 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 .env
+localhost+2-key.pem
+localhost+2.pem
