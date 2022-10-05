@@ -7,7 +7,8 @@ import logo from "../assets/img/icon/lofi_logo.png";
 import kakao_button from "../assets/img/social_login/kakao_login_medium_wide.png";
 import Google_button from "../assets/img/social_login/btn_google_signin_dark_normal_web@2x.png";
 import google_Icon from "../assets/img/social_login/google_icon.png";
-import axios from 'axios';
+import axios from '../api/axios';
+import requests from '../api/requests';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {RootState} from '../redux/modules/store';
@@ -39,7 +40,7 @@ const LoginPage = () => {
     console.log(email)
     console.log(password)
     axios
-      .post("/api/account/login",{
+      .post(requests.login,{
       email : email,
       password : password
     },
