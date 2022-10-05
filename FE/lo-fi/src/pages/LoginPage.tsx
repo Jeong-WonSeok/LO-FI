@@ -1,16 +1,31 @@
 import {useState} from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import "./LoginPage.css";
-
+import jwt from "jwt-decode";
+import jwtDecode from "jwt-decode";
 import logo from "../assets/img/icon/lofi_logo.png";
 import kakao_button from "../assets/img/social_login/kakao_login_medium_wide.png";
 import Google_button from "../assets/img/social_login/btn_google_signin_dark_normal_web@2x.png";
 import google_Icon from "../assets/img/social_login/google_icon.png";
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import {RootState} from '../redux/modules/store';
+import store from '../redux/modules/store';
+
+
 const LoginPage = () => {
+
+
+  const LOGIN = "user/LOGIN"
+
+  const email1 = useSelector((state:RootState) => state.user.email);
+  const id = useSelector((state:RootState) => state.user.id);
+
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+
 
 
   const onChangeEmail = (e : any) => {
@@ -27,7 +42,7 @@ const LoginPage = () => {
     console.log(email)
     console.log(password)
     axios
-      .post("/api/account/login",{
+      .post("api/account/login",{
       email : email,
       password : password
     },
@@ -35,9 +50,19 @@ const LoginPage = () => {
       headers : {"Content-type": `application/json`}
     })
     .then((response) => {
+      const token = response.data.result
       console.log(response.data.result);
-      localStorage.setItem("token", response.data.result);
-      window.location.href="http://localhost:3000/"
+      localStorage.setItem("token", token);
+      const decode:any = jwtDecode(token);
+
+      const email = decode.email;
+      const id = decode.id;
+
+      dispatch({type:LOGIN, email:email, id:id})
+      // dispatch({type:"LOGIN", payload})
+      // window.location.href="http://localhost:3000/"
+      console.log("확인해볼라고")
+      console.log(store.getState());
     })
     .catch((error) => {
       console.log(error);
@@ -80,6 +105,7 @@ const LoginPage = () => {
             <button onClick={onRegisterButton}>회원가입</button>
 
         </div>
+        <div>아이디는 {id} 이고, 이메일은 {email1}입니다</div>
         <div className="login_social_login">
           <a href="http://localhost:8080/oauth2/authorization/kakao">
               <img src={kakao_button} alt="카카오로 바로 시작"></img>
