@@ -7,7 +7,7 @@
     justify-content: space-between;
     align-items: center;
 }
-.container {
+.login_container {
     width: 100vw;
     height: 100vh;
     display: flex;
@@ -71,31 +71,42 @@
     height: 50px;
     border-radius: 30px;
     margin-top: 10px;
+    margin-bottom: 20px;
     padding: 0px 20px;
     border: 1px solid lightgray;
     outline: none;
   }
   
   .login_button {
-    width: 100%;
-    border-radius: 15px;
-    margin: 10px;
-    border-color: gray;
-    border-style: solid;
+    width: 80%;
+    /* border-radius: 15px; */
+    margin-bottom: 30px;
+    text-align: center;
+    /* border-style: solid; */
     display: flex;
     flex-direction: column;
+    /* background-color: #478185; */
   }
 
-  .text {
+  .login_button > button {
+    background-color: #478185;
+    margin-top : 10px;
+    border-radius: 15px;
+    height : 35px;
+  }
+
+  .login_text {
     font-family: "DalSeoHealingBold";
 
   }
 
-  .login_socialLogin {
-    /* width: 100%; */
-    margin: 10px;
-
+  .login_social_login {
+    width :60%;
+    text-align: center;
   }
+
+
+
 
 
   
