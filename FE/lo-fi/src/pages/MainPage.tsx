@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Category from '../components/Category';
+import SearchBar from '../components/SearchBar';
 import search_icon from '../assets/img/icon/search_icon.png'
 import list from '../assets/img/Category/list.png'
 import default_img from '../assets/img/icon/default_img.png'
@@ -38,10 +39,10 @@ const MainPage = () => {
     //메인페이지에서 토큰이 있는지 확인하고 토큰이 없으면
     //login페이지로 보냄
     const token = localStorage.getItem("token");
-    if (!token) {
-      console.log('로그인 되지 않음')
-      navigate('/login')
-    }
+    // if (!token) {
+    //   console.log('로그인 되지 않음')
+    //   navigate('/login')
+    // }
     
     // 좌표데이터를 가져온 후에 지도를 로드하기 위해
     // 나갔다가 다시 돌아오면 위치 데이터가 들어오지 않음
@@ -153,16 +154,7 @@ const MainPage = () => {
 
   return (
     <div style={{width: '100%'}}>
-      <div className='search_top_nav' >
-        <div className='search_map' onClick={goList}>
-          <img src={list} alt="" width={35} height={35} />
-          <span>목록으로</span>
-        </div>
-        <div className='search_box'>
-          <img src={search_icon} alt="" width={20} height={20}/>
-          <input className="search_input" type="text" value={SearchText} onChange={handleChange}/>
-        </div>
-      </div>
+      <SearchBar category={"map"}/>
       <Category/>
       
       <div id="map" style={{height: '85vh', width: "100%"}}>
