@@ -7,9 +7,14 @@ import com.ssafy.lofi.dto.response.UserDto;
 import com.ssafy.lofi.service.RegisterService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import sun.java2d.pipe.RegionIterator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -69,6 +74,14 @@ public class RegisterController {
     public ResponseEntity<?> registerMissingPerson(@RequestBody FoundArticleRequest foundArticleRequest,@AuthenticationPrincipal UserDetailsImpl userInfo){
         Long id = registerService.registerFoundArticle(foundArticleRequest,userInfo.getId());
         return ResponseEntity.ok().body(id);
+    }
+
+    @ApiOperation(value = "내가 등록한 게시물", notes = "사용자가 등록한 게시물들 반환")
+    @GetMapping("/myboard")
+    public ResponseEntity<?> getMyBoard(@AuthenticationPrincipal UserDetailsImpl userInfo){
+        Map<String,Object> result = registerService.selectMyboard(userInfo.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
     
 }

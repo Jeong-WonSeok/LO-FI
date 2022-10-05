@@ -24,4 +24,6 @@ public interface LostArticleRepository extends JpaRepository<LostArticle, Long> 
     @Query(nativeQuery = true, value = "select l.* from lost_article as l " +
             "where (6371*acos(cos(radians(:lat))*cos(radians(l.latitude))*cos(radians(l.longitude)-radians(:lon))+sin(radians(:lat))*sin(radians(l.latitude)))) <= 0.3")
     List<LostArticle> findAllByLatLon(double lat, double lon);
+
+    List<LostArticle> findAllByUserId(Long userId);
 }
