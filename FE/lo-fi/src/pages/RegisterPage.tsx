@@ -1,5 +1,6 @@
-import axios from "axios";
-// import axios from "../api/axios"
+// import axios from "axios";
+import axios from "../api/axios"
+import requests from "../api/requests";
 import { stringify } from "querystring";
 import React, { ReactEventHandler } from "react";
 import { useState } from "react";
@@ -108,7 +109,7 @@ const RegisterPage = () => {
 
     axios
       .post(
-        "http://j7b102.p.ssafy.io:8085/api/register/signUp/",
+        requests.signup,
         {
           email: email,
           password: password,
@@ -124,7 +125,7 @@ const RegisterPage = () => {
         navigate('/login')
       })
       .catch((error) => {
-        console.log(error.response);
+        console.error(error.response);
       });
   };
 
