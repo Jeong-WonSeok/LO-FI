@@ -108,7 +108,7 @@ const RegisterPage = () => {
 
     axios
       .post(
-        "http://j7b102.p.ssafy.iog:8085/api/register/signUp/",
+        "http://j7b102.p.ssafy.io:8085/api/register/signUp/",
         {
           email: email,
           password: password,
