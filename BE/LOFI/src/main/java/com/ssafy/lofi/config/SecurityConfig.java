@@ -62,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin().disable()
                 .authorizeRequests()
-                .antMatchers("/api/account/**","/api/register/**","/api/main/**").permitAll() //로그인 및 회원가입 요청은 허용
+                .antMatchers("/api/**").permitAll() //로그인 및 회원가입 요청은 허용
                 //.antMatchers("/api/**").authenticated()
                 .and()
                 .addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -71,7 +71,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(accessDeniedHandler)
                 .and()
                 .oauth2Login()
-                .defaultSuccessUrl("http://localhost:3000")
+                .defaultSuccessUrl("https://j7b102.p.ssafy.io")
                 .successHandler(authenticationSuccessHandler)
                 .userInfoEndpoint()
                 .userService(OAuth2UserServiceImpl);

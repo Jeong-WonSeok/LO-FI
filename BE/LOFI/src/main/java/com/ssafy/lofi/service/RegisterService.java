@@ -49,7 +49,7 @@ public class RegisterService {
         userRepository.deleteById(id);
     }
 
-    public Long registerMissingAnimal(MissingAnimalRequest missingAnimalRequest, int userId) {
+    public Long registerMissingAnimal(MissingAnimalRequest missingAnimalRequest, Long userId) {
         MissingAnimal missingAnimal = MissingAnimal.builder()
                 .name(missingAnimalRequest.getName())
                 .kind(missingAnimalRequest.getBreed())
@@ -62,6 +62,7 @@ public class RegisterService {
                 .latitude(missingAnimalRequest.getLat())
                 .longitude(missingAnimalRequest.getLat())
                 .time(stringConvertTime(missingAnimalRequest.getTime()))
+                .userId(userId)
                 .build();
         missingAnlmalRepository.save(missingAnimal);
         return missingAnimal.getId();
@@ -84,7 +85,7 @@ public class RegisterService {
         return java.sql.Time.valueOf(result);
     }
 
-    public Long registerMissingPerson(MissingPersonRequest missingPersonRequest, int userId) {
+    public Long registerMissingPerson(MissingPersonRequest missingPersonRequest, Long userId) {
         missingPersonRequest.setMissingClothes(spellCheckout(missingPersonRequest.getMissingClothes()));
         missingPersonRequest.setDescription(spellCheckout(missingPersonRequest.getDescription()));
 
@@ -100,6 +101,7 @@ public class RegisterService {
                 .latitude(missingPersonRequest.getLat())
                 .longitude(missingPersonRequest.getLon())
                 .time(stringConvertTime(missingPersonRequest.getMissingTime()))
+                .userId(userId)
                 .build();
         missingPersonRepository.save(missingPerson);
         return missingPerson.getId();
@@ -113,7 +115,7 @@ public class RegisterService {
         return s;
     }
 
-    public Long registerLostArticle(LostArticleRequest lostArticleRequest, int i) {
+    public Long registerLostArticle(LostArticleRequest lostArticleRequest, Long userId) {
         lostArticleRequest.setName(spellCheckout(lostArticleRequest.getName()));
         lostArticleRequest.setCategory(spellCheckout(lostArticleRequest.getCategory()));
 
@@ -127,12 +129,13 @@ public class RegisterService {
                 .latitude(lostArticleRequest.getLat())
                 .longitude(lostArticleRequest.getLon())
                 .time(stringConvertTime(lostArticleRequest.getTime()))
+                .userId(userId)
                 .build();
         lostArticleRepository.save(lostArticle);
         return lostArticle.getId();
     }
 
-    public Long registerFoundArticle(FoundArticleRequest foundArticleRequest, int i) {
+    public Long registerFoundArticle(FoundArticleRequest foundArticleRequest, Long userId) {
         foundArticleRequest.setName(spellCheckout(foundArticleRequest.getName()));
         foundArticleRequest.setCategory(spellCheckout(foundArticleRequest.getCategory()));
         foundArticleRequest.setDescription(spellCheckout(foundArticleRequest.getDescription()));
@@ -148,6 +151,7 @@ public class RegisterService {
                 .latitude(foundArticleRequest.getLat())
                 .longitude(foundArticleRequest.getLon())
                 .time(stringConvertTime(foundArticleRequest.getTime()))
+                .userId(userId)
                 .build();
         foundArticleRepository.save(foundArticle);
         return foundArticle.getId();

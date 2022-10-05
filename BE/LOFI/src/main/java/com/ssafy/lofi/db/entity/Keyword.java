@@ -13,20 +13,12 @@ import javax.persistence.*;
 @Builder
 public class Keyword extends BaseEntity{
 
-    // "id", "keyword", "animal_index_id", "person_index_id", "found_index_id", "lost_index_id"
+    // "id", "keyword", "animal_id", "person_id", "found_id", "lost_id"
 
     private String keyword;
-    @ManyToOne
-    @JoinColumn(name="foundId")
-    private FoundArticle found_index_id;
-    @ManyToOne
-    @JoinColumn(name="lostId")
-    private LostArticle lost_index_id;
-    @ManyToOne
-    @JoinColumn(name="animalId")
-    private MissingAnimal animal_index_id;
-    @ManyToOne
-    @JoinColumn(name="personId")
-    private MissingPerson person_index_id;
+    private Long foundId;
+    private Long lostId;
+    private Long animalId;
+    private Long personId;
 
 }

@@ -10,6 +10,7 @@ public class FoundArticleDto {
 
     private Long id;
     private Long userId;
+    private String email;
     private String name;
     private String category;
     private String safeLocation; // 보관 장소
@@ -21,6 +22,7 @@ public class FoundArticleDto {
     private double lat; // 발견 장소 좌표
     private double lon; // 발견 장소 좌표
     private String time;
+    private String policeTel;
 
     public FoundArticleDto(FoundArticle foundArticle){
         this.id = foundArticle.getId();
@@ -33,6 +35,7 @@ public class FoundArticleDto {
         this.picture = foundArticle.getPicture();
         this.lat = foundArticle.getLatitude();
         this.lon = foundArticle.getLongitude();
-        this.time = foundArticle.getTime().toString();
+        this.time = foundArticle.getTime() == null ? "00:00:00" : foundArticle.getTime().toString();
+        this.policeTel = foundArticle.getTel();
     }
 }
