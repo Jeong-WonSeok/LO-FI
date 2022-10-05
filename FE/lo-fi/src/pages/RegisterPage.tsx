@@ -1,9 +1,11 @@
 import axios from "axios";
 import { stringify } from "querystring";
 import React, { ReactEventHandler } from "react";
+import jwt from "jwt-decode";
 import { useState } from "react";
 import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 import "./RegisterPage.css";
+import jwtDecode from "jwt-decode";
 
 const RegisterPage = () => {
   // const [user, setUser] = useState();
@@ -13,6 +15,9 @@ const RegisterPage = () => {
   //   console.log(data);
   //   console.log(data.target);
   // }
+  const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0bWRkbjEwMDhAbmF2ZXIuY29tIiwiaWQiOjIsImVtYWlsIjoidG1kZG4xMDA4QG5hdmVyLmNvbSIsInByb3ZpZGVyIjoia2FrYW8iLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dLCJpYXQiOjE2NjQ2MTA3MzYsImV4cCI6MTY2NDY5NzEzNn0.Kg_rx4kKMi9dWOprZXrRkhi_3I7p6xYLjUrQrTMFl9g';
+  const decode:any = jwtDecode(token);
+
 
   //이메일, 비밀번호, 비밀번호 확인
   const [email, setEmail] = useState<string>("");

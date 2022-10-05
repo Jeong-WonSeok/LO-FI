@@ -19,6 +19,7 @@ export type RootState = ReturnType<typeof rootReducer>;
 const store = configureStore({
   reducer: rootReducer,
 })
+console.log(store.getState());
 
 // usedispatch 사용시 에러 발생을 잡아주기 위한 타입 설정
 export default store;
