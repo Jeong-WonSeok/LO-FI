@@ -1,11 +1,14 @@
 import axios from "axios";
+// import axios from "../api/axios"
 import { stringify } from "querystring";
 import React, { ReactEventHandler } from "react";
 import { useState } from "react";
 import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 import "./RegisterPage.css";
+import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
+  const navigate = useNavigate()
   // const [user, setUser] = useState();
 
   // const handleRegister = (data:any) => {
@@ -105,7 +108,7 @@ const RegisterPage = () => {
 
     axios
       .post(
-        "http://localhost:8080/api/register/signUp/",
+        "http://j7b102.p.ssafy.iog:8085/api/register/signUp/",
         {
           email: email,
           password: password,
@@ -117,7 +120,8 @@ const RegisterPage = () => {
       )
       .then((response) => {
         console.log(response);
-        window.location.href = "http://localhost:3000/login";
+        // window.location.href = "http://localhost:3000/login";
+        navigate('/login')
       })
       .catch((error) => {
         console.log(error.response);
