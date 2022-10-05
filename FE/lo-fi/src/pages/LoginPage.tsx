@@ -70,7 +70,8 @@ const LoginPage = () => {
 
   //회원가입 버튼 
   const onRegisterButton = (e : any) => {
-    window.location.href="http://localhost:3000/register"
+    // window.location.href="http://localhost:3000/register"
+    navigate("/register")
   }
 
 
@@ -102,7 +103,7 @@ const LoginPage = () => {
 
         </div>
         <div className="login_social_login">
-          <a href="http://localhost:8080/oauth2/authorization/kakao">
+          <a href="http://j7b102.p.ssafy.iog:8085/oauth2/authorization/kakao">
               <img src={kakao_button} alt="카카오로 바로 시작"></img>
           </a>
           
@@ -110,7 +111,7 @@ const LoginPage = () => {
               <img src={Google_button} alt="카카오로 바로 시작"></img>
           </button> */}
 
-          <a href="http://localhost:8080/oauth2/authorization/google" >
+          <a href="http://j7b102.p.ssafy.iog:8085/oauth2/authorization/google" >
             <img src={Google_button} className="test" alt="Google_button"></img>
           </a>
         </div>
