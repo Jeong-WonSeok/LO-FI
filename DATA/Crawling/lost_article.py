@@ -11,8 +11,8 @@ from datetime import datetime
 
 def selectDB(sql):
 
-    conn = pymysql.connect(host='localhost',
-                           user='ssafy',
+    conn = pymysql.connect(host='j7b102.p.ssafy.io',
+                           user='b102',
                            password='ssafy',
                            db='lo-fi')
 
@@ -28,8 +28,8 @@ def selectDB(sql):
 # db 맞춤법 검사기 돌려서 update
 def update_db(sql, sql_keyword, id):
     table = 'lost_article'
-    conn = pymysql.connect(host='localhost',
-                           user='ssafy',
+    conn = pymysql.connect(host='j7b102.p.ssafy.io',
+                           user='102',
                            password='ssafy',
                            db='lo-fi')
     result = []

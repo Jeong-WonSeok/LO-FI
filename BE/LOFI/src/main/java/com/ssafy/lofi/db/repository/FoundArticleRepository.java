@@ -23,4 +23,6 @@ public interface FoundArticleRepository extends JpaRepository<FoundArticle, Long
     @Query(nativeQuery = true, value = "select f.* from found_article as f " +
             "where (6371*acos(cos(radians(:lat))*cos(radians(f.latitude))*cos(radians(f.longitude)-radians(:lon))+sin(radians(:lat))*sin(radians(f.latitude)))) <= 0.3")
     List<FoundArticle> findAllByLatLon(double lat, double lon);
+
+    List<FoundArticle> findAllByUserId(Long userId);
 }
