@@ -1,17 +1,29 @@
 import {useState} from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import "./LoginPage.css";
-
+import jwt from "jwt-decode";
+import jwtDecode from "jwt-decode";
 import logo from "../assets/img/icon/lofi_logo.png";
 import kakao_button from "../assets/img/social_login/kakao_login_medium_wide.png";
 import Google_button from "../assets/img/social_login/btn_google_signin_dark_normal_web@2x.png";
 import google_Icon from "../assets/img/social_login/google_icon.png";
 import axios from 'axios';
+
+import { useDispatch, useSelector } from 'react-redux';
+import {RootState} from '../redux/modules/store';
+import store from '../redux/modules/store';
+
 const LoginPage = () => {
+  const LOGIN = "user/LOGIN"
   const navigate = useNavigate();
+
+  const email1 = useSelector((state:RootState) => state.user.email);
+  const id = useSelector((state:RootState) => state.user.id);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const dispatch = useDispatch();
 
   const onChangeEmail = (e : any) => {
     setEmail(e.target.value);
@@ -35,9 +47,18 @@ const LoginPage = () => {
       headers : {"Content-type": `application/json`}
     })
     .then((response) => {
+      const token = response.data.result
       console.log(response.data.result);
-      localStorage.setItem("token", response.data.result);
-      navigate('/register')
+      localStorage.setItem("token", token);
+      const decode:any = jwtDecode(token);
+
+      const email = decode.email;
+      const id = decode.id;
+
+      dispatch({type:LOGIN, email:email, id:id})
+      navigate('/')
+      console.log("확인해볼라고")
+      console.log(store.getState());
     })
     .catch((error) => {
       console.log(error);
