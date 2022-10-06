@@ -27,7 +27,17 @@ const getSearchAPI = async (type: string, searchText: string) => {
     category: type,
     keyword: searchText
   }
-  return await axios.get(requests.searchDetail, {params})
+  const res = await axios.get(requests.searchDetail, {params})
+  switch (type) {
+    case "animal":
+      return res.data.aniaml
+    case "article":
+      return res.data.article
+    case "person":
+      return res.data.person
+    case "found":
+      return res.data.found
+  }
 }
 
 
@@ -39,6 +49,7 @@ const SEARCH_DATA_PENDING = 'mainData/SEARCH_DATA_PENDING';
 const SEARCH_DATA_SUCCESS = 'mainData/SEARCH_DATA_SUCCESS';
 const SEARCH_DATA_FAILURE = 'mainData/SEARCH_DATA_FAILURE';
 const SEARCH_STOP = 'mainData/SEARCH_STOP';
+const SET_SEARCH_TEXT = 'mainData/SEARCH_TEXT';
 
 // 액션 생성 함수
 export const getData = (category: string, lat: number, lon: number) => async (dispatch: Dispatch) => {
@@ -68,6 +79,7 @@ export const getData = (category: string, lat: number, lon: number) => async (di
 export const searchData = (category: string, searchText: string) => async (dispatch: Dispatch) => {
   // 요청을 시작했다는 것을 알림
   dispatch({type: SEARCH_DATA_PENDING, payload: category})
+  dispatch({type: SET_SEARCH_TEXT, payload: searchText})
 
   // 요청을 시작한다.
   return await getSearchAPI(category, searchText).then(
@@ -75,7 +87,7 @@ export const searchData = (category: string, searchText: string) => async (dispa
       // 요청을 성곻했을 때, 응답내용을 payload로 보낸다.
       dispatch({
         type: SEARCH_DATA_SUCCESS,
-        payload: res,
+        payload: res
       })
     }
   ).catch(err => {
@@ -101,6 +113,7 @@ export interface initialStateType {
   category: string,
   data: Array<Object>,
   search_data: Array<Object>,
+  search_text: string,
 }
 // 초기값 설정
 const initialState:initialStateType = {
@@ -109,7 +122,8 @@ const initialState:initialStateType = {
   search: false,
   category: "",
   data: [],
-  search_data: []
+  search_data: [],
+  search_text: ""
 }
 
 // 액션에 따른 state 변경 / 이게 리듀서인가?
@@ -149,12 +163,21 @@ export default handleActions({
       category: String(payload)
     };
   },
-  [SEARCH_DATA_SUCCESS]: (state, {payload}) => {
-    return {
-      ...state,
-      pending: false,
-      search_data: state.search_data.concat(payload)
-    };
+  [SEARCH_DATA_SUCCESS]: (state, {payload} :any) => {
+    if (payload.length) {
+      return {
+        ...state,
+        pending: false,
+        search_data: state.search_data.concat(payload)
+      };
+    } else {
+      return {
+        ...state,
+        pending: false,
+        search_data: []
+      };
+    }
+    
   },
   [SEARCH_DATA_FAILURE]: (state, action) => {
     return {
@@ -167,7 +190,14 @@ export default handleActions({
     return {
       ...state,
       search: false,
+      search_text: ''
     };
+  },
+  [SET_SEARCH_TEXT]: (state, {payload}) => {
+    return {
+      ...state,
+      search_text: String(payload)
+    }
   },
 }, initialState)
 

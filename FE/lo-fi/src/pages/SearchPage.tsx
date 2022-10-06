@@ -4,6 +4,7 @@ import './SearchPage.css'
 import List from '../components/List';
 import SearchBar from '../components/SearchBar';
 import { useNavigate } from 'react-router-dom';
+import search from '../assets/img/icon/search_icon.png'
 
 
 export default function SearchPage() {
