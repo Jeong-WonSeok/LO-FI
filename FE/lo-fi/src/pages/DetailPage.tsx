@@ -184,8 +184,8 @@ export default function DetailPage() {
         </div>
       </div>
       <div className='detail-button'>
-      {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
-      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
+      {data.email && <button onClick={() => setOpenMailModal(true)}>분실동물 신고</button>}
+      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>분실동물 신고</a>}
             
       </div>
       </div>
@@ -231,8 +231,8 @@ export default function DetailPage() {
         </div>
       </div>
       <div className='detail-button'>
-      {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
-      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
+      {data.email && <button onClick={() => setOpenMailModal(true)}>실종자 신고</button>}
+      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>실종자 신고</a>}
       </div>
       </div>
       {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
@@ -279,8 +279,8 @@ export default function DetailPage() {
         </div>
       </div>
       <div className='detail-button'>
-      {data.email && <button onClick={() => setOpenMailModal(true)}>습득물 신고</button>}
-      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>습득물 신고</a>}
+      {data.email && <button onClick={() => setOpenMailModal(true)}>분실물 신고</button>}
+      {data.policeTel && <a style={{textDecoration: "none", color: "black"}} href={"tel:" + data.policeTel}>분실물 신고</a>}
       </div>
       </div>
       {openMailModal && <MailModal closeMail={closeMail} email={data.email} />}
