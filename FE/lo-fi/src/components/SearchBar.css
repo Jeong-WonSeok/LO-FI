@@ -6,6 +6,17 @@
   margin: 0 auto;
 }
 
+@media all and (max-width: 400px) {
+  .search_top_nav {
+    display: flex;
+    flex-direction: row;
+    font-family: 'DalSeoHealingMedium';
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+}
+
 .search_map {
   display: flex;
   flex-direction: column;
