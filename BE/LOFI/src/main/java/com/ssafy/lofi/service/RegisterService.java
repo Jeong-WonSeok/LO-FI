@@ -25,6 +25,7 @@ public class RegisterService {
     private final MissingPersonRepository missingPersonRepository;
     private final LostArticleRepository lostArticleRepository;
     private final FoundArticleRepository foundArticleRepository;
+    private final KeywordRepository keywordRepository;
 
     public User signUp(SignUpDto signUpDto) {
         User user = User.builder()
@@ -50,6 +51,8 @@ public class RegisterService {
     }
 
     public Long registerMissingAnimal(MissingAnimalRequest missingAnimalRequest, Long userId) {
+        missingAnimalRequest.setDescription(spellCheckout(missingAnimalRequest.getDescription()));
+
         MissingAnimal missingAnimal = MissingAnimal.builder()
                 .name(missingAnimalRequest.getName())
                 .kind(missingAnimalRequest.getBreed())
@@ -65,6 +68,20 @@ public class RegisterService {
                 .userId(userId)
                 .build();
         missingAnlmalRepository.save(missingAnimal);
+
+        // name, gender, description, kind, location, age
+        String[] words = {missingAnimal.getName(),missingAnimal.getGender(),missingAnimal.getKind(),missingAnimal.getDescription(),missingAnimal.getLocation(),missingAnimal.getAge()};
+        for (int i = 0; i < words.length;i++){
+            String result = keyword(words[i]);
+            String keywords[] = result.split(" ");
+            for (String s: keywords) {
+                Keyword keyword = Keyword.builder().keyword(s)
+                        .animalId(missingAnimal.getId())
+                        .build();
+                keywordRepository.save(keyword);
+            }
+        }
+
         return missingAnimal.getId();
     }
 
@@ -104,6 +121,19 @@ public class RegisterService {
                 .userId(userId)
                 .build();
         missingPersonRepository.save(missingPerson);
+
+        // location, description, category, dress
+        String[] words = {missingPerson.getLocation(),missingPerson.getDescription(),missingPerson.getCategory(),missingPerson.getDress()};
+        for (int i = 0; i < words.length;i++){
+            String result = keyword(words[i]);
+            String keywords[] = result.split(" ");
+            for (String s: keywords) {
+                Keyword keyword = Keyword.builder().keyword(s)
+                        .personId(missingPerson.getId())
+                        .build();
+                keywordRepository.save(keyword);
+            }
+        }
         return missingPerson.getId();
     }
 
@@ -114,6 +144,15 @@ public class RegisterService {
         String s = result.substring(1,result.length()-1);
         return s;
     }
+
+    public String keyword(String word){
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://j7b102.p.ssafy.io:8000/api/keyword/" + word;
+        String result = restTemplate.getForObject(url,String.class);
+        String s = result.substring(1,result.length()-1);
+        return s;
+    }
+
 
     public Long registerLostArticle(LostArticleRequest lostArticleRequest, Long userId) {
         lostArticleRequest.setName(spellCheckout(lostArticleRequest.getName()));
@@ -132,6 +171,19 @@ public class RegisterService {
                 .userId(userId)
                 .build();
         lostArticleRepository.save(lostArticle);
+
+        // name, category, location, description
+        String words[] = {lostArticle.getName(),lostArticle.getCategory(),lostArticle.getLocation(),lostArticle.getDescription()};
+        for (int i = 0; i < words.length;i++){
+            String result = keyword(words[i]);
+            String keywords[] = result.split(" ");
+            for (String s: keywords) {
+                Keyword keyword = Keyword.builder().keyword(s)
+                        .lostId(lostArticle.getId())
+                        .build();
+                keywordRepository.save(keyword);
+            }
+        }
         return lostArticle.getId();
     }
 
@@ -154,6 +206,19 @@ public class RegisterService {
                 .userId(userId)
                 .build();
         foundArticleRepository.save(foundArticle);
+
+        // name, safeLocation, foundLocation, category, description
+        String words[] = {foundArticle.getName(),foundArticle.getCategory(),foundArticle.getSafeLocation(),foundArticle.getFoundLocation(),foundArticle.getDescription()};
+        for (int i = 0; i < words.length;i++){
+            String result = keyword(words[i]);
+            String keywords[] = result.split(" ");
+            for (String s: keywords) {
+                Keyword keyword = Keyword.builder().keyword(s)
+                        .foundId(foundArticle.getId())
+                        .build();
+                keywordRepository.save(keyword);
+            }
+        }
         return foundArticle.getId();
     }
 
