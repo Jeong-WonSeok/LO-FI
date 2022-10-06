@@ -25,4 +25,16 @@ public interface FoundArticleRepository extends JpaRepository<FoundArticle, Long
     List<FoundArticle> findAllByLatLon(double lat, double lon);
 
     List<FoundArticle> findAllByUserId(Long userId);
+
+    // 습득물
+    @Query(nativeQuery = true, value = "select distinct f.* FROM (select * from keyword as k where k.keyword like :k1) as k1 join " +
+            "(select * from keyword as k where k.keyword like :k2) as k2 " + " on k1.found_id = k2.found_id " + "join found_article as f on k2.found_id = f.id order by f.date DESC limit 100")
+    List<FoundArticle> findBykeywordtwoFound(String k1,String k2);
+    @Query(nativeQuery = true, value = "select distinct f.* FROM (select * from keyword as k where k.keyword like :k1) as k1 join " +
+            "(select * from keyword as k where k.keyword like :k2) as k2 " + " on k1.found_id = k2.found_id " + "(select * from keyword as k where k.keyword like :k3) as k3 " +
+            "on k2.found_id = k3.found_id " + "join found_article as f on k2.found_id = f.id order by f.date DESC limit 100")
+    List<FoundArticle> findBykeywordthreeFound(String k1,String k2,String k3);
+    @Query(nativeQuery = true, value = "select distinct f.* FROM (select * from keyword as k where k.keyword like :k1) as k1 join " +
+            "found_article as f on k1.found_id = f.id order by f.date DESC limit 100")
+    List<FoundArticle> findBykeywordoneFound(String k1);
 }

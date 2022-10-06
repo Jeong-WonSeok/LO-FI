@@ -35,11 +35,11 @@ public class SearchService {
     public List<MissingAnimalDto> getAnimal(String[] keywords, String category) {
         List<MissingAnimal> missingAnimals = new ArrayList<>();
         if(keywords.length == 2){
-            missingAnimals = keywordRepository.findBykeywordtwoAnimal(keywords[0],keywords[1]);
+            missingAnimals = missingAnlmalRepository.findBykeywordtwoAnimal(keywords[0],keywords[1]);
         }else if(keywords.length == 3){
-            missingAnimals = keywordRepository.findBykeywordthreeAnimal(keywords[0],keywords[1],keywords[2]);
+            missingAnimals = missingAnlmalRepository.findBykeywordthreeAnimal(keywords[0],keywords[1],keywords[2]);
         }else {
-            missingAnimals = keywordRepository.findBykeywordoneAnimal(keywords[0]);
+            missingAnimals = missingAnlmalRepository.findBykeywordoneAnimal(keywords[0]);
         }
 
         List<MissingAnimalDto> missingAnimalDtos = new ArrayList<>();
@@ -63,11 +63,11 @@ public class SearchService {
         List<FoundArticle> foundArticles = new ArrayList<>();
 
         if(keywords.length == 2){
-            foundArticles = keywordRepository.findBykeywordtwoFound(keywords[0],keywords[1]);
+            foundArticles = foundArticleRepository.findBykeywordtwoFound(keywords[0],keywords[1]);
         }else if(keywords.length == 3){
-            foundArticles = keywordRepository.findBykeywordthreeFound(keywords[0],keywords[1],keywords[2]);
+            foundArticles = foundArticleRepository.findBykeywordthreeFound(keywords[0],keywords[1],keywords[2]);
         }else {
-            foundArticles = keywordRepository.findBykeywordoneFound(keywords[0]);
+            foundArticles = foundArticleRepository.findBykeywordoneFound(keywords[0]);
         }
 
         List<FoundArticleDto> foundArticleDtos = new ArrayList<>();
@@ -83,11 +83,11 @@ public class SearchService {
         List<LostArticle> lostArticles = new ArrayList<>();
 
         if(keywords.length == 2){
-            lostArticles = keywordRepository.findBykeywordtwoArticle(keywords[0],keywords[1]);
+            lostArticles = lostArticleRepository.findBykeywordtwoArticle(keywords[0],keywords[1]);
         }else if(keywords.length == 3){
-            lostArticles = keywordRepository.findBykeywordthreeArticle(keywords[0],keywords[1],keywords[2]);
+            lostArticles = lostArticleRepository.findBykeywordthreeArticle(keywords[0],keywords[1],keywords[2]);
         }else {
-            lostArticles = keywordRepository.findBykeywordoneArticle(keywords[0]);
+            lostArticles = lostArticleRepository.findBykeywordoneArticle(keywords[0]);
         }
         List<LostArticleDto> lostArticleDtos = new ArrayList<>();
 
