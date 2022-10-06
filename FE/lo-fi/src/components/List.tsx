@@ -98,7 +98,7 @@ export default function List() {
                       <span>{data.date}</span>
                     </div>
                     <div className='list-item-span'>
-                      <img src={data.gender === "female"? female : male} alt="" width={18} height={188} />
+                      <img src={data.gender === "female" || data.gender === "암컷" ? female : male} alt="" width={18} height={188} />
                       <span>{data.name + ' / ' + data.age} {data.ageNow ? ' / ' + data.ageNow : ''}</span>
                     </div>
                   </div>
@@ -117,8 +117,8 @@ export default function List() {
                   <div className='list-item-info'>
                     <div className='list-item-span'>
                       <img src={pin} alt="" width={18} height={18}/>
-                      { category === "found" && <span>{ data.safeLocation.length > 15 ? data.safeLocation.slice(0, 15) + '...' : data.safeLocation}</span>}
-                      { category === "article" && <span>{data.location.length > 15 ? data.location.slice(0, 15) + '...' : data.location}</span>}
+                      { category === "found" && <span>{ data.safeLocation.length > 13 ? data.safeLocation.slice(0, 13) + '...' : data.safeLocation}</span>}
+                      { category === "article" && <span>{data.location.length > 13 ? data.location.slice(0, 13) + '...' : data.location}</span>}
                     </div>
                     <div className='list-item-span'>
                       <img src={calendar} alt="" width={18} height={18}/>
@@ -126,7 +126,7 @@ export default function List() {
                     </div>
                     <div className='list-item-span'>
                       <img src={box} alt="" width={18} height={188} />
-                      <span>{data.name}</span>
+                      <span>{data.name.length > 13 ? data.name.slice(0,13) + '...' : data.name}</span>
                     </div>
                   </div>
                 </Link>
