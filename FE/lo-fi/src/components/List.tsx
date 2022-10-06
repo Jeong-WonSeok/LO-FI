@@ -44,18 +44,31 @@ export default function List() {
     if (error) {
 
     } else {
-      setList((current) => {
-        let newData = [...current]
-        if (data[0] == undefined) {
-          data.shift()
-          newData = data
+      if (search) {
+        setList((current) => {
+          let newData = [...current]
+          if (search_data[0] == undefined) {
+            search_data.shift()
+            newData = search_data
+          } else {
+            newData = search_data
+          } 
+          return newData
+          })
         } else {
-          newData = data
-        } 
-        return newData
-        })
-    } 
-  }, [data])
+          setList((current) => {
+            let newData = [...current]
+            if (data[0] == undefined) {
+              data.shift()
+              newData = data
+            } else {
+              newData = data
+            } 
+            return newData
+            })
+          } 
+      } 
+  }, [search, data, search_data])
 
   // 로딩중
   if (pending) {
