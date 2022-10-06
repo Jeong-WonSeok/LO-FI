@@ -1,0 +1,59 @@
+.detail-container {
+    font-family: 'DalSeoHealingBold';
+    width: 100%;
+    margin-bottom: 120px
+}
+
+.deatil-info-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.detail-map-open {
+    background-color: #B4E0D7;
+    border-radius: 10px;
+    margin-left: 10px;
+    padding: 0 5px;
+    font-size: 14px;
+}
+
+.detail-img {
+    margin: 20px;
+}
+
+.detail-info {
+    padding-top: 20px;
+    width: 100%;
+    padding: 20px
+}
+
+.detail-span {
+    display: flex;
+    flex-direction: row;
+    margin: 10px 0;
+    font-size: 20px;
+    align-items: center;
+}
+
+.detail-span > img {
+    height: 20px;
+}
+
+.detail-span > span {
+    margin-left: 12px;
+}
+
+.detail-button {
+    position: fixed;
+    bottom: 80px;
+}
+
+.detail-button > button {
+    background-color: #B4E0D7;
+    border-radius: 20px;
+    width: 280px;
+    height: 40px;
+    font-size: 20px;
+}

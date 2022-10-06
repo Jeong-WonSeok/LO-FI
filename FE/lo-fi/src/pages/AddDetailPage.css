@@ -1,0 +1,279 @@
+.submit-button{
+    background-color: #B4E0D7;
+    border-radius: 20px;
+    padding: 5px 10px;
+    opacity: 0.5;
+}
+
+.submit-success {
+    opacity: 1 !important;
+    -webkit-animation: jello-horizontal 0.9s both;
+    animation: jello-horizontal 0.9s both;
+}
+
+@-webkit-keyframes jello-horizontal {
+    0% {
+      -webkit-transform: scale3d(1, 1, 1);
+              transform: scale3d(1, 1, 1);
+    }
+    30% {
+      -webkit-transform: scale3d(1.25, 0.75, 1);
+              transform: scale3d(1.25, 0.75, 1);
+    }
+    40% {
+      -webkit-transform: scale3d(0.75, 1.25, 1);
+              transform: scale3d(0.75, 1.25, 1);
+    }
+    50% {
+      -webkit-transform: scale3d(1.15, 0.85, 1);
+              transform: scale3d(1.15, 0.85, 1);
+    }
+    65% {
+      -webkit-transform: scale3d(0.95, 1.05, 1);
+              transform: scale3d(0.95, 1.05, 1);
+    }
+    75% {
+      -webkit-transform: scale3d(1.05, 0.95, 1);
+              transform: scale3d(1.05, 0.95, 1);
+    }
+    100% {
+      -webkit-transform: scale3d(1, 1, 1);
+              transform: scale3d(1, 1, 1);
+    }
+  }
+  @keyframes jello-horizontal {
+    0% {
+      -webkit-transform: scale3d(1, 1, 1);
+              transform: scale3d(1, 1, 1);
+    }
+    30% {
+      -webkit-transform: scale3d(1.25, 0.75, 1);
+              transform: scale3d(1.25, 0.75, 1);
+    }
+    40% {
+      -webkit-transform: scale3d(0.75, 1.25, 1);
+              transform: scale3d(0.75, 1.25, 1);
+    }
+    50% {
+      -webkit-transform: scale3d(1.15, 0.85, 1);
+              transform: scale3d(1.15, 0.85, 1);
+    }
+    65% {
+      -webkit-transform: scale3d(0.95, 1.05, 1);
+              transform: scale3d(0.95, 1.05, 1);
+    }
+    75% {
+      -webkit-transform: scale3d(1.05, 0.95, 1);
+              transform: scale3d(1.05, 0.95, 1);
+    }
+    100% {
+      -webkit-transform: scale3d(1, 1, 1);
+              transform: scale3d(1, 1, 1);
+    }
+  }
+  
+
+.add-detail-container {
+    position: relative;
+    width: 400px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    font-family: 'DalseoHealingBold';
+    font-size: 20px;
+    margin-bottom: 60px;
+    margin-top: 70px;
+    padding: 0px 10px;
+}
+
+.add-detail-top-nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    align-items: center;
+    background: white;
+    position: fixed;
+    margin: 0 auto;
+    top:0;
+    left:0;
+    right: 0;
+    width: 400px;
+    z-index: 3;
+}
+
+@media all and (max-width:400px) {
+    .add-detail-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        font-family: 'DalseoHealingBold';
+        font-size: 20px;
+        margin-bottom: 60px;   
+        margin-top: 70px;    
+        padding: 0px 10px;
+    }
+    .add-detail-top-nav {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+        align-items: center;
+        background: white;
+        position: fixed;
+        top:0;
+        left:0;
+        width: 100%;
+        z-index: 3;
+    }
+}
+
+.add-component {
+    margin : 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.add-component > input {
+    text-align: right;
+    width: 150px;
+}
+
+#point {
+  width: 150px;
+}
+
+#detail_location {
+    text-align: right;
+}
+
+.add-alert {
+    margin: 0px 10px;
+    color: red;
+    text-align: end;
+    -webkit-animation: vibrate-1 0.3s linear both;
+    animation: vibrate-1 0.3s linear both;
+}
+
+@-webkit-keyframes vibrate-1 {
+    0% {
+      -webkit-transform: translate(0);
+              transform: translate(0);
+    }
+    20% {
+      -webkit-transform: translate(-2px, 2px);
+              transform: translate(-2px, 2px);
+    }
+    40% {
+      -webkit-transform: translate(-2px, -2px);
+              transform: translate(-2px, -2px);
+    }
+    60% {
+      -webkit-transform: translate(2px, 2px);
+              transform: translate(2px, 2px);
+    }
+    80% {
+      -webkit-transform: translate(2px, -2px);
+              transform: translate(2px, -2px);
+    }
+    100% {
+      -webkit-transform: translate(0);
+              transform: translate(0);
+    }
+  }
+  @keyframes vibrate-1 {
+    0% {
+      -webkit-transform: translate(0);
+              transform: translate(0);
+    }
+    20% {
+      -webkit-transform: translate(-2px, 2px);
+              transform: translate(-2px, 2px);
+    }
+    40% {
+      -webkit-transform: translate(-2px, -2px);
+              transform: translate(-2px, -2px);
+    }
+    60% {
+      -webkit-transform: translate(2px, 2px);
+              transform: translate(2px, 2px);
+    }
+    80% {
+      -webkit-transform: translate(2px, -2px);
+              transform: translate(2px, -2px);
+    }
+    100% {
+      -webkit-transform: translate(0);
+              transform: translate(0);
+    }
+  }
+  
+
+.add-component-gender {
+    display: flex;
+    flex-direction: row;
+}
+
+.add-componet-description {
+    display: flex;
+    flex-direction: column;
+}
+
+.add-picture-button {
+    background-color: #B4E0D7;
+    border-radius: 20px;
+    width: 85px;
+}
+
+#description {
+    min-height: 5rem;
+    overflow-y: hidden;
+    resize: none;
+}
+
+/* datepicker 스타일 */
+.react-datepicker-wrapper {
+    width: 150px !important;
+}
+
+.react-datepicker__input-container {
+    width: 150px !important;
+}
+
+.react-datepicker__input-container > input {
+    text-align: right;
+    width: 150px;
+}
+
+.react-datepicker-ignore-onclickoutside {
+    width: 200px !important;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.off {
+    display: none;
+}
+
+.picture_off {
+    display: none;
+}
+
+.input_required:before {
+    content: "*";
+    color: red;
+}
+
+.input_required {
+    font-size: 15px;
+    margin: 10px;
+}
+
+.required > label:after{
+    content: "*";
+    color: red;
+}
+

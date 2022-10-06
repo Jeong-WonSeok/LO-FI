@@ -1,38 +1,41 @@
-.App {
-  text-align: center;
+@charset "utf-8";
+
+/* 폰트 적용 */
+@font-face {
+  font-family: "DalSeoHealingMedium";
+  src: url("./assets/fonts/DalseoHealingMedium.ttf");
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+@font-face {
+  font-family: "DalSeoHealingBold";
+  src: url("./assets/fonts/DalseoHealingBold.ttf");
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+
+/* 768px 보다 작을 때 */
+@media all and (max-width: 400px) {
+  .App {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    width: 100% !important;
+    height: 100%;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+/* 768px 보다 클 때 */
+@media all and (min-width: 400px) {
+  .App {
+    width: 400px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    height: 100%;
   }
 }

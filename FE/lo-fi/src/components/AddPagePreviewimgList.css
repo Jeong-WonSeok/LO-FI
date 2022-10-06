@@ -1,0 +1,28 @@
+.img-delete-background {
+  position: relative;
+  left: 10px;
+  top: 30px;
+  background-color: white;
+  padding: 5px;
+  border-radius: 15px;
+  width: 20px;
+  height: 20px;
+}
+
+.add-img-list {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  margin : 10px;
+  margin-left: 0px !important;
+}
+
+.add-img-list::-webkit-scrollbar {
+  display: none;
+}
+
+.add-img-list > img{
+  margin-left: 10px;
+}
