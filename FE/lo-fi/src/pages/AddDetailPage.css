@@ -135,6 +135,11 @@
 
 .add-component > input {
     text-align: right;
+    width: 150px;
+}
+
+#point {
+  width: 150px;
 }
 
 #detail_location {
@@ -227,16 +232,16 @@
 
 /* datepicker 스타일 */
 .react-datepicker-wrapper {
-    width: 200px !important;
+    width: 150px !important;
 }
 
 .react-datepicker__input-container {
-    width: 200px !important;
+    width: 150px !important;
 }
 
 .react-datepicker__input-container > input {
     text-align: right;
-    width: 200px;
+    width: 150px;
 }
 
 .react-datepicker-ignore-onclickoutside {
