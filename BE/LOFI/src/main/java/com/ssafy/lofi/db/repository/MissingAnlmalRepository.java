@@ -18,4 +18,18 @@ public interface MissingAnlmalRepository extends JpaRepository<MissingAnimal, Lo
     List<MissingAnimal> findAllByLatLon(double lat, double lon);
 
     List<MissingAnimal> findAllByUserId(Long userId);
+
+    // 실종동물
+    @Query(nativeQuery = true, value = "select distinct a.* FROM (select * from keyword as k where k.keyword like :k1) as k1 join " +
+            "(select * from keyword as k where k.keyword like :k2) as k2 " + " on k1.animal_id = k2.animal_id " + "join missing_animal as a on k2.animal_id = a.id order by a.missing_day DESC limit 100")
+    List<MissingAnimal> findBykeywordtwoAnimal(String k1,String k2);
+
+    @Query(nativeQuery = true, value = "select distinct a.* FROM (select * from keyword as k where k.keyword like :k1) as k1 join " +
+            "(select * from keyword as k where k.keyword like :k2) as k2 " + " on k1.found_id = k2.found_id " + "(select * from keyword as k where k.keyword like :k3) as k3 " +
+            "on k2.found_id = k3.found_id " + "join missing_animal as f on k2.found_id = a.id order by a.missing_day DESC limit 100")
+    List<MissingAnimal> findBykeywordthreeAnimal(String k1,String k2,String k3);
+
+    @Query(nativeQuery = true, value = "select distinct a.* FROM (select * from keyword as k where k.keyword like :k1) as k1 join " +
+            "missing_animal as a on k1.animal_id = a.id order by a.missing_day DESC limit 100")
+    List<MissingAnimal> findBykeywordoneAnimal(String k1);
 }

@@ -26,4 +26,15 @@ public interface LostArticleRepository extends JpaRepository<LostArticle, Long> 
     List<LostArticle> findAllByLatLon(double lat, double lon);
 
     List<LostArticle> findAllByUserId(Long userId);
+
+    @Query(nativeQuery = true, value = "select distinct l.* FROM (select * from keyword as k where k.keyword like :k1) as k1 join " +
+            "(select * from keyword as k where k.keyword like :k2) as k2 " + " on k1.lost_id = k2.lost_id " + "join lost_article as l on k2.lost_id = l.id order by l.date DESC limit 100")
+    List<LostArticle> findBykeywordtwoArticle(String k1,String k2);
+    @Query(nativeQuery = true, value = "select distinct l.* FROM (select * from keyword as k where k.keyword like :k1) as k1 join " +
+            "(select * from keyword as k where k.keyword like :k2) as k2 " + " on k1.lost_id = k2.lost_id " + "(select * from keyword as k where k.keyword like :k3) as k3 " +
+            "on k2.lost_id = k3.lost_id " + "join lost_article as l on k2.lost_id = l.id order by l.date DESC limit 100")
+    List<LostArticle> findBykeywordthreeArticle(String k1,String k2,String k3);
+    @Query(nativeQuery = true, value = "select distinct l.* FROM (select * from keyword as k where k.keyword like :k1) as k1 join " +
+            "lost_article as l on k1.lost_id = l.id order by l.date DESC limit 100")
+    List<LostArticle> findBykeywordoneArticle(String k1);
 }
