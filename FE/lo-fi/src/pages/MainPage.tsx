@@ -21,7 +21,7 @@ type positionType = {
 
 const MainPage = () => {
   const navigate = useNavigate();
-  const { data, pending, error, category } = useAppSelector(state => state.mainData)
+  const { data, pending, error, category, search, search_data } = useAppSelector(state => state.mainData)
   
   const [location, setLocation] = useState({
     lat: 0,
@@ -60,8 +60,56 @@ const MainPage = () => {
     var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png"; 
     var imageSize = new kakao.maps.Size(24, 35); 
 
-    if (data[0]) {
+    if (data[0] && !search) {
       data.forEach((position: any) => {
+        var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); 
+        var marker = new kakao.maps.Marker({
+          map: map, // 마커를 표시할 지도
+          position: new kakao.maps.LatLng(position.lat, position.lon), // 마커를 표시할 위치
+          title : position.id, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+          clickable: true,
+          image : markerImage // 마커 이미지 
+        });
+
+        marker.setMap(map);
+        var content = `<div class="marker-info">
+        <img src=${position.picture.split(' ')[0] ? position.picture.split(' ')[0] : default_img} width={100} height={100}>
+          <div class='list-item-marker-info'>
+            <div class='marker-info-list-item-span'>
+              <img src=${pin} alt="" width={18} height={18}/>
+              <span>${position.location? position.location.slice(0, 10) : position.safeLocation.slice(0, 10)}</span>
+            </div>
+            <div class='marker-info-list-item-span'>
+              <img src=${calendar} alt="" width={18} height={18}/>
+              <span>${position.date}</span>
+            </div>
+            <div class='marker-info-list-item-span'>
+              <img src=${box} alt="" width={18} height={18} />
+              <span>${position.name} ${position.age ? ' / ' + position.age : ''}</span>
+            </div>
+          </div>
+        </div>`
+
+        // 마커 위에 커스텀오버레이를 표시합니다
+        // 마커를 중심으로 커스텀 오버레이를 표시하기위해 CSS를 이용해 위치를 설정했습니다
+        var overlay = new kakao.maps.CustomOverlay({
+            content: content,
+            position: marker.getPosition()
+        });
+
+        // 마커를 클릭했을 때 커스텀 오버레이를 표시합니다
+        kakao.maps.event.addListener(marker, 'click', function() {
+          map.setCenter(marker.getPosition())
+          overlay.setMap(map);
+        });
+
+        // 커스텀 오버레이를 닫기 위해 호출되는 함수입니다 
+        kakao.maps.event.addListener(map, 'click', function() {
+          overlay.setMap(null);     
+        })
+      })
+    } else if (search) {
+      search_data.forEach((position: any) => {
         var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); 
         var marker = new kakao.maps.Marker({
           map: map, // 마커를 표시할 지도
@@ -124,7 +172,7 @@ const MainPage = () => {
   }
   fecthmap();
 
-  }, [location, data]);
+  }, [location, data, search, search_data]);
 
   const getLocation = () => {
     if (navigator.geolocation) { // GPS를 지원하면
@@ -135,6 +183,9 @@ const MainPage = () => {
             "lat": position.coords.latitude,
             "lon": position.coords.longitude
           }))
+          if (!position.coords.latitude && !position.coords.longitude) {
+            alert('GPS 정보를 불러드리지 못했습니다.\n 새로고침을 해주세요');
+          }
         }
       }, function(error) {
         console.error(error);

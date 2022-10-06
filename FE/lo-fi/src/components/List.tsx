@@ -41,13 +41,14 @@ export default function List() {
   const [list, setList] = useState(ObjectArray)
 
   useEffect(() => {
+    
     if (error) {
-
+      return
     } else {
       if (search) {
         setList((current) => {
           let newData = [...current]
-          if (search_data[0] == undefined) {
+          if (search_data[0] === undefined) {
             search_data.shift()
             newData = search_data
           } else {
@@ -58,33 +59,28 @@ export default function List() {
         } else {
           setList((current) => {
             let newData = [...current]
-            if (data[0] == undefined) {
+            if (data[0] === undefined) {
               data.shift()
               newData = data
             } else {
               newData = data
             } 
             return newData
+            
             })
           } 
       } 
   }, [search, data, search_data])
 
   // 로딩중
-  if (pending) {
+  if (pending && !search) {
     return (
       <div className='list-container'>
         <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
       </div>
     )
   } else {
-    if (!data[0] || error) {
-      return (
-        <div className='list-container' style={{fontSize: "20px"}}>
-          찾는 데이터가 없습니다
-        </div>
-      )
-    } else {
+    if (list.length) {
       if (category === "animal" || category === "person") {
         return (
           <div className='list-container'>
@@ -139,6 +135,18 @@ export default function List() {
           </div>
         )
       }
-    }
+    } else if (search_data.length === 0 && search) {
+      return (
+        <div className='list-container' style={{fontSize: "20px"}}>
+          찾는 데이터가 없습니다.
+        </div>
+      )
+    } else {
+      return (
+        <div className='list-container' style={{fontSize: "20px"}}>
+          근처에 데이터가 없습니다.
+        </div>
+      )
+    } 
   }
 }
