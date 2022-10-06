@@ -21,7 +21,7 @@ public interface FoundArticleRepository extends JpaRepository<FoundArticle, Long
     List<String> findAllAtcId();
 
     @Query(nativeQuery = true, value = "select f.* from found_article as f " +
-            "where (6371*acos(cos(radians(:lat))*cos(radians(f.latitude))*cos(radians(f.longitude)-radians(:lon))+sin(radians(:lat))*sin(radians(f.latitude)))) <= 1")
+            "where (6371*acos(cos(radians(:lat))*cos(radians(f.latitude))*cos(radians(f.longitude)-radians(:lon))+sin(radians(:lat))*sin(radians(f.latitude)))) <= 1 order by f.date DESC")
     List<FoundArticle> findAllByLatLon(double lat, double lon);
 
     List<FoundArticle> findAllByUserId(Long userId);

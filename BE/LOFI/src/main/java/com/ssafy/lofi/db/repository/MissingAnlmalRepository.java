@@ -14,7 +14,7 @@ public interface MissingAnlmalRepository extends JpaRepository<MissingAnimal, Lo
     void truncateMissingPerson();
 
     @Query(nativeQuery = true, value = "select m.* from missing_animal as m " +
-            "where (6371*acos(cos(radians(:lat))*cos(radians(m.latitude))*cos(radians(m.longitude)-radians(:lon))+sin(radians(:lat))*sin(radians(m.latitude)))) <= 1")
+            "where (6371*acos(cos(radians(:lat))*cos(radians(m.latitude))*cos(radians(m.longitude)-radians(:lon))+sin(radians(:lat))*sin(radians(m.latitude)))) <= 1 order by m.missing_day DESC")
     List<MissingAnimal> findAllByLatLon(double lat, double lon);
 
     List<MissingAnimal> findAllByUserId(Long userId);
