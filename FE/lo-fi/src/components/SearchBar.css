@@ -20,6 +20,8 @@
 
 .search_map > span {
   text-align: center;
+  width: 46px;
+  height: 20px;
 }
 
 .search_box {
@@ -36,7 +38,7 @@
 
 @media all and (max-width: 400px) {
   .search_box {
-    width: 100%;
+    width: 80%;
     height: 40px;
     margin: 10px auto;
     padding: 10px 0px;
