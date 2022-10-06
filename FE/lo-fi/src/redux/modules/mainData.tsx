@@ -30,7 +30,7 @@ const getSearchAPI = async (type: string, searchText: string) => {
   const res = await axios.get(requests.searchDetail, {params})
   switch (type) {
     case "animal":
-      return res.data.aniaml
+      return res.data.animal
     case "article":
       return res.data.article
     case "person":

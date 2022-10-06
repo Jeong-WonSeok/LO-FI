@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import map from '../assets/img/Category/map.png'
 import list from '../assets/img/Category/list.png'
 import search_icon from '../assets/img/icon/search_icon.png'
@@ -28,6 +28,12 @@ export default function SearchBar(props: any) {
     
     xButton?.classList.remove('not_search')
   }
+
+  useEffect(() => {
+    setSearchText('')
+  
+  }, [category])
+  
 
   const endSearch = () => {
     setSearchText('')
