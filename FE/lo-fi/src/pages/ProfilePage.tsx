@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./ProfilePage.css";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/modules/store";
-import axios from "axios";
+import axios from "../api/axios";
 import { useNavigate } from 'react-router-dom';
 import requests from "../api/requests";
 
@@ -16,11 +16,13 @@ export default function ProfilePage() {
   const [point, setPoint] = useState(0);
 
   axios
-    .get(requests.profile, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
+    .get(requests.profile
+      // .get("http://localhost:8080/api/register/myPage" ,{
+      // headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    )
     .then((response) => {
       const data = response.data.result;
+      
 
       setId(response.data.id);
       setEmail(response.data.email);
