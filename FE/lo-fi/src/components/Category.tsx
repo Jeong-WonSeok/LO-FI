@@ -9,10 +9,10 @@ import baby from '../assets/img/Category/remove_baby.png'
 import select_baby from '../assets/img/Category/color_baby.png'
 import './Category.css';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHook'
-import { getData } from '../redux/modules/mainData'
+import { getData, stopSearch } from '../redux/modules/mainData'
 
 const Category = () => {
-  const { category } = useAppSelector( state => state.mainData)
+  const { category, search } = useAppSelector( state => state.mainData)
   const [Select, setSelect] = useState("");
   const [location, setLocation] = useState({
     "lat": 0,
@@ -22,6 +22,9 @@ const Category = () => {
   const dispatch = useAppDispatch();
 
   const handleChangeTap = (tag: string) => {
+    if (search) {
+      dispatch(stopSearch())
+    }
     // 선택하면 데이터가 바뀜
     dispatch(getData(tag, location.lat, location.lon))
     setSelect(tag);
@@ -80,7 +83,7 @@ const Category = () => {
       <button className='category-buttons' onClick={() => handleChangeTap('person')}>
         <img src={Select === 'person' ? select_baby : baby} alt=""
         width="20px" height="20px"/>
-        <span>실종아동</span>
+        <span>실종자</span>
       </button>
       <button className='category-buttons' onClick={() => handleChangeTap('found')}>
         <img src={Select === 'found' ? select_take_item : take_item} alt=""

@@ -48,12 +48,19 @@
 .detail-button {
     position: fixed;
     bottom: 80px;
-}
-
-.detail-button > button {
     background-color: #B4E0D7;
     border-radius: 20px;
     width: 280px;
     height: 40px;
     font-size: 20px;
+    text-align: center;
+}
+
+.detail-button > a {
+    display: block;
+    margin-top: 5px;
+}
+
+.detail-button > button {
+    margin-top: 5px;
 }
