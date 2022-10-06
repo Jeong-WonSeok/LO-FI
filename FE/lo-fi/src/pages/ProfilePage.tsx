@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux/modules/store";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import requests from "../api/requests";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function ProfilePage() {
   const [point, setPoint] = useState(0);
 
   axios
-    .get("http://localhost:8080/api/register/myPage", {
+    .get(requests.profile, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
     .then((response) => {
