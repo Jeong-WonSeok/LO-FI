@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Category from '../components/Category';
+import SearchBar from '../components/SearchBar';
 import search_icon from '../assets/img/icon/search_icon.png'
 import list from '../assets/img/Category/list.png'
 import default_img from '../assets/img/icon/default_img.png'
@@ -153,16 +154,7 @@ const MainPage = () => {
 
   return (
     <div style={{width: '100%'}}>
-      <div className='search_top_nav' >
-        <div className='search_map' onClick={goList}>
-          <img src={list} alt="" width={35} height={35} />
-          <span>목록으로</span>
-        </div>
-        <div className='search_box'>
-          <img src={search_icon} alt="" width={20} height={20}/>
-          <input className="search_input" type="text" value={SearchText} onChange={handleChange}/>
-        </div>
-      </div>
+      <SearchBar category={"map"}/>
       <Category/>
       
       <div id="map" style={{height: '85vh', width: "100%"}}>
